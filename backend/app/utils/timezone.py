@@ -33,3 +33,13 @@ def make_aware(dt: datetime) -> datetime:
 def combine_date_time(d: date, t: time) -> datetime:
     """Combine date and time in the configured timezone."""
     return datetime.combine(d, t, tzinfo=get_tz())
+
+
+def to_local(dt: datetime | None) -> datetime | None:
+    """Convert any datetime to configured timezone (Asia/Karachi). Returns None if dt is None."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=get_tz())
+    return dt.astimezone(get_tz())
+

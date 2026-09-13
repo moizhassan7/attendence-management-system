@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { 
-  CalendarDays, Sliders, Image as ImageIcon, Upload, 
+  CalendarDays, Image as ImageIcon, Upload, 
   CheckCircle2, AlertTriangle, Shield, Award, Plus, 
-  Trash2, Edit3, X, Save, Building2, GraduationCap, Calendar
+  Trash2, Edit3, X, Save, Building2, GraduationCap, Sliders
 } from 'lucide-react';
 import api from '../api/client';
+import { useBranding } from '../context/BrandingContext';
 
 interface BrandingData {
   acronym: string;
@@ -46,14 +47,15 @@ interface CourseItem {
 }
 
 const Configuration: React.FC = () => {
+  const { branding: globalBranding, updateBranding: updateGlobalBranding } = useBranding();
   const [loading, setLoading] = useState(true);
   const [branding, setBranding] = useState<BrandingData>({
-    acronym: 'PTS',
-    display_name: 'Police Training School Rawat',
-    legal_name: 'Police Training School, Rawat — Rawalpindi',
-    system_name: 'Biometric Attendance Management System',
-    tagline: 'Train to Serve',
-    logo_url: '/pts_logo.png',
+    acronym: globalBranding.acronym || 'PTS',
+    display_name: globalBranding.display_name || 'Police Training School Rawat',
+    legal_name: globalBranding.legal_name || 'Police Training School, Rawat — Rawalpindi',
+    system_name: globalBranding.system_name || 'Biometric Attendance Management System',
+    tagline: globalBranding.tagline || 'Train to Serve',
+    logo_url: globalBranding.logo_url || '/pts_logo.png',
   });
 
   const [ranges, setRanges] = useState<RangesData>({
@@ -111,6 +113,7 @@ const Configuration: React.FC = () => {
 
       if (settingsRes.data.success) {
         setBranding(settingsRes.data.data.branding);
+        updateGlobalBranding(settingsRes.data.data.branding);
         setRanges(settingsRes.data.data.ranges);
         setDesignations(settingsRes.data.data.designations || []);
       }
@@ -136,6 +139,7 @@ const Configuration: React.FC = () => {
     try {
       const res = await api.post('/settings/branding', branding);
       if (res.data.success) {
+        updateGlobalBranding(branding);
         showToast('Branding settings saved successfully');
       }
     } catch (err: any) {
@@ -329,6 +333,14 @@ const Configuration: React.FC = () => {
       showToast(err.response?.data?.detail || 'Failed to delete course', 'error');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-[calc(100vh-6rem)] items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
@@ -669,7 +681,7 @@ const Configuration: React.FC = () => {
                 <Building2 className="w-4 h-4 text-indigo-600" /> Departments & Wings
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                School administrative wings, branches, and operational units
+                Administrative wings, branches, and operational units
               </p>
             </div>
             <button

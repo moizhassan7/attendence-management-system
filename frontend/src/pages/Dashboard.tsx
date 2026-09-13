@@ -95,6 +95,10 @@ const PIE_COLORS: Record<string, string> = {
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const d = new Date();
+    return d.toISOString().split('T')[0];
+  });
   const [stats, setStats] = useState<DashboardKPI | null>(null);
   const [distribution, setDistribution] = useState<AttendanceDistribution[]>([]);
   const [workforce, setWorkforce] = useState<WorkforceRatio | null>(null);
@@ -102,17 +106,20 @@ const Dashboard: React.FC = () => {
   const [departments, setDepartments] = useState<DepartmentSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncNotice, setSyncNotice] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
 
   const fetchDashboardData = useCallback(async (showRefreshing = false) => {
     if (showRefreshing) setIsRefreshing(true);
     try {
+      const params = selectedDate ? { date: selectedDate } : {};
       const [statsRes, distRes, workforceRes, ranksRes, deptsRes] = await Promise.all([
-        api.get('/dashboard/stats'),
-        api.get('/dashboard/distribution'),
+        api.get('/dashboard/stats', { params }),
+        api.get('/dashboard/distribution', { params }),
         api.get('/dashboard/workforce-ratio'),
-        api.get('/dashboard/rank-summary'),
-        api.get('/dashboard/department-summary'),
+        api.get('/dashboard/rank-summary', { params }),
+        api.get('/dashboard/department-summary', { params }),
       ]);
 
       if (statsRes.data?.data) setStats(statsRes.data.data);
@@ -127,7 +134,26 @@ const Dashboard: React.FC = () => {
       setLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [selectedDate]);
+
+  const handleLiveSync = async () => {
+    setIsSyncing(true);
+    setSyncNotice(null);
+    try {
+      const res = await api.post('/devices/sync-all');
+      const data = res.data?.data;
+      const msg = res.data?.message || `Sync completed: ${data?.total_synced ?? 0} devices processed.`;
+      setSyncNotice(msg);
+      await fetchDashboardData(true);
+      setTimeout(() => setSyncNotice(null), 5000);
+    } catch (err: any) {
+      console.error("Device sync failed", err);
+      setSyncNotice(err.response?.data?.detail || "Device synchronization failed. Check device network connectivity.");
+      setTimeout(() => setSyncNotice(null), 6000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     fetchDashboardData();
@@ -139,11 +165,15 @@ const Dashboard: React.FC = () => {
 
     // WebSocket live connection
     let ws: WebSocket | null = null;
+    let isMounted = true;
+
     try {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const host = window.location.hostname || 'localhost';
       ws = new WebSocket(`${protocol}//${host}:8000/ws/dashboard`);
+      
       ws.onmessage = (event) => {
+        if (!isMounted) return;
         try {
           const msg = JSON.parse(event.data);
           if (msg.event === 'dashboard.metrics.updated') {
@@ -153,13 +183,26 @@ const Dashboard: React.FC = () => {
           // ignore non-json
         }
       };
+
+      ws.onerror = () => {
+        // Prevent uncaught console error on disconnect
+      };
     } catch (err) {
       console.warn("WebSocket dashboard connection skipped:", err);
     }
 
     return () => {
+      isMounted = false;
       clearInterval(interval);
-      if (ws) ws.close();
+      if (ws) {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        } else if (ws.readyState === WebSocket.CONNECTING) {
+          ws.onopen = () => {
+            try { ws?.close(); } catch {}
+          };
+        }
+      }
     };
   }, [fetchDashboardData]);
 
@@ -200,32 +243,54 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100">
           <CalendarDays className="w-4 h-4 text-primary" />
-          <span className="text-sm font-semibold text-slate-600">
-            {new Date().toLocaleString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}
-          </span>
+          <input 
+            type="date" 
+            value={selectedDate} 
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="text-sm font-semibold text-slate-700 bg-transparent border-none focus:outline-none cursor-pointer"
+            title="Select date to inspect attendance records"
+          />
           <button 
             onClick={() => fetchDashboardData(true)} 
-            disabled={isRefreshing}
+            disabled={isRefreshing || isSyncing}
             title="Refresh database data"
-            className="ml-2 text-slate-400 hover:text-primary transition-colors"
+            className="ml-2 text-slate-400 hover:text-primary transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-primary' : ''}`} />
           </button>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <span className="text-xs text-slate-400 font-medium hidden sm:inline">
             Updated: {lastRefreshed.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
           </span>
           <button 
-            onClick={() => fetchDashboardData(true)}
-            className="flex items-center gap-2 bg-dark text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-700 transition-colors shadow-lg shadow-dark/10"
+            onClick={handleLiveSync}
+            disabled={isSyncing}
+            title="Poll and synchronize all ZKTeco devices immediately"
+            className="flex items-center gap-2 bg-dark text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-700 transition-colors shadow-lg shadow-dark/10 disabled:opacity-75"
           >
-            <MonitorPlay className="w-4 h-4" />
-            Live Sync
+            {isSyncing ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin text-accent" />
+                <span>Syncing Devices...</span>
+              </>
+            ) : (
+              <>
+                <MonitorPlay className="w-4 h-4" />
+                <span>Live Sync</span>
+              </>
+            )}
           </button>
         </div>
       </div>
+
+      {syncNotice && (
+        <div className="bg-primary/10 border border-primary/20 text-primary px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all">
+          <span>{syncNotice}</span>
+          <button onClick={() => setSyncNotice(null)} className="text-primary hover:text-primaryDark">✕</button>
+        </div>
+      )}
 
       {/* Dynamic Subtitle */}
       <div className="text-sm font-medium text-slate-500 tracking-tight">
@@ -441,7 +506,12 @@ const Dashboard: React.FC = () => {
                 ranks.map((rank) => {
                   const presentPercent = rank.total > 0 ? Math.round((rank.present / rank.total) * 100) : 0;
                   return (
-                    <tr key={rank.rank_id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr 
+                      key={rank.rank_id} 
+                      onClick={() => navigate(`/directory?tab=Staff&rank_id=${rank.rank_id}`)}
+                      className="hover:bg-slate-50/80 transition-colors cursor-pointer"
+                      title={`Click to view all ${rank.rank_name} in directory`}
+                    >
                       <td className="px-6 py-3 font-semibold text-slate-700 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                         {rank.rank_name}
@@ -496,7 +566,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <TraineesOverview />
+      <TraineesOverview targetDate={selectedDate} />
     </div>
   );
 };

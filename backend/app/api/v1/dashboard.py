@@ -23,7 +23,7 @@ from app.schemas.dashboard import (
     RankSummary,
     AttendanceDistribution,
 )
-from app.utils.timezone import today
+from app.utils.timezone import today, now, to_local
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
@@ -554,8 +554,8 @@ async def security_dashboard(
             
         # Determine shift dynamically based on first_in punch time
         shift = "Awaiting"
-        first_in = att.first_in if att else None
-        last_out = att.last_out if att else None
+        first_in = to_local(att.first_in) if att else None
+        last_out = to_local(att.last_out) if att else None
         
         if current_status in ["LEAVE", "MEDICAL", "OSD", "DUTY_REST", "WEEKEND", "HOLIDAY", "EVIDENCE"]:
             shift = "Off / Marked"
@@ -635,6 +635,29 @@ async def enrollment_dashboard(
     if trainees_pending < 0:
         trainees_pending = 0
 
+    # Real unlinked punches from database
+    from app.models.attendance import AttendancePunch
+    registered_ids = select(Personnel.biometric_user_id)
+    unlinked_res = await db.execute(
+        select(AttendancePunch.biometric_user_id)
+        .where(AttendancePunch.biometric_user_id.not_in(registered_ids))
+        .distinct()
+    )
+    unlinked_pins = [r[0] for r in unlinked_res.all()]
+
+    # Partition by trainee PIN range vs staff
+    staff_unlinked = 0
+    trainee_unlinked = 0
+    for pin in unlinked_pins:
+        try:
+            num = int(pin)
+            if num <= 2000:
+                trainee_unlinked += 1
+            else:
+                staff_unlinked += 1
+        except ValueError:
+            staff_unlinked += 1
+
     # Devices for enrollment target selector
     devices_result = await db.execute(
         select(Device).where(Device.enabled == True)
@@ -651,31 +674,67 @@ async def enrollment_dashboard(
         }
         for d in devices
     ]
-    if not device_list:
-        device_list = [
-            {
-                "id": 1,
-                "name": "MB460 (TTQ5254800795)-Device-A",
-                "ip_address": "192.168.1.201",
-                "location": "Main Gate",
-                "status": "ONLINE",
-                "display_label": "MB460 (TTQ5254800795)-Device-A"
-            }
-        ]
 
     return ApiResponse(data={
         "staff_kpi": {
             "total": total_staff,
             "enrolled": staff_enrolled,
             "pending": staff_pending,
-            "unlinked": 9,
+            "unlinked": staff_unlinked,
         },
         "trainee_kpi": {
             "total": total_trainees,
             "enrolled": trainees_enrolled,
             "pending": trainees_pending,
-            "unlinked": 3,
+            "unlinked": trainee_unlinked,
         },
         "devices": device_list
+    })
+
+
+@router.get("/overview", response_model=ApiResponse)
+async def dashboard_overview(
+    date_filter: Annotated[date | None, Query(alias="date")] = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """Unified composite overview endpoint for the executive dashboard."""
+    target_date = date_filter or today()
+
+    # 1. Staff strength and attendance totals
+    stats_res = await dashboard_stats(date_filter=target_date, db=db)
+    
+    # 2. Workforce ratio
+    workforce_res = await workforce_ratio(db=db)
+
+    # 3. Attendance distribution
+    dist_res = await attendance_distribution(date_filter=target_date, db=db)
+
+    # 4. Rank summary
+    rank_res = await rank_summary(date_filter=target_date, db=db)
+
+    # 5. Department summary
+    dept_res = await department_summary(date_filter=target_date, db=db)
+
+    # 6. Trainee dashboard data
+    trainee_res = await trainee_dashboard(date_filter=target_date, db=db)
+
+    # 7. Device status
+    dev_total = await db.scalar(select(func.count(Device.id)).where(Device.enabled == True)) or 0
+    dev_online = await db.scalar(select(func.count(Device.id)).where(Device.enabled == True, Device.connection_status == "ONLINE")) or 0
+
+    return ApiResponse(data={
+        "server_time": now().isoformat(),
+        "date": target_date.isoformat(),
+        "stats": stats_res.data,
+        "workforce": workforce_res.data,
+        "distribution": dist_res.data,
+        "ranks": rank_res.data,
+        "departments": dept_res.data,
+        "trainees": trainee_res.data,
+        "devices": {
+            "total": dev_total,
+            "online": dev_online,
+            "offline": max(0, dev_total - dev_online),
+        },
     })
 

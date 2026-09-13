@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { BrandingProvider } from './context/BrandingContext';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -9,19 +10,23 @@ import Personnel from './pages/Personnel';
 import Security from './pages/Security';
 import Directory from './pages/Directory';
 import Enrollment from './pages/Enrollment';
+import Attendance from './pages/Attendance';
 import Devices from './pages/Devices';
 import Users from './pages/Users';
 import Configuration from './pages/Configuration';
 import Reports from './pages/Reports';
-
-// Placeholders for other pages
-const Attendance = () => <div className="p-4 text-white">Attendance Page - Coming Soon</div>;
+import Backup from './pages/Backup';
+import LiveScreen from './pages/LiveScreen';
 
 const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) => {
   const { user, isAuthenticated, loading } = useAuth();
   
   if (loading) {
-    return <div className="flex h-screen items-center justify-center bg-background text-primary"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-primary">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
   }
   
   if (!isAuthenticated) {
@@ -40,6 +45,17 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       
+      {/* Full-screen Kiosk Route */}
+      <Route 
+        path="/live-screen" 
+        element={
+          <ProtectedRoute>
+            <LiveScreen />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Main Authenticated Layout */}
       <Route path="/" element={
         <ProtectedRoute>
           <Layout />
@@ -57,18 +73,24 @@ const AppRoutes = () => {
         <Route path="users" element={<Users />} />
         <Route path="settings" element={<Configuration />} />
         <Route path="configuration" element={<Configuration />} />
+        <Route path="backup" element={<Backup />} />
       </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </AuthProvider>
+    <BrandingProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </BrandingProvider>
   );
 };
 

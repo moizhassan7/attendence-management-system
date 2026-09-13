@@ -10,6 +10,7 @@ from app.zk.base import (
     BaseAttendanceDevice,
     DeviceAttendanceLog,
     DeviceInfo,
+    DeviceTemplate,
     DeviceUser,
 )
 from app.zk.exceptions import (
@@ -43,7 +44,7 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                 timeout=self._settings.device_timeout_seconds,
                 password=int(self.password) if self.password else 0,
                 force_udp=False,
-                ommit_ping=False,
+                ommit_ping=True,
             )
             self._conn = zk.connect()
             if self._conn is None:
@@ -111,6 +112,124 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
             ]
         except Exception as e:
             raise DeviceReadError(f"Failed to read users: {e}")
+
+    def set_user(
+        self,
+        user_id: str,
+        name: str,
+        privilege: int = 0,
+        password: str = "",
+        group_id: str = "1",
+        card: int = 0,
+    ) -> bool:
+        """Create or update user on the device."""
+        if not self._conn:
+            raise DeviceConnectionError("Not connected")
+        try:
+            existing_users = self._conn.get_users() or []
+            existing = next((u for u in existing_users if str(u.user_id) == str(user_id)), None)
+            if existing:
+                uid = existing.uid
+            else:
+                max_uid = max([u.uid for u in existing_users], default=0)
+                uid = max_uid + 1
+
+            self._conn.set_user(
+                uid=uid,
+                name=name,
+                privilege=privilege,
+                password=password,
+                group_id=str(group_id),
+                user_id=str(user_id),
+                card=card,
+            )
+            try:
+                self._conn.refresh_data()
+            except Exception:
+                pass
+            logger.info("Set user %s (%s) on device %s (uid=%d)", user_id, name, self.ip, uid)
+            return True
+        except Exception as e:
+            logger.error("Failed to set user %s on device %s: %s", user_id, self.ip, e)
+            raise DeviceReadError(f"Failed to set user on device: {e}")
+
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
+        """Trigger remote fingerprint enrollment prompt on device."""
+        if not self._conn:
+            raise DeviceConnectionError("Not connected")
+        try:
+            existing_users = self._conn.get_users() or []
+            user = next((u for u in existing_users if str(u.user_id) == str(user_id)), None)
+            if not user:
+                max_uid = max([u.uid for u in existing_users], default=0)
+                uid = max_uid + 1
+                self._conn.set_user(
+                    uid=uid,
+                    name=str(user_id),
+                    privilege=0,
+                    password="",
+                    group_id="1",
+                    user_id=str(user_id),
+                    card=0,
+                )
+                try:
+                    self._conn.refresh_data()
+                except Exception:
+                    pass
+            else:
+                uid = user.uid
+
+            logger.info("Starting remote enrollment for user %s (uid=%d) on %s", user_id, uid, self.ip)
+            success = self._conn.enroll_user(uid=uid, temp_id=temp_id, user_id=str(user_id))
+            return bool(success)
+        except Exception as e:
+            logger.error("Enrollment failed for user %s on %s: %s", user_id, self.ip, e)
+            raise DeviceReadError(f"Enrollment failed on device: {e}")
+        finally:
+            try:
+                self._conn.cancel_capture()
+                self._conn.verify_user()
+            except Exception:
+                pass
+
+    def get_templates(self) -> list[DeviceTemplate]:
+        """Retrieve enrolled fingerprint templates from device."""
+        if not self._conn:
+            raise DeviceConnectionError("Not connected")
+        try:
+            raw_templates = self._conn.get_templates() or []
+            return [
+                DeviceTemplate(
+                    uid=t.uid,
+                    fid=t.fid if hasattr(t, "fid") else 0,
+                    size=t.size if hasattr(t, "size") else 0,
+                    valid=t.valid if hasattr(t, "valid") else 1,
+                )
+                for t in raw_templates
+            ]
+        except Exception as e:
+            logger.warning("Failed to read templates from device %s: %s", self.ip, e)
+            return []
+
+    def delete_user(self, user_id: str) -> bool:
+        """Delete user from device."""
+        if not self._conn:
+            raise DeviceConnectionError("Not connected")
+        try:
+            existing_users = self._conn.get_users() or []
+            user = next((u for u in existing_users if str(u.user_id) == str(user_id)), None)
+            if user:
+                self._conn.delete_user(uid=user.uid, user_id=str(user_id))
+                try:
+                    self._conn.refresh_data()
+                except Exception:
+                    pass
+                logger.info("Deleted user %s from device %s", user_id, self.ip)
+                return True
+            return False
+        except Exception as e:
+            logger.error("Failed to delete user %s from %s: %s", user_id, self.ip, e)
+            raise DeviceReadError(f"Failed to delete user from device: {e}")
 
     def get_attendance(self) -> list[DeviceAttendanceLog]:
         """Retrieve attendance logs."""

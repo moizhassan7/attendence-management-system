@@ -7,20 +7,28 @@ import {
   ShieldCheck,
   BookOpen,
   UserPlus,
+  UserCheck,
   FileText,
   UserCog,
   Link,
   Settings,
   DatabaseBackup,
-  LogOut,
   Fingerprint,
-  MonitorPlay
+  MonitorPlay,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useBranding } from '../context/BrandingContext';
 
 const Layout: React.FC = () => {
   const { user, logout } = useAuth();
+  const { branding } = useBranding();
+  const [logoFailed, setLogoFailed] = React.useState(false);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    setLogoFailed(false);
+  }, [branding.logo_url]);
 
   const handleLogout = () => {
     logout();
@@ -35,6 +43,7 @@ const Layout: React.FC = () => {
     { to: '/security', icon: ShieldCheck, label: 'Security' },
     { to: '/directory', icon: BookOpen, label: 'Directory' },
     { to: '/enrollment', icon: UserPlus, label: 'Enrollment' },
+    { to: '/attendance', icon: UserCheck, label: 'Attendance' },
     { to: '/reports', icon: FileText, label: 'Reports' },
     { to: '/users', icon: UserCog, label: 'User Management' },
     { to: '/devices', icon: Link, label: 'Connection' },
@@ -49,12 +58,33 @@ const Layout: React.FC = () => {
         <div className="flex-1 overflow-y-auto no-scrollbar">
           {/* Logo Area */}
           <div className="p-6 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700">
-              <Fingerprint className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-slate-700 overflow-hidden flex-shrink-0 shadow-xs p-1">
+              {branding.logo_url && !logoFailed ? (
+                <img 
+                  src={branding.logo_url} 
+                  alt={branding.display_name} 
+                  className="w-full h-full object-contain"
+                  onError={() => setLogoFailed(true)} 
+                />
+              ) : branding.acronym ? (
+                <span className="font-black text-xs text-primary tracking-tight">{branding.acronym}</span>
+              ) : (
+                <Fingerprint className="w-6 h-6 text-primary" />
+              )}
             </div>
-            <div>
-              <h1 className="font-bold text-sm tracking-tight text-slate-800 leading-tight">Police Training<br/>School Rawat</h1>
-              <p className="text-[10px] text-slate-500 leading-tight mt-1">Biometric Attendance<br/>Management System</p>
+            <div className="min-w-0 flex-1">
+              <h1 
+                className="font-bold text-sm tracking-tight text-slate-800 leading-snug truncate"
+                title={branding.display_name || 'Organization'}
+              >
+                {branding.display_name || 'Organization'}
+              </h1>
+              <p 
+                className="text-[10px] text-slate-500 leading-tight mt-0.5 truncate"
+                title={branding.system_name || 'Attendance System'}
+              >
+                {branding.system_name || 'Attendance System'}
+              </p>
             </div>
           </div>
           
@@ -81,7 +111,10 @@ const Layout: React.FC = () => {
 
         {/* Bottom Area */}
         <div className="p-4 bg-white border-t border-slate-50">
-          <button className="w-full flex items-center justify-center gap-2 bg-dark text-white rounded-xl py-3 px-4 text-sm font-medium hover:bg-slate-700 transition-colors mb-3 shadow-lg shadow-dark/10">
+          <button 
+            onClick={() => navigate('/live-screen')}
+            className="w-full flex items-center justify-center gap-2 bg-dark text-white rounded-xl py-3 px-4 text-sm font-medium hover:bg-slate-700 transition-colors mb-3 shadow-lg shadow-dark/10"
+          >
             <MonitorPlay className="w-4 h-4" />
             Live Screen
           </button>

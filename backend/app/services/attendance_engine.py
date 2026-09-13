@@ -13,7 +13,7 @@ from app.models.exception import AttendanceException
 from app.models.holiday import Holiday
 from app.models.personnel import Personnel
 from app.models.shift import Shift
-from app.utils.timezone import get_tz, now
+from app.utils.timezone import get_tz, now, to_local
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +48,13 @@ class AttendanceService:
         # Assuming weekend_days setting (e.g., "5,6" for Sat/Sun). Hardcoded 5,6 for simplicity if settings missing
         is_weekend = target_date.weekday() in (5, 6)
 
-        # 2. Check for Holiday
+        # 2. Check if holiday
         holiday = (await db.execute(
             select(Holiday).where(Holiday.holiday_date == target_date)
         )).scalar_one_or_none()
         is_holiday = holiday is not None
 
-        # 3. Check for Exception (Leave, OSD, etc.)
+        # 3. Check sanctioned exception
         exc = (await db.execute(
             select(AttendanceException).where(
                 AttendanceException.personnel_id == personnel.id,
@@ -64,8 +64,9 @@ class AttendanceService:
 
         # 4. Get Punches for the day
         from datetime import time
-        t0 = datetime.combine(target_date, time.min)
-        t1 = datetime.combine(target_date, time.max)
+        tz = get_tz()
+        t0 = datetime.combine(target_date, time.min, tzinfo=tz)
+        t1 = datetime.combine(target_date, time.max, tzinfo=tz)
         punches = (await db.execute(
             select(AttendancePunch).where(
                 AttendancePunch.biometric_user_id == personnel.biometric_user_id,
@@ -100,22 +101,23 @@ class AttendanceService:
             status = "PRESENT"
 
             if shift:
-                # Calculate expected start time with timezone safety
-                exp_tz = first_in.tzinfo if first_in.tzinfo else None
-                expected_start = datetime.combine(target_date, shift.start_time, tzinfo=exp_tz)
+                # Calculate expected start time in local timezone
+                first_in_local = to_local(first_in)
+                expected_start = datetime.combine(target_date, shift.start_time, tzinfo=tz)
                 grace_period = timedelta(minutes=shift.late_grace_minutes if shift.late_grace_minutes is not None else 10)
 
                 # Check late
-                if first_in > expected_start + grace_period:
+                if first_in_local and first_in_local > expected_start + grace_period:
                     status = "LATE"
-                    late_delta = first_in - expected_start
+                    late_delta = first_in_local - expected_start
                     late_minutes = max(0, int(late_delta.total_seconds() / 60))
 
                 # Check overtime
                 if last_out:
-                    expected_end = datetime.combine(target_date, shift.end_time, tzinfo=exp_tz)
-                    if last_out > expected_end:
-                        ot_delta = last_out - expected_end
+                    last_out_local = to_local(last_out)
+                    expected_end = datetime.combine(target_date, shift.end_time, tzinfo=tz)
+                    if last_out_local and last_out_local > expected_end:
+                        ot_delta = last_out_local - expected_end
                         overtime_minutes = max(0, int(ot_delta.total_seconds() / 60))
         else:
             # Base default cases when no punch was registered

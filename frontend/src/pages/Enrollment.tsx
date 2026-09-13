@@ -3,7 +3,7 @@ import {
   Users, CheckCircle2, Clock, AlertTriangle, 
   CalendarDays, Wifi, Plus, Search, 
   ChevronDown, Fingerprint, ScanFace, Play, ChevronRight, X,
-  UserCheck, Shield, Briefcase, GraduationCap
+  UserCheck, Shield, Briefcase, GraduationCap, RefreshCw, UploadCloud
 } from 'lucide-react';
 import api from '../api/client';
 
@@ -76,8 +76,24 @@ const Enrollment: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [viewPerson, setViewPerson] = useState<PersonnelItem | null>(null);
   const [showDeviceUsersModal, setShowDeviceUsersModal] = useState(false);
+  const [unlinkedUsers, setUnlinkedUsers] = useState<any[]>([]);
+  const [loadingUnlinked, setLoadingUnlinked] = useState(false);
   const [enrollingId, setEnrollingId] = useState<number | null>(null);
+  const [pushingId, setPushingId] = useState<number | null>(null);
+  const [isSyncingBiometrics, setIsSyncingBiometrics] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const fetchUnlinkedUsers = async () => {
+    setLoadingUnlinked(true);
+    try {
+      const res = await api.get('/attendance/unlinked');
+      setUnlinkedUsers(res.data?.data || []);
+    } catch (err) {
+      console.error('Failed to load unlinked device users', err);
+    } finally {
+      setLoadingUnlinked(false);
+    }
+  };
 
   // Master data from Configuration & Database
   const [masterRanks, setMasterRanks] = useState<MasterRank[]>([]);
@@ -213,17 +229,63 @@ const Enrollment: React.FC = () => {
   const handleEnrollBiometric = async (personId: number, type: 'finger' | 'face', name: string) => {
     setEnrollingId(personId);
     try {
-      const res = await api.post(`/personnel/${personId}/enroll-biometric?biometric_type=${type}`);
+      const dev = kpiData?.devices?.find(d => d.display_label === selectedDevice);
+      const devParam = dev ? `&device_id=${dev.id}` : '';
+      if (type === 'finger') {
+        showToast(`Terminal prompt active! Place finger 3 times on the sensor for ${name}...`);
+      }
+      const res = await api.post(`/personnel/${personId}/enroll-biometric?biometric_type=${type}${devParam}`);
       if (res.data.success) {
-        showToast(`Prompt sent: ${type === 'finger' ? 'Fingerprint' : 'Face'} enrolled for ${name} on ${selectedDevice || 'Terminal'}`);
+        showToast(res.data.message || `Fingerprint enrolled successfully for ${name}!`);
         await fetchPersonnel();
         await fetchKpis();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to trigger enrollment', err);
-      showToast(`Error enrolling ${type} for ${name}`);
+      const detail = err.response?.data?.detail || `Error enrolling ${type} for ${name}`;
+      showToast(detail);
     } finally {
       setEnrollingId(null);
+    }
+  };
+
+  // Push specific personnel to terminal
+  const handlePushToTerminal = async (personId: number, name: string) => {
+    setPushingId(personId);
+    try {
+      const dev = kpiData?.devices?.find(d => d.display_label === selectedDevice);
+      const devParam = dev ? `?device_id=${dev.id}` : '';
+      const res = await api.post(`/personnel/${personId}/push-to-terminal${devParam}`);
+      if (res.data.success) {
+        showToast(res.data.message || `User ${name} pushed to terminal!`);
+        await fetchPersonnel();
+      }
+    } catch (err: any) {
+      console.error('Failed to push to terminal', err);
+      const detail = err.response?.data?.detail || `Error pushing ${name} to terminal`;
+      showToast(detail);
+    } finally {
+      setPushingId(null);
+    }
+  };
+
+  // Sync biometrics from terminal
+  const handleSyncBiometrics = async () => {
+    setIsSyncingBiometrics(true);
+    try {
+      const dev = kpiData?.devices?.find(d => d.display_label === selectedDevice);
+      const devParam = dev ? `?device_id=${dev.id}` : '';
+      const res = await api.post(`/personnel/sync-biometrics${devParam}`);
+      if (res.data.success) {
+        showToast(res.data.message || 'Biometrics synced successfully!');
+        await fetchPersonnel();
+        await fetchKpis();
+      }
+    } catch (err: any) {
+      console.error('Failed to sync biometrics', err);
+      showToast(err.response?.data?.detail || 'Failed to sync biometrics from terminal');
+    } finally {
+      setIsSyncingBiometrics(false);
     }
   };
 
@@ -269,8 +331,8 @@ const Enrollment: React.FC = () => {
   };
 
   const currentKPIs = activeTab === 'Staff' 
-    ? (kpiData?.staff_kpi || { total: 209, enrolled: 207, pending: 2, unlinked: 9 })
-    : (kpiData?.trainee_kpi || { total: 857, enrolled: 855, pending: 2, unlinked: 3 });
+    ? (kpiData?.staff_kpi || { total: 0, enrolled: 0, pending: 0, unlinked: 0 })
+    : (kpiData?.trainee_kpi || { total: 0, enrolled: 0, pending: 0, unlinked: 0 });
 
   // Initials generator
   const getInitials = (name: string) => {
@@ -324,7 +386,10 @@ const Enrollment: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <button 
-            onClick={() => setShowDeviceUsersModal(true)}
+            onClick={() => {
+              fetchUnlinkedUsers();
+              setShowDeviceUsersModal(true);
+            }}
             className="flex items-center gap-2 bg-white text-slate-700 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm"
           >
             <Wifi className="w-3.5 h-3.5 text-indigo-500" />
@@ -515,7 +580,7 @@ const Enrollment: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2 self-end md:self-auto">
+          <div className="flex items-center gap-2 self-end md:self-auto flex-wrap">
             <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
               <Wifi className="w-3.5 h-3.5 text-indigo-500" /> Enrol on
             </span>
@@ -537,6 +602,16 @@ const Enrollment: React.FC = () => {
               </select>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
+
+            <button
+              onClick={handleSyncBiometrics}
+              disabled={isSyncingBiometrics}
+              title="Sync enrolled biometric templates from terminal to dashboard"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200 cursor-pointer shadow-2xs"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingBiometrics ? 'animate-spin text-indigo-600' : 'text-slate-400'}`} />
+              <span>{isSyncingBiometrics ? 'Syncing...' : 'Sync Biometrics'}</span>
+            </button>
           </div>
         </div>
 
@@ -645,10 +720,19 @@ const Enrollment: React.FC = () => {
                           <button
                             disabled={enrollingId === person.id}
                             onClick={() => handleEnrollBiometric(person.id, 'finger', person.full_name)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-slate-200 hover:border-indigo-500 hover:text-indigo-600 text-[11px] font-bold text-slate-600 transition-colors bg-white shadow-2xs hover:bg-indigo-50/40"
+                            title="Trigger fingerprint enrollment on physical terminal"
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all shadow-2xs ${
+                              enrollingId === person.id
+                                ? 'bg-indigo-600 text-white border-indigo-600 animate-pulse'
+                                : 'border-slate-200 hover:border-indigo-500 hover:text-indigo-600 text-slate-600 bg-white hover:bg-indigo-50/40'
+                            }`}
                           >
-                            <Play className="w-2.5 h-2.5 fill-current text-slate-400 group-hover:text-indigo-500" />
-                            Finger
+                            {enrollingId === person.id ? (
+                              <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+                            ) : (
+                              <Play className="w-2.5 h-2.5 fill-current text-slate-400 group-hover:text-indigo-500" />
+                            )}
+                            {enrollingId === person.id ? 'Scanning...' : 'Finger'}
                           </button>
 
                           <button
@@ -658,6 +742,16 @@ const Enrollment: React.FC = () => {
                           >
                             <Play className="w-2.5 h-2.5 fill-current text-slate-400 group-hover:text-indigo-500" />
                             Face
+                          </button>
+
+                          <button
+                            disabled={pushingId === person.id}
+                            onClick={() => handlePushToTerminal(person.id, person.full_name)}
+                            title="Push user profile and PIN to terminal memory"
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 text-[11px] font-semibold text-slate-500 transition-colors bg-white shadow-2xs hover:bg-emerald-50/40"
+                          >
+                            <UploadCloud className={`w-3 h-3 ${pushingId === person.id ? 'animate-bounce text-emerald-600' : 'text-slate-400'}`} />
+                            {pushingId === person.id ? 'Pushing...' : 'Push'}
                           </button>
                         </div>
                       </td>
@@ -1175,29 +1269,31 @@ const Enrollment: React.FC = () => {
             </div>
 
             <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-              {[
-                { pin: "1092", device: "MB460-A", lastPunch: "Today 08:14 AM" },
-                { pin: "1093", device: "MB460-A", lastPunch: "Today 08:32 AM" },
-                { pin: "1104", device: "Gate-02", lastPunch: "Yesterday 09:00 PM" },
-                { pin: "1105", device: "Gate-02", lastPunch: "Yesterday 09:05 PM" },
-                { pin: "1118", device: "Admin-ZKT", lastPunch: "10 Sep 08:00 AM" },
-              ].map((u) => (
-                <div key={u.pin} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
-                  <div>
-                    <div className="font-bold text-slate-800">Device PIN #{u.pin}</div>
-                    <div className="text-[11px] text-slate-400">Terminal: {u.device} • Last: {u.lastPunch}</div>
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setShowDeviceUsersModal(false);
-                      openAddPersonModal(u.pin);
-                    }}
-                    className="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-100 text-xs"
-                  >
-                    Link Profile
-                  </button>
+              {loadingUnlinked ? (
+                <div className="py-8 text-center text-xs text-slate-400">Loading unlinked punches from database...</div>
+              ) : unlinkedUsers.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400">
+                  No unlinked punches found on terminals. All biometric PINs match registered profiles.
                 </div>
-              ))}
+              ) : (
+                unlinkedUsers.map((u) => (
+                  <div key={u.biometric_user_id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs">
+                    <div>
+                      <div className="font-bold text-slate-800">Device PIN #{u.biometric_user_id}</div>
+                      <div className="text-[11px] text-slate-400">Terminal: {u.device_name || 'Terminal'} • Total: {u.punch_count} punches</div>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setShowDeviceUsersModal(false);
+                        openAddPersonModal(String(u.biometric_user_id));
+                      }}
+                      className="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-100 text-xs"
+                    >
+                      Link Profile
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="flex justify-end pt-3 border-t border-slate-100">

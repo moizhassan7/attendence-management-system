@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from sqlalchemy import select
-from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.attendance import AttendancePunch
@@ -81,7 +80,20 @@ class SyncService:
             logs_inserted = 0
             logs_skipped = 0
 
-            for log_entry in raw_logs:
+            # Incremental sync optimization: only check logs near or after latest stored timestamp
+            latest_time = await db.scalar(
+                select(func.max(AttendancePunch.punch_time)).where(AttendancePunch.device_id == device.id)
+            )
+
+            candidates = raw_logs
+            if latest_time is not None:
+                cutoff = latest_time - timedelta(minutes=5)
+                candidates = [
+                    l for l in raw_logs 
+                    if (make_aware(l.timestamp) if l.timestamp.tzinfo is None else l.timestamp) >= cutoff
+                ]
+
+            for log_entry in candidates:
                 was_inserted = await self._ingest_punch(db, device.id, log_entry)
                 if was_inserted:
                     logs_inserted += 1

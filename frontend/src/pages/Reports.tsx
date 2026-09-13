@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calendar, ChevronRight, Search, FileSpreadsheet, Download, 
-  Clock, Filter, RotateCcw, Building2, Award, ChevronDown, 
-  Tv, ChevronLeft, ArrowUpDown, UserCheck, AlertCircle, Sparkles
+  RotateCcw, ChevronDown, 
+  Tv, ChevronLeft, UserCheck, AlertCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
@@ -47,11 +47,16 @@ const Reports: React.FC = () => {
   // Quick report filter tabs
   const [quickFilter, setQuickFilter] = useState<'all' | 'late' | 'absent' | 'leave' | 'by_department' | 'summary'>('all');
 
-  // Time period state
+  // Time period state with dynamic default dates
+  const todayStr = () => new Date().toISOString().split('T')[0];
   const [periodMode, setPeriodMode] = useState<'single' | 'range'>('single');
-  const [singleDate, setSingleDate] = useState<string>('2026-09-12');
-  const [startDate, setStartDate] = useState<string>('2026-09-01');
-  const [endDate, setEndDate] = useState<string>('2026-09-12');
+  const [singleDate, setSingleDate] = useState<string>(todayStr);
+  const [startDate, setStartDate] = useState<string>(() => {
+    const d = new Date();
+    d.setDate(1);
+    return d.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState<string>(todayStr);
 
   // Filter criteria
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -75,7 +80,7 @@ const Reports: React.FC = () => {
     total_hours: 0,
   });
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(50);
+  const [pageSize] = useState<number>(50);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalRows, setTotalRows] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);

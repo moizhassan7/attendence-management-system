@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  CalendarDays, Monitor, Plus, Search, 
-  Shield, ShieldAlert, Lock, Edit3, KeyRound, 
+  CalendarDays, Plus, Search, 
+  Shield, Lock, Edit3, KeyRound, 
   Power, Trash2, X, CheckCircle2, AlertTriangle, ChevronDown 
 } from 'lucide-react';
 import api from '../api/client';
@@ -58,7 +58,6 @@ const Users: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      let url = '/users?';
       const params: string[] = [];
       if (searchTerm) params.push(`search=${encodeURIComponent(searchTerm)}`);
       if (statusFilter) params.push(`status=${encodeURIComponent(statusFilter)}`);
@@ -285,7 +284,6 @@ const Users: React.FC = () => {
               ) : (
                 users.map((u) => {
                   const isAdmin = u.role.toUpperCase() === 'ADMIN';
-                  const isCurrent = currentUser?.username === u.username || u.username === 'admin';
                   const isSelfManaged = u.username.toLowerCase() === 'admin';
 
                   return (

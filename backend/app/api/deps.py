@@ -56,3 +56,7 @@ async def get_current_active_admin(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough privileges"
         )
     return current_user
+
+
+require_admin = get_current_active_admin
+require_user = get_current_user

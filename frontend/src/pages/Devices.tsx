@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Wifi, WifiOff, RefreshCw, Plus, Search, 
-  CheckCircle2, AlertTriangle, Clock, Server, 
+  CheckCircle2, AlertTriangle, Server, 
   CalendarDays, Zap, Trash2, Edit3, Users, 
-  ArrowUpDown, ExternalLink, X, Shield, Activity, Power
+  X, Activity
 } from 'lucide-react';
 import api from '../api/client';
 

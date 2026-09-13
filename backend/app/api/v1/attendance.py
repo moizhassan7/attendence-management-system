@@ -2,19 +2,25 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, date as dt_date, datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select, func
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from sqlalchemy import select, func, or_
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.attendance import AttendancePunch, AttendanceDaily
+from app.models.exception import AttendanceException
 from app.models.personnel import Personnel
+from app.models.device import Device
+from app.models.settings import SystemSetting
 from app.schemas.common import ApiResponse, PaginatedResponse, PaginationMeta
 from app.schemas.attendance import AttendancePunchOut, AttendanceDailyOut
-from app.utils.timezone import today
+from app.services.attendance_engine import AttendanceService
+from app.utils.timezone import today, now, to_local, get_tz
 
 router = APIRouter(prefix="/attendance", tags=["attendance"])
 
@@ -22,7 +28,7 @@ router = APIRouter(prefix="/attendance", tags=["attendance"])
 @router.get("/punches", response_model=PaginatedResponse)
 async def list_punches(
     page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 50,
+    page_size: Annotated[int, Query(ge=1, le=1000)] = 50,
     date_filter: Annotated[date | None, Query(alias="date")] = None,
     biometric_user_id: Annotated[str | None, Query()] = None,
     device_id: Annotated[int | None, Query()] = None,
@@ -34,8 +40,9 @@ async def list_punches(
 
     if date_filter:
         from datetime import datetime, time
-        t0 = datetime.combine(date_filter, time.min)
-        t1 = datetime.combine(date_filter, time.max)
+        tz = get_tz()
+        t0 = datetime.combine(date_filter, time.min, tzinfo=tz)
+        t1 = datetime.combine(date_filter, time.max, tzinfo=tz)
         query = query.where(AttendancePunch.punch_time >= t0, AttendancePunch.punch_time <= t1)
         count_query = count_query.where(AttendancePunch.punch_time >= t0, AttendancePunch.punch_time <= t1)
 
@@ -66,11 +73,11 @@ async def list_punches(
             id=p.id,
             device_id=p.device_id,
             biometric_user_id=p.biometric_user_id,
-            punch_time=p.punch_time,
+            punch_time=to_local(p.punch_time),
             punch_type=p.punch_type,
             verified=p.verified,
             source=p.source,
-            created_at=p.created_at,
+            created_at=to_local(p.created_at),
             personnel_name=person.full_name if person else None,
             device_name=p.device.name if p.device else None,
         ))
@@ -84,7 +91,7 @@ async def list_punches(
 @router.get("/daily", response_model=PaginatedResponse)
 async def list_daily_attendance(
     page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 50,
+    page_size: Annotated[int, Query(ge=1, le=1000)] = 50,
     date_filter: Annotated[date | None, Query(alias="date")] = None,
     department_id: Annotated[int | None, Query()] = None,
     rank_id: Annotated[int | None, Query()] = None,
@@ -129,14 +136,14 @@ async def list_daily_attendance(
             id=r.id,
             personnel_id=r.personnel_id,
             attendance_date=r.attendance_date,
-            first_in=r.first_in,
-            last_out=r.last_out,
+            first_in=to_local(r.first_in),
+            last_out=to_local(r.last_out),
             total_work_minutes=r.total_work_minutes,
             status=r.status,
             late_minutes=r.late_minutes,
             overtime_minutes=r.overtime_minutes,
             source=r.source,
-            calculated_at=r.calculated_at,
+            calculated_at=to_local(r.calculated_at),
             personnel_name=p.full_name if p else None,
             employee_code=p.employee_code if p else None,
             biometric_user_id=p.biometric_user_id if p else None,
@@ -168,19 +175,37 @@ async def recent_punches(
     out = []
     for p in punches:
         personnel = await db.execute(
-            select(Personnel).where(Personnel.biometric_user_id == p.biometric_user_id)
+            select(Personnel)
+            .options(selectinload(Personnel.rank), selectinload(Personnel.department), selectinload(Personnel.course))
+            .where(Personnel.biometric_user_id == p.biometric_user_id)
         )
         person = personnel.scalar_one_or_none()
+        rank_course = None
+        dept_name = None
+        emp_code = None
+        if person:
+            emp_code = person.employee_code
+            dept_name = person.department.name if person.department else None
+            if person.is_trainee and person.course:
+                rank_course = person.course.name
+            elif person.rank:
+                rank_course = person.rank.name
+            else:
+                rank_course = person.designation
+
         out.append(AttendancePunchOut(
             id=p.id,
             device_id=p.device_id,
             biometric_user_id=p.biometric_user_id,
-            punch_time=p.punch_time,
+            punch_time=to_local(p.punch_time),
             punch_type=p.punch_type,
             verified=p.verified,
             source=p.source,
-            created_at=p.created_at,
+            created_at=to_local(p.created_at),
             personnel_name=person.full_name if person else None,
+            rank_name=rank_course,
+            department_name=dept_name,
+            employee_code=emp_code,
             device_name=p.device.name if p.device else None,
         ))
 
@@ -188,6 +213,7 @@ async def recent_punches(
 
 
 @router.post("/process", response_model=ApiResponse)
+@router.post("/process-daily", response_model=ApiResponse)
 async def process_attendance(
     target_date: Annotated[date | None, Query(alias="date")] = None,
     personnel_id: Annotated[int | None, Query()] = None,
@@ -331,8 +357,10 @@ async def get_attendance_report(
             rank_title = (p.rank.name if p.rank else None) or p.designation or (p.course.name if p.course else "Trainee" if p.is_trainee else "Staff")
             dept_title = (p.department.name if p.department else "General")
 
-            check_in_str = first_in.strftime("%I:%M %p") if first_in else "—"
-            check_out_str = last_out.strftime("%I:%M %p") if last_out else "—"
+            first_in_local = to_local(first_in)
+            last_out_local = to_local(last_out)
+            check_in_str = first_in_local.strftime("%I:%M %p") if first_in_local else "—"
+            check_out_str = last_out_local.strftime("%I:%M %p") if last_out_local else "—"
             hours_str = f"{total_minutes / 60:.2f}" if total_minutes and total_minutes > 0 else "—"
 
             items.append({
@@ -425,8 +453,10 @@ async def get_attendance_report(
                     rank_title = (p.rank.name if p.rank else None) or p.designation or (p.course.name if p.course else "Trainee" if p.is_trainee else "Staff")
                     dept_title = (p.department.name if p.department else "General")
 
-                    check_in_str = first_in.strftime("%I:%M %p") if first_in else "—"
-                    check_out_str = last_out.strftime("%I:%M %p") if last_out else "—"
+                    first_in_local = to_local(first_in)
+                    last_out_local = to_local(last_out)
+                    check_in_str = first_in_local.strftime("%I:%M %p") if first_in_local else "—"
+                    check_out_str = last_out_local.strftime("%I:%M %p") if last_out_local else "—"
                     hours_str = f"{total_minutes / 60:.2f}" if total_minutes and total_minutes > 0 else "—"
 
                     items.append({
@@ -559,8 +589,11 @@ async def export_attendance_report(
     ws.views.sheetView[0].showGridLines = True
 
     # Title header
+    setting_res = await db.execute(select(SystemSetting.value).where(SystemSetting.key == "org_display_name"))
+    org_display_name = setting_res.scalar_one_or_none() or "Police Training School Rawat"
+
     ws.merge_cells("A1:K1")
-    ws["A1"] = f"Police Training School Rawat — {entity_label} Attendance Report ({target_date_str})"
+    ws["A1"] = f"{org_display_name} — {entity_label} Attendance Report ({target_date_str})"
     ws["A1"].font = Font(name="Calibri", size=14, bold=True, color="1E293B")
     ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
     ws.row_dimensions[1].height = 30
@@ -645,4 +678,310 @@ async def export_attendance_report(
             "Content-Disposition": f'attachment; filename="Attendance_{entity_label}_{target_date_str}.xlsx"'
         },
     )
+
+
+# ════════════════════════════════════════════════════════════════
+# Exceptions (Leave, OSD, Medical, Duty Rest, Repatriation)
+# ════════════════════════════════════════════════════════════════
+
+class ExceptionCreate(BaseModel):
+    personnel_id: int
+    date: dt_date | None = None
+    start_date: dt_date | None = None
+    end_date: dt_date | None = None
+    exception_type: str  # LEAVE, OSD, MEDICAL, DUTY_REST, REPATRIATION, EVIDENCE, PRESENT, ABSENT
+    reason: str | None = None
+    approved_by: str | None = None
+    remarks: str | None = None
+
+
+@router.post("/exceptions", response_model=ApiResponse)
+async def create_or_update_exception(
+    payload: ExceptionCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Create or update an attendance exception (Leave, OSD, Medical, Duty Rest, Repatriation) across single date or range."""
+    p_res = await db.execute(select(Personnel).where(Personnel.id == payload.personnel_id))
+    person = p_res.scalar_one_or_none()
+    if not person:
+        raise HTTPException(status_code=404, detail="Personnel record not found")
+
+    s_date = payload.start_date or payload.date or today()
+    e_date = payload.end_date or s_date
+    if s_date > e_date:
+        s_date, e_date = e_date, s_date
+
+    current = s_date
+    calc_service = AttendanceService()
+    while current <= e_date:
+        existing_res = await db.execute(
+            select(AttendanceException).where(
+                AttendanceException.personnel_id == payload.personnel_id,
+                AttendanceException.date == current,
+            )
+        )
+        existing = existing_res.scalar_one_or_none()
+
+        if existing:
+            existing.exception_type = payload.exception_type.upper()
+            existing.reason = payload.reason
+            existing.approved_by = payload.approved_by
+            existing.remarks = payload.remarks
+            existing.updated_at = now()
+        else:
+            new_exc = AttendanceException(
+                personnel_id=payload.personnel_id,
+                date=current,
+                exception_type=payload.exception_type.upper(),
+                reason=payload.reason,
+                approved_by=payload.approved_by,
+                remarks=payload.remarks,
+            )
+            db.add(new_exc)
+
+        await db.flush()
+        await calc_service.process_daily_attendance(db, current, personnel_id=payload.personnel_id)
+        current += timedelta(days=1)
+
+    await db.commit()
+
+    return ApiResponse(
+        message=f"Attendance exception '{payload.exception_type.upper()}' recorded for {person.full_name} from {s_date} to {e_date}",
+        data={"personnel_id": payload.personnel_id, "start_date": str(s_date), "end_date": str(e_date), "status": payload.exception_type.upper()},
+    )
+
+
+@router.get("/exceptions", response_model=ApiResponse)
+async def list_exceptions(
+    date_filter: Annotated[date | None, Query(alias="date")] = None,
+    personnel_id: Annotated[int | None, Query()] = None,
+    exception_type: Annotated[str | None, Query()] = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """List attendance exceptions with filters."""
+    query = select(AttendanceException).options(
+        selectinload(AttendanceException.personnel).selectinload(Personnel.rank),
+        selectinload(AttendanceException.personnel).selectinload(Personnel.department),
+        selectinload(AttendanceException.personnel).selectinload(Personnel.course),
+    ).order_by(AttendanceException.date.desc())
+
+    if date_filter:
+        query = query.where(AttendanceException.date == date_filter)
+    if personnel_id:
+        query = query.where(AttendanceException.personnel_id == personnel_id)
+    if exception_type:
+        query = query.where(AttendanceException.exception_type == exception_type.upper())
+
+    result = await db.execute(query)
+    exceptions = result.scalars().all()
+
+    out = []
+    for exc in exceptions:
+        p = exc.personnel
+        rank_or_course = None
+        dept_name = None
+        if p:
+            dept_name = p.department.name if p.department else None
+            rank_or_course = p.course.name if (p.is_trainee and p.course) else (p.rank.name if p.rank else p.designation)
+
+        out.append({
+            "id": exc.id,
+            "personnel_id": exc.personnel_id,
+            "personnel_name": p.full_name if p else "N/A",
+            "biometric_user_id": p.biometric_user_id if p else "N/A",
+            "employee_code": p.employee_code if p else None,
+            "rank_or_course": rank_or_course,
+            "department_name": dept_name,
+            "is_trainee": p.is_trainee if p else False,
+            "date": str(exc.date),
+            "exception_type": exc.exception_type,
+            "reason": exc.reason,
+            "approved_by": exc.approved_by,
+            "remarks": exc.remarks,
+            "created_at": exc.created_at.isoformat() if exc.created_at else None,
+        })
+
+    return ApiResponse(data=out)
+
+
+@router.delete("/exceptions/{exception_id}", response_model=ApiResponse)
+async def delete_exception(
+    exception_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete an exception and recalculate the day's attendance."""
+    result = await db.execute(select(AttendanceException).where(AttendanceException.id == exception_id))
+    exc = result.scalar_one_or_none()
+    if not exc:
+        raise HTTPException(status_code=404, detail="Exception not found")
+
+    target_date = exc.date
+    target_personnel_id = exc.personnel_id
+
+    await db.delete(exc)
+    await db.flush()
+
+    calc_service = AttendanceService()
+    await calc_service.process_daily_attendance(db, target_date, personnel_id=target_personnel_id)
+    await db.commit()
+
+    return ApiResponse(message="Exception deleted and attendance recalculated")
+
+
+# ════════════════════════════════════════════════════════════════
+# Manual Punch
+# ════════════════════════════════════════════════════════════════
+
+class ManualPunchCreate(BaseModel):
+    personnel_id: int | None = None
+    biometric_user_id: str | None = None
+    punch_time: datetime
+    punch_type: str | None = None
+    punch_state: int | None = None
+    device_id: int | None = None
+    remarks: str | None = None
+
+
+@router.post("/manual-punch", response_model=ApiResponse)
+async def record_manual_punch(
+    payload: ManualPunchCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Record a manual biometric punch and recalculate attendance for that day."""
+    bio_id = payload.biometric_user_id
+    person = None
+    if payload.personnel_id:
+        p_res = await db.execute(select(Personnel).where(Personnel.id == payload.personnel_id))
+        person = p_res.scalar_one_or_none()
+        if person:
+            bio_id = person.biometric_user_id
+    elif bio_id:
+        p_res = await db.execute(select(Personnel).where(Personnel.biometric_user_id == bio_id))
+        person = p_res.scalar_one_or_none()
+
+    if not bio_id:
+        raise HTTPException(status_code=400, detail="Must provide personnel_id or biometric_user_id")
+
+    dev_id = payload.device_id
+    if not dev_id:
+        d_res = await db.execute(select(Device).where(Device.enabled == True).limit(1))
+        dev = d_res.scalar_one_or_none()
+        dev_id = dev.id if dev else 1
+
+    # Resolve punch type: support punch_state (1 = IN, 2 = OUT) or punch_type ("IN", "OUT")
+    resolved_type = "IN"
+    if payload.punch_state == 2 or (payload.punch_type and payload.punch_type.upper() == "OUT"):
+        resolved_type = "OUT"
+    elif payload.punch_state == 1 or (payload.punch_type and payload.punch_type.upper() == "IN"):
+        resolved_type = "IN"
+    elif payload.punch_type:
+        resolved_type = payload.punch_type.upper()
+
+    target_time = payload.punch_time
+
+    # Check for duplicate punch at the exact same device, user, and timestamp
+    existing_res = await db.execute(
+        select(AttendancePunch).where(
+            AttendancePunch.device_id == dev_id,
+            AttendancePunch.biometric_user_id == bio_id,
+            AttendancePunch.punch_time == target_time,
+        )
+    )
+    existing_punch = existing_res.scalar_one_or_none()
+
+    if existing_punch:
+        if existing_punch.punch_type == resolved_type:
+            # Exact duplicate already recorded
+            punch = existing_punch
+        else:
+            # Different punch state at same minute (e.g. IN followed immediately by OUT)
+            # Offset by 1 second to avoid UniqueConstraint collision
+            target_time = target_time + timedelta(seconds=1)
+            punch = AttendancePunch(
+                device_id=dev_id,
+                biometric_user_id=bio_id,
+                punch_time=target_time,
+                punch_type=resolved_type,
+                source="MANUAL",
+                verified=1,
+            )
+            db.add(punch)
+    else:
+        punch = AttendancePunch(
+            device_id=dev_id,
+            biometric_user_id=bio_id,
+            punch_time=target_time,
+            punch_type=resolved_type,
+            source="MANUAL",
+            verified=1,
+        )
+        db.add(punch)
+
+    try:
+        await db.flush()
+    except Exception as exc:
+        logger.warning("Integrity conflict while saving punch, applying fallback offset: %s", exc)
+        await db.rollback()
+        target_time = payload.punch_time + timedelta(seconds=1)
+        punch = AttendancePunch(
+            device_id=dev_id,
+            biometric_user_id=bio_id,
+            punch_time=target_time,
+            punch_type=resolved_type,
+            source="MANUAL",
+            verified=1,
+        )
+        db.add(punch)
+        await db.flush()
+
+    punch_date = target_time.date()
+    calc_service = AttendanceService()
+    p_id = person.id if person else None
+    await calc_service.process_daily_attendance(db, punch_date, personnel_id=p_id)
+    await db.commit()
+
+    return ApiResponse(
+        message=f"Manual {resolved_type} punch recorded for user {bio_id} at {target_time.strftime('%Y-%m-%d %H:%M:%S')}",
+        data={"biometric_user_id": bio_id, "punch_time": target_time.isoformat(), "punch_type": resolved_type},
+    )
+
+
+# ════════════════════════════════════════════════════════════════
+# Unlinked Punches
+# ════════════════════════════════════════════════════════════════
+
+@router.get("/unlinked", response_model=ApiResponse)
+async def list_unlinked_punches(db: AsyncSession = Depends(get_db)):
+    """List biometric punches that do not match any registered personnel."""
+    registered_ids = select(Personnel.biometric_user_id)
+
+    query = (
+        select(
+            AttendancePunch.biometric_user_id,
+            func.count(AttendancePunch.id).label("punch_count"),
+            func.max(AttendancePunch.punch_time).label("last_punch"),
+            func.min(AttendancePunch.device_id).label("device_id"),
+        )
+        .where(AttendancePunch.biometric_user_id.not_in(registered_ids))
+        .group_by(AttendancePunch.biometric_user_id)
+        .order_by(func.max(AttendancePunch.punch_time).desc())
+    )
+
+    result = await db.execute(query)
+    rows = result.all()
+
+    out = []
+    for r in rows:
+        dev_res = await db.execute(select(Device).where(Device.id == r.device_id))
+        dev = dev_res.scalar_one_or_none()
+        lp_local = to_local(r.last_punch)
+        out.append({
+            "pin": str(r.biometric_user_id),
+            "punch_count": r.punch_count,
+            "last_punch": lp_local.strftime("%d %b %I:%M %p") if lp_local else "N/A",
+            "last_punch_iso": lp_local.isoformat() if lp_local else None,
+            "device": dev.name if dev else f"Device #{r.device_id}",
+        })
+
+    return ApiResponse(data=out)
 

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Fingerprint, Lock, User, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useBranding } from '../context/BrandingContext';
 import api from '../api/client';
 
 const Login: React.FC = () => {
@@ -9,6 +10,12 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { branding } = useBranding();
+  const [logoFailed, setLogoFailed] = useState(false);
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [branding.logo_url]);
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -59,11 +66,29 @@ const Login: React.FC = () => {
       <div className="w-full max-w-md z-10">
         <div className="glass-panel p-8">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/10 border border-primary/30">
-              <Fingerprint className="w-8 h-8 text-primary" />
+            <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/10 border border-primary/30 overflow-hidden p-1.5">
+              {branding.logo_url && !logoFailed ? (
+                <img 
+                  src={branding.logo_url} 
+                  alt={branding.display_name} 
+                  className="w-full h-full object-contain"
+                  onError={() => setLogoFailed(true)} 
+                />
+              ) : branding.acronym ? (
+                <span className="text-xl font-black text-primary">{branding.acronym}</span>
+              ) : (
+                <Fingerprint className="w-8 h-8 text-primary" />
+              )}
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">AttendSys</h1>
-            <p className="text-slate-400 text-sm mt-1">Biometric Attendance & Executive Dashboard</p>
+            <h1 className="text-2xl font-bold text-white tracking-tight text-center">
+              {branding.display_name || 'AttendSys'}
+            </h1>
+            <p className="text-slate-400 text-sm mt-1 text-center">
+              {branding.system_name || 'Biometric Attendance & Executive Dashboard'}
+            </p>
+            {branding.tagline && (
+              <p className="text-slate-500 text-xs italic mt-1">{branding.tagline}</p>
+            )}
           </div>
 
           {error && (
@@ -125,7 +150,7 @@ const Login: React.FC = () => {
           </form>
           
           <div className="mt-8 text-center text-xs text-slate-500">
-            <p>On-Premise ZKTeco Integration System</p>
+            <p>{branding.legal_name || branding.display_name || 'On-Premise ZKTeco Integration System'}</p>
             <p className="mt-1">Version 1.0.0</p>
           </div>
         </div>

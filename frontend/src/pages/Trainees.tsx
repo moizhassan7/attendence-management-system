@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, UserCheck, UserX, Briefcase, 
-  CalendarDays, FileWarning, Activity, ArrowRightLeft, Plus, ChevronRight, Monitor
+  CalendarDays, FileWarning, Activity, ArrowRightLeft, Plus, ChevronRight, Monitor,
+  Search, X, Trash2
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip
@@ -39,6 +41,8 @@ interface CourseSummary {
   holiday: number;
   evidence: number;
   repatriation: number;
+  male?: number;
+  female?: number;
 }
 
 interface TraineeData {
@@ -80,27 +84,162 @@ const ProgressBar = ({ current, total }: { current: number, total: number }) => 
 };
 
 const Trainees: React.FC = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState<TraineeData | null>(null);
   const [traineeList, setTraineeList] = useState<any[]>([]);
+  const [coursesList, setCoursesList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('ALL');
+
+  // Modals state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showMarkModal, setShowMarkModal] = useState(false);
+  const [selectedTrainee, setSelectedTrainee] = useState<any | null>(null);
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  // Add Trainee Form
+  const [newTrainee, setNewTrainee] = useState({
+    full_name: '',
+    biometric_user_id: '',
+    employee_code: '',
+    gender: 'Male',
+    course_id: '',
+    phone: '',
+    cnic: '',
+  });
+
+  // Mark Attendance Form
+  const [markAttendance, setMarkAttendance] = useState({
+    personnel_id: '',
+    exception_type: 'LEAVE',
+    start_date: new Date().toISOString().split('T')[0],
+    end_date: new Date().toISOString().split('T')[0],
+    reason: '',
+  });
+
+  const fetchData = useCallback(async () => {
+    try {
+      const [dashRes, traineesRes, coursesRes] = await Promise.all([
+        api.get('/dashboard/trainees'),
+        api.get('/personnel?is_trainee=true&page_size=100'),
+        api.get('/courses?page_size=50')
+      ]);
+      setData(dashRes.data?.data);
+      setTraineeList(traineesRes.data?.data || []);
+      setCoursesList(coursesRes.data?.data || []);
+    } catch (error) {
+      console.error('Failed to fetch trainee data', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [dashRes, traineesRes] = await Promise.all([
-          api.get('/dashboard/trainees'),
-          api.get('/personnel?is_trainee=true&page_size=100') // fetch up to 100 recent trainees for the list
-        ]);
-        setData(dashRes.data.data);
-        setTraineeList(traineesRes.data.data || []);
-      } catch (error) {
-        console.error('Failed to fetch trainee data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const handleAddTrainee = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.post('/personnel', {
+        full_name: newTrainee.full_name,
+        biometric_user_id: parseInt(newTrainee.biometric_user_id, 10),
+        employee_code: newTrainee.employee_code || null,
+        gender: newTrainee.gender,
+        course_id: newTrainee.course_id ? parseInt(newTrainee.course_id, 10) : null,
+        phone: newTrainee.phone || null,
+        cnic: newTrainee.cnic || null,
+        is_trainee: true,
+        category: 'Trainee',
+        employment_status: 'Active',
+      });
+      setShowAddModal(false);
+      setNewTrainee({
+        full_name: '',
+        biometric_user_id: '',
+        employee_code: '',
+        gender: 'Male',
+        course_id: '',
+        phone: '',
+        cnic: '',
+      });
+      setActionNotice('Trainee created and enrolled successfully in database.');
+      setTimeout(() => setActionNotice(null), 4000);
+      fetchData();
+    } catch (err: any) {
+      console.error('Error adding trainee:', err);
+      alert(err.response?.data?.detail || 'Failed to create trainee.');
+    }
+  };
+
+  const handleMarkAttendance = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.post('/attendance/exceptions', {
+        personnel_id: parseInt(markAttendance.personnel_id, 10),
+        exception_type: markAttendance.exception_type,
+        start_date: markAttendance.start_date,
+        end_date: markAttendance.end_date,
+        reason: markAttendance.reason || null,
+      });
+      setShowMarkModal(false);
+      setActionNotice(`Attendance status updated to ${markAttendance.exception_type} in database.`);
+      setTimeout(() => setActionNotice(null), 4000);
+      fetchData();
+    } catch (err: any) {
+      console.error('Error marking attendance exception:', err);
+      alert(err.response?.data?.detail || 'Failed to update attendance.');
+    }
+  };
+
+  const handleTransferCourse = async (courseId: number) => {
+    if (!selectedTrainee) return;
+    try {
+      await api.put(`/personnel/${selectedTrainee.id}`, {
+        course_id: courseId
+      });
+      setActionNotice(`Course updated successfully for ${selectedTrainee.full_name}.`);
+      setTimeout(() => setActionNotice(null), 4000);
+      setSelectedTrainee(null);
+      fetchData();
+    } catch (err: any) {
+      console.error('Failed to transfer course:', err);
+      alert(err.response?.data?.detail || 'Failed to transfer course.');
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    if (!selectedTrainee) return;
+    const newStatus = selectedTrainee.employment_status === 'Active' ? 'Inactive' : 'Active';
+    try {
+      await api.put(`/personnel/${selectedTrainee.id}`, {
+        employment_status: newStatus
+      });
+      setActionNotice(`Trainee status updated to ${newStatus}.`);
+      setTimeout(() => setActionNotice(null), 4000);
+      setSelectedTrainee(null);
+      fetchData();
+    } catch (err: any) {
+      console.error('Failed to toggle status:', err);
+      alert(err.response?.data?.detail || 'Failed to update status.');
+    }
+  };
+
+  const handleDeleteTrainee = async () => {
+    if (!selectedTrainee) return;
+    if (!window.confirm(`Are you sure you want to permanently delete trainee "${selectedTrainee.full_name}"?`)) return;
+    try {
+      await api.delete(`/personnel/${selectedTrainee.id}`);
+      setActionNotice(`Trainee deleted from database.`);
+      setTimeout(() => setActionNotice(null), 4000);
+      setSelectedTrainee(null);
+      fetchData();
+    } catch (err: any) {
+      console.error('Failed to delete trainee:', err);
+      alert(err.response?.data?.detail || 'Failed to delete trainee.');
+    }
+  };
 
   if (loading) {
     return (
@@ -113,11 +252,8 @@ const Trainees: React.FC = () => {
   if (!data) return null;
 
   const { kpi, courses } = data;
-
-  // Colors for Donut Charts matching the UI (Present = dark slate, Remaining = light gray)
   const COLORS = ['#475569', '#E2E8F0'];
 
-  // Avatar color generator based on ID
   const getAvatarColor = (id: number) => {
     const colors = [
       "bg-teal-100 text-teal-600",
@@ -130,7 +266,7 @@ const Trainees: React.FC = () => {
     return colors[id % colors.length];
   };
 
-  // Sum for the detailed statement table
+  // Calculations for summary table
   const totalEnrolled = courses.reduce((acc, c) => acc + c.strength, 0);
   const totalPresent = courses.reduce((acc, c) => acc + c.present, 0);
   const totalAbsent = courses.reduce((acc, c) => acc + c.absent, 0);
@@ -140,6 +276,19 @@ const Trainees: React.FC = () => {
   const totalMedical = courses.reduce((acc, c) => acc + c.medical, 0);
   const totalEvidence = courses.reduce((acc, c) => acc + c.evidence, 0);
   const totalRepat = courses.reduce((acc, c) => acc + c.repatriation, 0);
+  const totalMale = courses.reduce((acc, c) => acc + (c.male || 0), 0);
+  const totalFemale = courses.reduce((acc, c) => acc + (c.female || 0), 0);
+
+  // Filtered trainee list
+  const filteredTrainees = traineeList.filter(t => {
+    const matchesSearch = !searchQuery || 
+      t.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      String(t.biometric_user_id).includes(searchQuery) ||
+      t.employee_code?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCourse = selectedCourseFilter === 'ALL' || 
+      String(t.course_id) === selectedCourseFilter;
+    return matchesSearch && matchesCourse;
+  });
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
@@ -152,21 +301,37 @@ const Trainees: React.FC = () => {
             {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} <span className="font-normal">{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit'})}</span>
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900">Trainee Dashboard</h1>
-          <p className="text-xs font-medium text-slate-400 mt-1">Course enrolment & attendance · {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+          <p className="text-xs font-medium text-slate-400 mt-1">Course enrolment & attendance · Live database records</p>
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors hidden md:flex">
+          <button 
+            onClick={() => navigate('/live-screen')}
+            className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors hidden md:flex"
+          >
             <Monitor className="w-4 h-4" /> Live Screen
           </button>
-          <button className="flex items-center gap-2 bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:bg-slate-50 transition-colors">
+          <button 
+            onClick={() => setShowMarkModal(true)}
+            className="flex items-center gap-2 bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:bg-slate-50 transition-colors"
+          >
             <UserCheck className="w-4 h-4 text-primary" /> Mark attendance
           </button>
-          <button className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-indigo-700 transition-colors">
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-indigo-700 transition-colors"
+          >
             <Plus className="w-4 h-4" /> Add trainee
           </button>
         </div>
       </div>
+
+      {actionNotice && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between">
+          <span>{actionNotice}</span>
+          <button onClick={() => setActionNotice(null)}>✕</button>
+        </div>
+      )}
 
       {/* KPIs Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-3">
@@ -189,7 +354,11 @@ const Trainees: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {courses.map((course, idx) => (
-            <div key={idx} className="flex flex-col gap-1 cursor-pointer group">
+            <div 
+              key={idx} 
+              onClick={() => setSelectedCourseFilter(String(course.course_id))}
+              className="flex flex-col gap-1 cursor-pointer group p-3 rounded-2xl hover:bg-slate-50 transition-colors"
+            >
               <div className="flex justify-between items-center text-xs font-bold text-slate-600">
                 <span>{course.course_name}</span>
                 <span className="text-indigo-600 flex items-center">{course.present} <ChevronRight className="w-3 h-3 ml-1 opacity-50 group-hover:opacity-100 transition-opacity" /></span>
@@ -249,7 +418,7 @@ const Trainees: React.FC = () => {
                         startAngle={90}
                         endAngle={-270}
                       >
-                        {pieData.map((entry, index) => (
+                        {pieData.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -306,8 +475,8 @@ const Trainees: React.FC = () => {
                   <td className="px-4 py-4 text-center text-amber-500">{course.medical}</td>
                   <td className="px-4 py-4 text-center text-blue-500">{course.evidence}</td>
                   <td className="px-4 py-4 text-center text-pink-500">{course.repatriation}</td>
-                  <td className="px-4 py-4 text-center text-slate-500">{course.male}</td>
-                  <td className="px-4 py-4 text-center text-slate-500">{course.female}</td>
+                  <td className="px-4 py-4 text-center text-slate-500">{course.male ?? 0}</td>
+                  <td className="px-4 py-4 text-center text-slate-500">{course.female ?? 0}</td>
                 </tr>
               ))}
               {/* Total Row */}
@@ -323,8 +492,8 @@ const Trainees: React.FC = () => {
                 <td className="px-4 py-4 text-center">{totalMedical}</td>
                 <td className="px-4 py-4 text-center">{totalEvidence}</td>
                 <td className="px-4 py-4 text-center">{totalRepat}</td>
-                <td className="px-4 py-4 text-center">{courses.reduce((acc, c) => acc + c.male, 0)}</td>
-                <td className="px-4 py-4 text-center">{courses.reduce((acc, c) => acc + c.female, 0)}</td>
+                <td className="px-4 py-4 text-center">{totalMale}</td>
+                <td className="px-4 py-4 text-center">{totalFemale}</td>
               </tr>
             </tbody>
           </table>
@@ -333,36 +502,373 @@ const Trainees: React.FC = () => {
 
       {/* Trainees List */}
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-        <div className="flex justify-between items-center mb-6 border-b border-slate-50 pb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-50 pb-4">
           <div>
             <h3 className="text-sm font-bold text-slate-800">Trainees</h3>
-            <p className="text-[11px] text-slate-400 font-medium">{totalEnrolled} individual records</p>
+            <p className="text-[11px] text-slate-400 font-medium">{filteredTrainees.length} individual records shown</p>
           </div>
-          <button className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center">
-            View full trainee directory <ChevronRight className="w-3 h-3 ml-1" />
-          </button>
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-56">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Search name, PIN, roll..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <select
+              value={selectedCourseFilter}
+              onChange={(e) => setSelectedCourseFilter(e.target.value)}
+              aria-label="Filter trainees by course"
+              className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-medium text-slate-600 focus:outline-none"
+            >
+              <option value="ALL">All Courses</option>
+              {coursesList.map(c => (
+                <option key={c.id} value={String(c.id)}>{c.name}</option>
+              ))}
+            </select>
+            <button 
+              onClick={() => navigate('/directory?tab=Trainees')}
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center whitespace-nowrap"
+            >
+              Full directory <ChevronRight className="w-3 h-3 ml-1" />
+            </button>
+          </div>
         </div>
         
-        <div className="space-y-1">
-          {traineeList.length === 0 && <div className="p-4 text-center text-sm text-slate-500">No trainees found.</div>}
-          {traineeList.map((trainee, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer group">
+        <div className="space-y-1 max-h-[500px] overflow-y-auto no-scrollbar">
+          {filteredTrainees.length === 0 && <div className="p-8 text-center text-sm text-slate-400">No trainees match search criteria.</div>}
+          {filteredTrainees.map((trainee) => (
+            <div 
+              key={trainee.id} 
+              onClick={() => setSelectedTrainee(trainee)}
+              className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer group"
+            >
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(trainee.id)}`}>
                   {trainee.full_name ? trainee.full_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'NA'}
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-700">{trainee.full_name}</h4>
-                  <p className="text-xs font-medium text-slate-400">ID: {trainee.biometric_user_id}</p>
+                  <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                    <span>PIN: {trainee.biometric_user_id}</span>
+                    {trainee.course && <span>· {trainee.course.name}</span>}
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${trainee.employment_status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                      {trainee.employment_status}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">
-                PIN {trainee.biometric_user_id} <ChevronRight className="w-3 h-3 ml-2 opacity-50 group-hover:opacity-100" />
+                <span>Manage</span> <ChevronRight className="w-3 h-3 ml-2 opacity-50 group-hover:opacity-100" />
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Add Trainee Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100">
+            <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-lg text-slate-800">Enroll New Trainee</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleAddTrainee} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Full Name *</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="e.g. Muhammad Ali"
+                  value={newTrainee.full_name}
+                  onChange={(e) => setNewTrainee({...newTrainee, full_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Biometric PIN *</label>
+                  <input 
+                    type="number" 
+                    required
+                    placeholder="e.g. 501"
+                    value={newTrainee.biometric_user_id}
+                    onChange={(e) => setNewTrainee({...newTrainee, biometric_user_id: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Roll / Service No</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. TR-2026-042"
+                    value={newTrainee.employee_code}
+                    onChange={(e) => setNewTrainee({...newTrainee, employee_code: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Course Assignment *</label>
+                  <select
+                    required
+                    value={newTrainee.course_id}
+                    onChange={(e) => setNewTrainee({...newTrainee, course_id: e.target.value})}
+                    aria-label="Course Assignment"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  >
+                    <option value="">Select Course</option>
+                    {coursesList.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Gender</label>
+                  <select
+                    value={newTrainee.gender}
+                    onChange={(e) => setNewTrainee({...newTrainee, gender: e.target.value})}
+                    aria-label="Gender"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Phone</label>
+                  <input 
+                    type="text" 
+                    placeholder="0300-1234567"
+                    value={newTrainee.phone}
+                    onChange={(e) => setNewTrainee({...newTrainee, phone: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">CNIC</label>
+                  <input 
+                    type="text" 
+                    placeholder="37405-..."
+                    value={newTrainee.cnic}
+                    onChange={(e) => setNewTrainee({...newTrainee, cnic: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <button 
+                  type="button" 
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-5 py-2 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md"
+                >
+                  Save Trainee
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Mark Attendance Exception Modal */}
+      {showMarkModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100">
+            <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-lg text-slate-800">Mark Attendance / Exception</h3>
+              <button onClick={() => setShowMarkModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleMarkAttendance} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Select Trainee *</label>
+                <select
+                  required
+                  value={markAttendance.personnel_id}
+                  onChange={(e) => setMarkAttendance({...markAttendance, personnel_id: e.target.value})}
+                  aria-label="Select Trainee"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                >
+                  <option value="">Choose Trainee...</option>
+                  {traineeList.map(t => (
+                    <option key={t.id} value={t.id}>
+                      PIN {t.biometric_user_id} - {t.full_name} ({t.course?.name || 'Trainee'})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Status Exception *</label>
+                <select
+                  value={markAttendance.exception_type}
+                  onChange={(e) => setMarkAttendance({...markAttendance, exception_type: e.target.value})}
+                  aria-label="Status Exception"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                >
+                  <option value="LEAVE">Leave</option>
+                  <option value="OSD">OSD (On Special Duty)</option>
+                  <option value="MEDICAL">Medical Leave</option>
+                  <option value="EVIDENCE">Court / Evidence</option>
+                  <option value="DUTY_REST">Duty Rest</option>
+                  <option value="REPATRIATION">Repatriation</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Start Date</label>
+                  <input 
+                    type="date" 
+                    required
+                    value={markAttendance.start_date}
+                    onChange={(e) => setMarkAttendance({...markAttendance, start_date: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">End Date</label>
+                  <input 
+                    type="date" 
+                    required
+                    value={markAttendance.end_date}
+                    onChange={(e) => setMarkAttendance({...markAttendance, end_date: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Reason / Order Ref</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Sanctioned order #104/PTS"
+                  value={markAttendance.reason}
+                  onChange={(e) => setMarkAttendance({...markAttendance, reason: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <button 
+                  type="button" 
+                  onClick={() => setShowMarkModal(false)}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-5 py-2 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md"
+                >
+                  Update Attendance
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Trainee Details & Actions Modal */}
+      {selectedTrainee && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100">
+            <div className="flex justify-between items-start mb-4 border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-bold text-lg text-slate-800">{selectedTrainee.full_name}</h3>
+                <p className="text-xs text-slate-400">Biometric PIN: #{selectedTrainee.biometric_user_id}</p>
+              </div>
+              <button onClick={() => setSelectedTrainee(null)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs mb-6">
+              <div className="flex justify-between py-1.5 border-b border-slate-50">
+                <span className="text-slate-400 font-medium">Roll / Service No:</span>
+                <span className="font-semibold text-slate-700">{selectedTrainee.employee_code || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-50">
+                <span className="text-slate-400 font-medium">Course:</span>
+                <span className="font-bold text-indigo-600">{selectedTrainee.course?.name || 'Unassigned'}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-50">
+                <span className="text-slate-400 font-medium">Status:</span>
+                <span className={`font-bold px-2 py-0.5 rounded ${selectedTrainee.employment_status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                  {selectedTrainee.employment_status}
+                </span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-50">
+                <span className="text-slate-400 font-medium">Phone:</span>
+                <span className="font-medium text-slate-700">{selectedTrainee.phone || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-slate-50">
+                <span className="text-slate-400 font-medium">CNIC:</span>
+                <span className="font-medium text-slate-700">{selectedTrainee.cnic || 'N/A'}</span>
+              </div>
+
+              {/* Transfer Course */}
+              <div className="pt-2">
+                <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1">Transfer to Course</label>
+                <select
+                  defaultValue={selectedTrainee.course_id || ''}
+                  onChange={(e) => e.target.value && handleTransferCourse(parseInt(e.target.value, 10))}
+                  aria-label="Transfer to Course"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none"
+                >
+                  <option value="">Select course to transfer...</option>
+                  {coursesList.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <button
+                onClick={handleDeleteTrainee}
+                className="flex items-center gap-1.5 text-xs font-bold text-rose-500 hover:text-rose-700"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Delete
+              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleToggleStatus}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-xl ${selectedTrainee.employment_status === 'Active' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
+                >
+                  {selectedTrainee.employment_status === 'Active' ? 'Deactivate' : 'Activate'}
+                </button>
+                <button 
+                  onClick={() => setSelectedTrainee(null)}
+                  className="px-4 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

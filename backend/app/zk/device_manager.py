@@ -61,3 +61,51 @@ class DeviceManager:
                 self.adapter.enable()
         finally:
             self.adapter.disconnect()
+
+    def push_user(
+        self,
+        user_id: str,
+        name: str,
+        privilege: int = 0,
+        password: str = "",
+        group_id: str = "1",
+        card: int = 0,
+    ) -> bool:
+        """Push a user profile to the device."""
+        self.adapter.connect()
+        try:
+            return self.adapter.set_user(
+                user_id=user_id,
+                name=name,
+                privilege=privilege,
+                password=password,
+                group_id=group_id,
+                card=card,
+            )
+        finally:
+            self.adapter.disconnect()
+
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
+        """Trigger remote fingerprint enrollment on the device."""
+        self.adapter.connect()
+        try:
+            return self.adapter.enroll_fingerprint(user_id=user_id, temp_id=temp_id)
+        finally:
+            self.adapter.disconnect()
+
+    def fetch_templates(self) -> list[Any]:
+        """Fetch all biometric templates from the device."""
+        self.adapter.connect()
+        try:
+            return self.adapter.get_templates()
+        finally:
+            self.adapter.disconnect()
+
+    def delete_user(self, user_id: str) -> bool:
+        """Remove user from device."""
+        self.adapter.connect()
+        try:
+            return self.adapter.delete_user(user_id=user_id)
+        finally:
+            self.adapter.disconnect()
+

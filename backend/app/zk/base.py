@@ -42,6 +42,15 @@ class DeviceInfo:
     log_count: int = 0
 
 
+@dataclass
+class DeviceTemplate:
+    """Fingerprint template from biometric device."""
+    uid: int
+    fid: int = 0
+    size: int = 0
+    valid: int = 1
+
+
 class BaseAttendanceDevice(ABC):
     """Interface that both ZKTeco and Mock adapters must implement."""
 
@@ -66,6 +75,34 @@ class BaseAttendanceDevice(ABC):
         ...
 
     @abstractmethod
+    def set_user(
+        self,
+        user_id: str,
+        name: str,
+        privilege: int = 0,
+        password: str = "",
+        group_id: str = "1",
+        card: int = 0,
+    ) -> bool:
+        """Create or update a user on the device."""
+        ...
+
+    @abstractmethod
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
+        """Trigger remote fingerprint enrollment prompt on device."""
+        ...
+
+    @abstractmethod
+    def get_templates(self) -> list[DeviceTemplate]:
+        """Retrieve all biometric templates from device."""
+        ...
+
+    @abstractmethod
+    def delete_user(self, user_id: str) -> bool:
+        """Delete user from device."""
+        ...
+
+    @abstractmethod
     def get_attendance(self) -> list[DeviceAttendanceLog]:
         """Retrieve all attendance logs from device."""
         ...
@@ -84,3 +121,4 @@ class BaseAttendanceDevice(ABC):
     def disable(self) -> None:
         """Temporarily disable device (e.g., during log read)."""
         ...
+

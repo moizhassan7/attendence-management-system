@@ -18,6 +18,7 @@ from app.api.v1.master_data import (
 from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
 from app.api.v1.settings import router as settings_router
+from app.api.v1.backup import router as backup_router
 
 api_router = APIRouter(prefix="/api/v1")
 
@@ -25,6 +26,7 @@ api_router.include_router(health_router)
 api_router.include_router(auth_router)
 api_router.include_router(users_router)
 api_router.include_router(settings_router)
+api_router.include_router(backup_router)
 api_router.include_router(devices_router)
 api_router.include_router(personnel_router)
 api_router.include_router(attendance_router)

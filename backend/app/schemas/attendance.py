@@ -18,6 +18,9 @@ class AttendancePunchOut(BaseModel):
     created_at: datetime
     # Resolved
     personnel_name: str | None = None
+    rank_name: str | None = None
+    department_name: str | None = None
+    employee_code: str | None = None
     device_name: str | None = None
     model_config = {"from_attributes": True}
 

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
   Users, UserCheck, UserX, Briefcase, 
-  CalendarDays, Activity, FileWarning, ArrowRightLeft, Plus, ChevronRight, Monitor,
-  GraduationCap, Sunrise, Sun, Moon, Clock, Search, FileDown
+  CalendarDays, Activity, FileWarning,
+  GraduationCap, Sunrise, Sun, Moon, Clock, FileDown, X
 } from 'lucide-react';
 import api from '../api/client';
+import { useBranding } from '../context/BrandingContext';
 
 const KPICard = ({ title, value, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden`}>
@@ -24,23 +25,106 @@ const KPICard = ({ title, value, colorClass, bgClass, icon: Icon, borderClass }:
 );
 
 const Security: React.FC = () => {
+  const { branding } = useBranding();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeShift, setActiveShift] = useState<string>('Morning');
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [showMarkModal, setShowMarkModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  // Bulk Exception Form
+  const [bulkException, setBulkException] = useState({
+    exception_type: 'DUTY_REST',
+    date: new Date().toISOString().split('T')[0],
+    reason: 'Security rotation schedule',
+  });
+
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await api.get('/dashboard/security');
+      setData(res.data?.data);
+    } catch (error) {
+      console.error('Failed to fetch security data', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await api.get('/dashboard/security');
-        setData(res.data.data);
-      } catch (error) {
-        console.error('Failed to fetch security data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const handleExport = async (format: 'xlsx' | 'csv') => {
+    setIsExporting(true);
+    try {
+      const res = await api.get(`/attendance/report/export?is_trainee=false&format=${format}`, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([res.data], {
+        type: format === 'xlsx' 
+          ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+          : 'text/csv'
+      });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      const orgSlug = (branding.acronym || 'org').toLowerCase().replace(/[^a-z0-9]/g, '_');
+      link.download = `${orgSlug}_security_attendance_${new Date().toISOString().split('T')[0]}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error('Export failed', err);
+      alert('Failed to export security report.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>, staffList: any[]) => {
+    if (e.target.checked) {
+      setSelectedIds(staffList.map(s => s.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleToggleSelect = (id: number) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkMarkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedIds.length === 0) return;
+
+    try {
+      await Promise.all(
+        selectedIds.map(personnelId => 
+          api.post('/attendance/exceptions', {
+            personnel_id: personnelId,
+            exception_type: bulkException.exception_type,
+            start_date: bulkException.date,
+            end_date: bulkException.date,
+            reason: bulkException.reason || null,
+          })
+        )
+      );
+
+      setShowMarkModal(false);
+      setSelectedIds([]);
+      setActionNotice(`Updated ${selectedIds.length} security personnel to ${bulkException.exception_type}.`);
+      setTimeout(() => setActionNotice(null), 4000);
+      fetchData();
+    } catch (err: any) {
+      console.error('Bulk exception failed', err);
+      alert(err.response?.data?.detail || 'Failed to update attendance status.');
+    }
+  };
 
   if (loading) {
     return (
@@ -54,14 +138,6 @@ const Security: React.FC = () => {
 
   const { deployment, status, staff } = data;
 
-  const getShiftIcon = (shift: string) => {
-    if (shift === 'Morning') return Sunrise;
-    if (shift === 'Evening') return Sun;
-    if (shift === 'Night') return Moon;
-    if (shift === 'Awaiting') return Clock;
-    return CalendarDays;
-  };
-
   const shiftTabs = [
     { name: 'Morning', count: deployment.morning, icon: Sunrise },
     { name: 'Evening', count: deployment.evening, icon: Sun },
@@ -71,9 +147,11 @@ const Security: React.FC = () => {
   ];
 
   const filteredStaff = staff.filter((s: any) => 
-    s.shift.toLowerCase() === activeShift.toLowerCase() || 
+    s.shift?.toLowerCase() === activeShift.toLowerCase() || 
     (activeShift === 'Off / Marked' && s.shift === 'Off / Marked')
   );
+
+  const allSelected = filteredStaff.length > 0 && filteredStaff.every((s: any) => selectedIds.includes(s.id));
 
   return (
     <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
@@ -86,18 +164,33 @@ const Security: React.FC = () => {
             {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} <span className="font-normal">{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit'})}</span>
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900">Security Attendance</h1>
-          <p className="text-xs font-medium text-slate-400 mt-1">Shifts are detected automatically from each guard's punches — no daily setup needed</p>
+          <p className="text-xs font-medium text-slate-400 mt-1">Shifts are detected automatically from real device biometric punches</p>
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 bg-white text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
-            <FileDown className="w-4 h-4" /> Excel
+          <button 
+            onClick={() => handleExport('xlsx')}
+            disabled={isExporting}
+            className="flex items-center gap-2 bg-white text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50"
+          >
+            <FileDown className="w-4 h-4" /> {isExporting ? 'Exporting...' : 'Excel'}
           </button>
-          <button className="flex items-center gap-2 bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
+          <button 
+            onClick={() => handleExport('csv')}
+            disabled={isExporting}
+            className="flex items-center gap-2 bg-white text-slate-700 px-4 py-2 rounded-lg text-sm font-bold border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50"
+          >
             <FileDown className="w-4 h-4" /> CSV
           </button>
         </div>
       </div>
+
+      {actionNotice && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between">
+          <span>{actionNotice}</span>
+          <button onClick={() => setActionNotice(null)}>✕</button>
+        </div>
+      )}
 
       <div className="space-y-4">
         <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">DEPLOYMENT TODAY</h3>
@@ -144,8 +237,12 @@ const Security: React.FC = () => {
           </button>
         ))}
         <div className="ml-auto">
-          <button className="flex items-center gap-2 bg-slate-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-sm hover:bg-slate-600 transition-colors">
-            Mark selected
+          <button 
+            disabled={selectedIds.length === 0}
+            onClick={() => setShowMarkModal(true)}
+            className="flex items-center gap-2 bg-indigo-600 disabled:bg-slate-300 text-white px-5 py-2 rounded-full text-sm font-bold shadow-sm hover:bg-indigo-700 transition-colors disabled:cursor-not-allowed"
+          >
+            Mark selected ({selectedIds.length})
           </button>
         </div>
       </div>
@@ -154,7 +251,7 @@ const Security: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 min-h-[400px]">
         <div className="mb-6">
           <h3 className="text-sm font-bold text-slate-800">{activeShift} - {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</h3>
-          <p className="text-[11px] text-slate-400 font-medium">{filteredStaff.length} on the {activeShift.toLowerCase()} shift (detected from punches)</p>
+          <p className="text-[11px] text-slate-400 font-medium">{filteredStaff.length} on the {activeShift.toLowerCase()} shift (detected from real punches)</p>
         </div>
 
         <div className="overflow-x-auto">
@@ -162,7 +259,13 @@ const Security: React.FC = () => {
             <thead className="text-[10px] text-slate-400 uppercase tracking-wider font-bold border-b border-slate-50">
               <tr>
                 <th className="px-4 py-3 w-10">
-                  <input type="checkbox" className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                  <input 
+                    type="checkbox" 
+                    checked={allSelected}
+                    onChange={(e) => handleSelectAll(e, filteredStaff)}
+                    aria-label="Select all staff"
+                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
+                  />
                 </th>
                 <th className="px-4 py-3">NAME</th>
                 <th className="px-4 py-3">RANK / BELT</th>
@@ -185,12 +288,18 @@ const Security: React.FC = () => {
                 filteredStaff.map((staffMember: any) => (
                   <tr key={staffMember.id} className="hover:bg-slate-50 transition-colors font-semibold text-slate-700">
                     <td className="px-4 py-4">
-                      <input type="checkbox" className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                      <input 
+                        type="checkbox" 
+                        checked={selectedIds.includes(staffMember.id)}
+                        onChange={() => handleToggleSelect(staffMember.id)}
+                        aria-label={`Select ${staffMember.name}`}
+                        className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer" 
+                      />
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs uppercase">
-                          {staffMember.name.substring(0, 2)}
+                          {staffMember.name?.substring(0, 2) || 'NA'}
                         </div>
                         <span className="uppercase font-bold">{staffMember.name}</span>
                       </div>
@@ -233,6 +342,78 @@ const Security: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Bulk Exception Modal */}
+      {showMarkModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100">
+            <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-bold text-lg text-slate-800">Mark Selected Personnel</h3>
+                <p className="text-xs text-slate-400">{selectedIds.length} guards selected</p>
+              </div>
+              <button onClick={() => setShowMarkModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleBulkMarkSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Status / Exception</label>
+                <select
+                  value={bulkException.exception_type}
+                  onChange={(e) => setBulkException({...bulkException, exception_type: e.target.value})}
+                  aria-label="Status / Exception"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                >
+                  <option value="DUTY_REST">Duty Rest</option>
+                  <option value="OSD">OSD (On Special Duty)</option>
+                  <option value="LEAVE">Leave</option>
+                  <option value="MEDICAL">Medical Leave</option>
+                  <option value="EVIDENCE">Court / Evidence</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Date</label>
+                <input 
+                  type="date"
+                  required
+                  value={bulkException.date}
+                  onChange={(e) => setBulkException({...bulkException, date: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Reason / Office Order</label>
+                <input 
+                  type="text" 
+                  value={bulkException.reason}
+                  onChange={(e) => setBulkException({...bulkException, reason: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <button 
+                  type="button" 
+                  onClick={() => setShowMarkModal(false)}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-5 py-2 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md"
+                >
+                  Apply Status
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

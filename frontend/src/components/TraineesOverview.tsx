@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   GraduationCap, ChevronRight, UserCheck, UserX, Briefcase, 
@@ -7,30 +7,50 @@ import {
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip
 } from 'recharts';
+import api from '../api/client';
 
-// Mock data matching the screenshot
-const TRAINEE_ATTENDANCE = {
-  present: 0,
-  presentPercent: 0,
-  absent: 3,
-  leave: 0,
-  weekend: 900,
-  osd: 0,
-  repatriation: 17
-};
+interface CourseSummary {
+  course_id: number;
+  course_name: string;
+  strength: number;
+  present: number;
+  absent: number;
+  late: number;
+  leave: number;
+  osd: number;
+  medical: number;
+  duty_rest: number;
+  weekend: number;
+  holiday: number;
+  evidence: number;
+  repatriation: number;
+  male?: number;
+  female?: number;
+}
 
-const TRAINEE_ENROLMENT = {
-  total: 920,
-  basic: 770,
-  lower: 87,
-  drill: 0
-};
+interface TraineeKPI {
+  total_strength: number;
+  present: number;
+  attendance_percent: number;
+  late: number;
+  absent: number;
+  leave: number;
+  osd: number;
+  medical: number;
+  duty_rest: number;
+  weekend: number;
+  holiday: number;
+  evidence?: number;
+  repatriation?: number;
+}
 
-const COURSE_DATA = [
-  { name: 'Basic Recruit Class Course', enrolled: 770, present: 0, late: 0, absent: 3, leave: 0, weekend: 752, osd: 0, medical: 0, evidence: 0, repatriation: 15, strength: 770 },
-  { name: 'Lower Class Course', enrolled: 87, present: 0, late: 0, absent: 0, leave: 0, weekend: 86, osd: 0, medical: 0, evidence: 0, repatriation: 1, strength: 87 },
-  { name: 'Drill/Weapon Instructor Course', enrolled: 0, present: 0, late: 0, absent: 0, leave: 0, weekend: 0, osd: 0, medical: 0, evidence: 0, repatriation: 0, strength: 0 },
-];
+interface TraineesOverviewProps {
+  targetDate?: string;
+  externalData?: {
+    kpi: TraineeKPI;
+    courses: CourseSummary[];
+  } | null;
+}
 
 const SmallKPICard = ({ title, value, subtitle, colorClass, icon: Icon }: any) => (
   <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between">
@@ -45,12 +65,65 @@ const SmallKPICard = ({ title, value, subtitle, colorClass, icon: Icon }: any) =
   </div>
 );
 
-const TraineesOverview: React.FC = () => {
+const TraineesOverview: React.FC<TraineesOverviewProps> = ({ targetDate, externalData }) => {
   const navigate = useNavigate();
-  
-  const barChartData = COURSE_DATA.map(c => ({
-    name: c.name,
-    Strength: c.enrolled
+  const [data, setData] = useState<{ kpi: TraineeKPI; courses: CourseSummary[] } | null>(externalData || null);
+  const [loading, setLoading] = useState(!externalData);
+
+  useEffect(() => {
+    if (externalData) {
+      setData(externalData);
+      setLoading(false);
+      return;
+    }
+
+    const fetchTraineeData = async () => {
+      setLoading(true);
+      try {
+        const url = targetDate ? `/dashboard/trainees?date=${targetDate}` : '/dashboard/trainees';
+        const res = await api.get(url);
+        if (res.data?.data) {
+          setData(res.data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch trainee dashboard metrics', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTraineeData();
+  }, [targetDate, externalData]);
+
+  if (loading && !data) {
+    return (
+      <div className="mt-8 p-12 bg-white rounded-3xl border border-slate-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  const kpi = data?.kpi || {
+    total_strength: 0,
+    present: 0,
+    attendance_percent: 0,
+    late: 0,
+    absent: 0,
+    leave: 0,
+    weekend: 0,
+    osd: 0,
+    medical: 0,
+    duty_rest: 0,
+    holiday: 0,
+    repatriation: 0,
+    evidence: 0,
+  };
+
+  const courses = data?.courses || [];
+
+  const barChartData = courses.map(c => ({
+    name: c.course_name,
+    Strength: c.strength,
   }));
 
   return (
@@ -78,12 +151,43 @@ const TraineesOverview: React.FC = () => {
       <div>
         <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">Trainees - Attendance</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <SmallKPICard title="PRESENT" value={TRAINEE_ATTENDANCE.present} subtitle={`${TRAINEE_ATTENDANCE.presentPercent}%`} icon={UserCheck} colorClass="text-accent" />
-          <SmallKPICard title="ABSENT" value={TRAINEE_ATTENDANCE.absent} icon={UserX} colorClass="text-danger" />
-          <SmallKPICard title="LEAVE" value={TRAINEE_ATTENDANCE.leave} icon={Briefcase} colorClass="text-info" />
-          <SmallKPICard title="WEEKEND" value={TRAINEE_ATTENDANCE.weekend} icon={CalendarDays} colorClass="text-dark" />
-          <SmallKPICard title="OSD" value={TRAINEE_ATTENDANCE.osd} icon={FileWarning} colorClass="text-purple" />
-          <SmallKPICard title="REPATRIATION" value={TRAINEE_ATTENDANCE.repatriation} icon={ArrowRightLeft} colorClass="text-pink-500" />
+          <SmallKPICard 
+            title="PRESENT" 
+            value={kpi.present} 
+            subtitle={`${kpi.attendance_percent}%`} 
+            icon={UserCheck} 
+            colorClass="text-accent" 
+          />
+          <SmallKPICard 
+            title="ABSENT" 
+            value={kpi.absent} 
+            icon={UserX} 
+            colorClass="text-danger" 
+          />
+          <SmallKPICard 
+            title="LEAVE" 
+            value={kpi.leave} 
+            icon={Briefcase} 
+            colorClass="text-info" 
+          />
+          <SmallKPICard 
+            title="WEEKEND" 
+            value={kpi.weekend} 
+            icon={CalendarDays} 
+            colorClass="text-dark" 
+          />
+          <SmallKPICard 
+            title="OSD" 
+            value={kpi.osd} 
+            icon={FileWarning} 
+            colorClass="text-purple" 
+          />
+          <SmallKPICard 
+            title="REPATRIATION" 
+            value={kpi.repatriation || 0} 
+            icon={ArrowRightLeft} 
+            colorClass="text-pink-500" 
+          />
         </div>
       </div>
 
@@ -91,13 +195,29 @@ const TraineesOverview: React.FC = () => {
       <div>
         <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3 px-1 mt-6">Trainees - Course Enrolment</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          <SmallKPICard title="TRAINEES ENROLLED" value={TRAINEE_ENROLMENT.total} icon={Users} colorClass="text-primary" />
-          <SmallKPICard title="BASIC RECRUIT CLASS COURSE" value={TRAINEE_ENROLMENT.basic} icon={BookOpen} colorClass="text-indigo-600" />
-          <SmallKPICard title="LOWER CLASS COURSE" value={TRAINEE_ENROLMENT.lower} icon={GraduationCap} colorClass="text-emerald-500" />
-          <SmallKPICard title="DRILL/WEAPON INSTRUCTOR COURSE" value={TRAINEE_ENROLMENT.drill} icon={FileWarning} colorClass="text-amber-500" />
+          <SmallKPICard 
+            title="TRAINEES ENROLLED" 
+            value={kpi.total_strength} 
+            icon={Users} 
+            colorClass="text-primary" 
+          />
+          {courses.slice(0, 3).map((c, idx) => {
+            const icons = [BookOpen, GraduationCap, FileWarning];
+            const colors = ['text-indigo-600', 'text-emerald-500', 'text-amber-500'];
+            return (
+              <SmallKPICard
+                key={c.course_id}
+                title={c.course_name.toUpperCase()}
+                value={c.strength}
+                icon={icons[idx % icons.length]}
+                colorClass={colors[idx % colors.length]}
+              />
+            );
+          })}
         </div>
       </div>
 
+      {/* Charts and Attendance Table */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 pt-2">
         {/* Enrolment by Course Chart */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col h-[320px]">
@@ -152,49 +272,57 @@ const TraineesOverview: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {COURSE_DATA.map((course, idx) => {
-                  const colors = ['bg-primary', 'bg-purple', 'bg-pink-500'];
-                  const bulletColor = colors[idx % colors.length];
-                  
-                  return (
-                    <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-3 font-semibold text-slate-700 flex items-center gap-2 text-xs truncate max-w-[160px]" title={course.name}>
-                        <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${bulletColor}`}></div>
-                        <span className="truncate">{course.name}</span>
-                      </td>
-                      <td className="px-2 py-3 text-center font-bold text-accent">
-                        {course.present > 0 ? course.present : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-medium text-warning/80">
-                        {course.late > 0 ? course.late : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-bold text-danger">
-                        {course.absent > 0 ? course.absent : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-medium text-info/80">
-                        {course.leave > 0 ? course.leave : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-medium text-slate-600">
-                        {course.weekend > 0 ? course.weekend : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-medium text-purple/80">
-                        {course.osd > 0 ? course.osd : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-medium text-warning/80">
-                        {course.medical > 0 ? course.medical : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-medium text-blue-500/80">
-                        {course.evidence > 0 ? course.evidence : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-2 py-3 text-center font-bold text-pink-500">
-                        {course.repatriation > 0 ? course.repatriation : <span className="text-slate-200">0</span>}
-                      </td>
-                      <td className="px-6 py-3 text-center font-bold text-slate-700 bg-slate-50/30">
-                        {course.strength}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {courses.length === 0 ? (
+                  <tr>
+                    <td colSpan={11} className="px-6 py-8 text-center text-slate-400 text-xs">
+                      No courses found in database.
+                    </td>
+                  </tr>
+                ) : (
+                  courses.map((course, idx) => {
+                    const colors = ['bg-primary', 'bg-purple', 'bg-pink-500', 'bg-emerald-500', 'bg-amber-500'];
+                    const bulletColor = colors[idx % colors.length];
+                    
+                    return (
+                      <tr key={course.course_id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-3 font-semibold text-slate-700 flex items-center gap-2 text-xs truncate max-w-[160px]" title={course.course_name}>
+                          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${bulletColor}`}></div>
+                          <span className="truncate">{course.course_name}</span>
+                        </td>
+                        <td className="px-2 py-3 text-center font-bold text-accent">
+                          {course.present > 0 ? course.present : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-medium text-warning/80">
+                          {course.late > 0 ? course.late : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-bold text-danger">
+                          {course.absent > 0 ? course.absent : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-medium text-info/80">
+                          {course.leave > 0 ? course.leave : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-medium text-slate-600">
+                          {course.weekend > 0 ? course.weekend : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-medium text-purple/80">
+                          {course.osd > 0 ? course.osd : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-medium text-warning/80">
+                          {course.medical > 0 ? course.medical : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-medium text-blue-500/80">
+                          {course.evidence > 0 ? course.evidence : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-2 py-3 text-center font-bold text-pink-500">
+                          {course.repatriation > 0 ? course.repatriation : <span className="text-slate-200">0</span>}
+                        </td>
+                        <td className="px-6 py-3 text-center font-bold text-slate-700 bg-slate-50/30">
+                          {course.strength}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>

@@ -12,6 +12,7 @@ from app.zk.base import (
     BaseAttendanceDevice,
     DeviceAttendanceLog,
     DeviceInfo,
+    DeviceTemplate,
     DeviceUser,
 )
 
@@ -82,6 +83,32 @@ class MockZKDeviceAdapter(BaseAttendanceDevice):
             )
             for i, (uid, name) in enumerate(_MOCK_EMPLOYEES)
         ]
+
+    def set_user(
+        self,
+        user_id: str,
+        name: str,
+        privilege: int = 0,
+        password: str = "",
+        group_id: str = "1",
+        card: int = 0,
+    ) -> bool:
+        logger.info("[MOCK] User set on device: PIN=%s, Name=%s", user_id, name)
+        return True
+
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
+        logger.info("[MOCK] Fingerprint enrolled for user PIN=%s", user_id)
+        return True
+
+    def get_templates(self) -> list[DeviceTemplate]:
+        return [
+            DeviceTemplate(uid=i + 1, fid=0, size=1024, valid=1)
+            for i in range(len(_MOCK_EMPLOYEES))
+        ]
+
+    def delete_user(self, user_id: str) -> bool:
+        logger.info("[MOCK] User deleted from device: PIN=%s", user_id)
+        return True
 
     def get_attendance(self) -> list[DeviceAttendanceLog]:
         """Generate realistic attendance logs for today."""
