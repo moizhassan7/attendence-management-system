@@ -2,10 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
   CalendarDays, ChevronRight, Search, FileDown,
-  X, ChevronLeft
+  X, ChevronLeft, Edit
 } from 'lucide-react';
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
+import { EditPersonnelModal } from '../components/EditPersonnelModal';
 
 const Directory: React.FC = () => {
   const { branding } = useBranding();
@@ -34,6 +35,7 @@ const Directory: React.FC = () => {
 
   // Selected Person Details Modal
   const [selectedPerson, setSelectedPerson] = useState<any | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Load master data for filters
   useEffect(() => {
@@ -476,7 +478,13 @@ const Directory: React.FC = () => {
               )}
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-slate-100">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="px-4 py-2 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center gap-1.5"
+              >
+                <Edit className="w-3.5 h-3.5" /> Edit
+              </button>
               <button 
                 onClick={() => setSelectedPerson(null)}
                 className="px-5 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl"
@@ -486,6 +494,18 @@ const Directory: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showEditModal && selectedPerson && (
+        <EditPersonnelModal
+          person={selectedPerson}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            setShowEditModal(false);
+            setSelectedPerson(null);
+            fetchDirectory();
+          }}
+        />
       )}
 
     </div>

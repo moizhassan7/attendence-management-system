@@ -2,10 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { 
   Users, UserCheck, UserX, Briefcase, 
   CalendarDays, Activity, FileWarning,
-  GraduationCap, Sunrise, Sun, Moon, Clock, FileDown, X
+  GraduationCap, Sunrise, Sun, Moon, Clock, FileDown, X,
+  ChevronRight, Search, Plus, ArrowRightLeft, CheckCircle2, XCircle, Edit
 } from 'lucide-react';
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
+import { EditPersonnelModal } from '../components/EditPersonnelModal';
 
 const KPICard = ({ title, value, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden`}>
@@ -28,9 +30,11 @@ const Security: React.FC = () => {
   const { branding } = useBranding();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeShift, setActiveShift] = useState<string>('Morning');
+  const [activeShift, setActiveShift] = useState<string>('');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [showMarkModal, setShowMarkModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editStaff, setEditStaff] = useState<any | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
@@ -45,6 +49,10 @@ const Security: React.FC = () => {
     try {
       const res = await api.get('/dashboard/security');
       setData(res.data?.data);
+      if (res.data?.data?.deployment && !activeShift) {
+        const keys = Object.keys(res.data.data.deployment);
+        setActiveShift(keys.length > 0 ? keys[0] : 'Awaiting');
+      }
     } catch (error) {
       console.error('Failed to fetch security data', error);
     } finally {
@@ -126,6 +134,17 @@ const Security: React.FC = () => {
     }
   };
 
+  const handleEditClick = async (id: number) => {
+    try {
+      const res = await api.get(`/personnel/${id}`);
+      setEditStaff(res.data?.data);
+      setShowEditModal(true);
+    } catch (err: any) {
+      console.error('Failed to fetch personnel details', err);
+      alert('Failed to load personnel details for editing.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-[calc(100vh-6rem)] items-center justify-center">
@@ -138,13 +157,12 @@ const Security: React.FC = () => {
 
   const { deployment, status, staff } = data;
 
-  const shiftTabs = [
-    { name: 'Morning', count: deployment.morning, icon: Sunrise },
-    { name: 'Evening', count: deployment.evening, icon: Sun },
-    { name: 'Night', count: deployment.night, icon: Moon },
-    { name: 'Awaiting', count: deployment.awaiting, icon: Clock },
-    { name: 'Off / Marked', count: deployment.off, icon: CalendarDays }
-  ];
+  const shiftTabs = Object.keys(deployment).map(key => {
+    let icon = Clock;
+    if (key === 'Awaiting') icon = Clock;
+    if (key === 'Off / Marked') icon = CalendarDays;
+    return { name: key, count: deployment[key], icon };
+  });
 
   const filteredStaff = staff.filter((s: any) => 
     s.shift?.toLowerCase() === activeShift.toLowerCase() || 
@@ -164,7 +182,7 @@ const Security: React.FC = () => {
             {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} <span className="font-normal">{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit'})}</span>
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900">Security Attendance</h1>
-          <p className="text-xs font-medium text-slate-400 mt-1">Shifts are detected automatically from real device biometric punches</p>
+          <p className="text-xs font-medium text-slate-400 mt-1">Shifts are mapped based on assigned Configuration</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -275,6 +293,7 @@ const Security: React.FC = () => {
                 <th className="px-4 py-3">OT</th>
                 <th className="px-4 py-3">WORKED (7D)</th>
                 <th className="px-4 py-3">STATUS</th>
+                <th className="px-4 py-3 text-right">ACTIONS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-xs">
@@ -334,6 +353,15 @@ const Security: React.FC = () => {
                           </span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <button 
+                        onClick={() => handleEditClick(staffMember.id)}
+                        className="p-1.5 bg-slate-50 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="Edit Personnel"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -412,6 +440,18 @@ const Security: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {showEditModal && editStaff && (
+        <EditPersonnelModal
+          person={editStaff}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            setShowEditModal(false);
+            setEditStaff(null);
+            fetchData();
+          }}
+        />
       )}
 
     </div>

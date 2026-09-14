@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Users, UserCheck, UserX, Briefcase, 
   CalendarDays, Activity, FileWarning, Plus, ChevronRight,
-  GraduationCap, Search, X, Trash2
+  GraduationCap, Search, X, Trash2, Edit
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from 'recharts';
 import api from '../api/client';
+import { EditPersonnelModal } from '../components/EditPersonnelModal';
 
 const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28`}>
@@ -47,12 +48,14 @@ const Personnel: React.FC = () => {
   const [staffList, setStaffList] = useState<any[]>([]);
   const [ranksList, setRanksList] = useState<any[]>([]);
   const [deptsList, setDeptsList] = useState<any[]>([]);
+  const [shiftsList, setShiftsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'Uniform' | 'Non-Uniform'>('Uniform');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showMarkModal, setShowMarkModal] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<any | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -67,6 +70,8 @@ const Personnel: React.FC = () => {
     rank_id: '',
     department_id: '',
     designation: '',
+    duty_type: '',
+    shift_id: '',
     phone: '',
     cnic: '',
   });
@@ -82,16 +87,18 @@ const Personnel: React.FC = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const [dashRes, staffRes, ranksRes, deptsRes] = await Promise.all([
+      const [dashRes, staffRes, ranksRes, deptsRes, shiftsRes] = await Promise.all([
         api.get('/dashboard/staff'),
         api.get('/personnel?is_trainee=false&page_size=100'),
         api.get('/ranks?page_size=50'),
         api.get('/departments?page_size=50'),
+        api.get('/shifts?page_size=50'),
       ]);
       setData(dashRes.data?.data);
       setStaffList(staffRes.data?.data || []);
       setRanksList(ranksRes.data?.data || []);
       setDeptsList(deptsRes.data?.data || []);
+      setShiftsList(shiftsRes.data?.data || []);
     } catch (error) {
       console.error('Failed to fetch staff data', error);
     } finally {
@@ -115,6 +122,8 @@ const Personnel: React.FC = () => {
         rank_id: newStaff.rank_id ? parseInt(newStaff.rank_id, 10) : null,
         department_id: newStaff.department_id ? parseInt(newStaff.department_id, 10) : null,
         designation: newStaff.designation || null,
+        duty_type: newStaff.duty_type || null,
+        shift_id: newStaff.shift_id ? parseInt(newStaff.shift_id, 10) : null,
         phone: newStaff.phone || null,
         cnic: newStaff.cnic || null,
         is_trainee: false,
@@ -130,6 +139,8 @@ const Personnel: React.FC = () => {
         rank_id: '',
         department_id: '',
         designation: '',
+        duty_type: '',
+        shift_id: '',
         phone: '',
         cnic: '',
       });
@@ -628,6 +639,35 @@ const Personnel: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Duty Type</label>
+                  <select
+                    value={newStaff.duty_type}
+                    onChange={(e) => setNewStaff({...newStaff, duty_type: e.target.value})}
+                    aria-label="Duty Type"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  >
+                    <option value="">General Duty</option>
+                    <option value="Security">Security / Guard</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Shift (Optional)</label>
+                  <select
+                    value={newStaff.shift_id}
+                    onChange={(e) => setNewStaff({...newStaff, shift_id: e.target.value})}
+                    aria-label="Shift"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  >
+                    <option value="">Default Shift</option>
+                    {shiftsList.map(s => (
+                      <option key={s.id} value={s.id}>{s.name} ({s.start_time.substring(0,5)})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
                   <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Phone</label>
                   <input 
                     type="text" 
@@ -820,6 +860,12 @@ const Personnel: React.FC = () => {
               </button>
               <div className="flex gap-2">
                 <button
+                  onClick={() => setShowEditModal(true)}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center gap-1.5"
+                >
+                  <Edit className="w-3.5 h-3.5" /> Edit
+                </button>
+                <button
                   onClick={handleToggleStatus}
                   className={`px-3 py-1.5 text-xs font-bold rounded-xl ${selectedStaff.employment_status === 'Active' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
                 >
@@ -835,6 +881,18 @@ const Personnel: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showEditModal && selectedStaff && (
+        <EditPersonnelModal
+          person={selectedStaff}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            setShowEditModal(false);
+            setSelectedStaff(null);
+            fetchData();
+          }}
+        />
       )}
 
     </div>

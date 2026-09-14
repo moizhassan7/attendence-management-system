@@ -1,0 +1,2891 @@
+[
+    {
+        "biometric_user_id": "1",
+        "full_name": "ASI Ghulam Rasool",
+        "department": "Police Training School Sargodh",
+        "rank": "ASI",
+        "designation": "INCHARGE IT. SECTION",
+        "cnic": "38402-3879319-9",
+        "belt_no": "221/R"
+    },
+    {
+        "biometric_user_id": "3",
+        "full_name": "ASI Ghulam Rasool",
+        "department": "Admin Staff",
+        "rank": "ASI",
+        "designation": "INCHARGE IT. SECTION",
+        "cnic": "38402-3879319-9",
+        "belt_no": "221/R"
+    },
+    {
+        "biometric_user_id": "4",
+        "full_name": "IP Aftab Ahmed",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "5",
+        "full_name": "IP Saadat Ali Shah",
+        "department": "Admin Staff",
+        "rank": "Inspector",
+        "designation": "PSO",
+        "cnic": "38402-1591309-7",
+        "belt_no": "S/264"
+    },
+    {
+        "biometric_user_id": "6",
+        "full_name": "SI Muneer Hussain",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "8",
+        "full_name": "ASI Shakeel Ehsan",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "9",
+        "full_name": "ASI Mujhaid Iqbal",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "10",
+        "full_name": "ASI M Shafqat Khan",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "11",
+        "full_name": "ASI Muhammad Irfan",
+        "department": "Admin Staff",
+        "rank": "ASI",
+        "designation": "NAIB MESS INCHARGE",
+        "cnic": "38403-3535639-3",
+        "belt_no": "996/S"
+    },
+    {
+        "biometric_user_id": "13",
+        "full_name": "ASI Muhammad Yousaf",
+        "department": "Admin Staff",
+        "rank": "ASI",
+        "designation": "INCHARGE KOT",
+        "cnic": "38402-3534587-7",
+        "belt_no": "523/S"
+    },
+    {
+        "biometric_user_id": "14",
+        "full_name": "ASI Shah Muhammad",
+        "department": "Admin Staff",
+        "rank": "ASI",
+        "designation": "READER",
+        "cnic": "38403-2204299-7",
+        "belt_no": "643/S"
+    },
+    {
+        "biometric_user_id": "15",
+        "full_name": "ASI Muhammad Yaqoob",
+        "department": "Admin Staff",
+        "rank": "ASI",
+        "designation": "READER TO DSP",
+        "cnic": "38201-1229239-1",
+        "belt_no": "507/S"
+    },
+    {
+        "biometric_user_id": "16",
+        "full_name": "ASI Muhammad Safdar",
+        "department": "Admin Staff",
+        "rank": "ASI",
+        "designation": "READER TO DSP",
+        "cnic": "38201-7737955-5",
+        "belt_no": "28/R"
+    },
+    {
+        "biometric_user_id": "17",
+        "full_name": "ASI Zaki ul Hassan",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "18",
+        "full_name": "ASI M Yousaf Shakir",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "19",
+        "full_name": "ASI Muhammad Riaz",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "20",
+        "full_name": "ASI Muhammad Feroze",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "21",
+        "full_name": "HC Sohail Abbas",
+        "department": "Admin Staff",
+        "rank": "PAINTER",
+        "designation": "PAINTER",
+        "cnic": "38401-9108939-7",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "22",
+        "full_name": "HC Naveed Ahmed",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "23",
+        "full_name": "HC Ghulam Dastigeer",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "24",
+        "full_name": "HC Amir Hanif",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "25",
+        "full_name": "HC Sajid Irfan",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "26",
+        "full_name": "HC Ghulam Asgher Khan",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "27",
+        "full_name": "HC Zaheer Abbas",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "28",
+        "full_name": "HC Muzafar Iqbal",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "29",
+        "full_name": "HC Ahmed Nadeem",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "30",
+        "full_name": "HC Muhammad Anwer",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "31",
+        "full_name": "HC Hafeez Ullah",
+        "department": "Admin Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "GUN MAN",
+        "cnic": "38201-3145630-1",
+        "belt_no": "257, 108/PTS"
+    },
+    {
+        "biometric_user_id": "32",
+        "full_name": "HC M Tahir Pervaiz",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "33",
+        "full_name": "FC Muhammad Ishtiaq",
+        "department": "Admin Staff",
+        "rank": "Constable",
+        "designation": "NAIB MESS INCHARGE",
+        "cnic": "38403-9205185-1",
+        "belt_no": "829/C, 88/PTS"
+    },
+    {
+        "biometric_user_id": "34",
+        "full_name": "FC Abid Mehmood",
+        "department": "Admin Staff",
+        "rank": "Constable",
+        "designation": "NAIB PSO",
+        "cnic": "38403-7038767-9",
+        "belt_no": "53/PTS"
+    },
+    {
+        "biometric_user_id": "35",
+        "full_name": "FC Usman Taki",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "36",
+        "full_name": "FC Sajid Ayube",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "37",
+        "full_name": "FC Qasir Abbas",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "38",
+        "full_name": "FC Farman Ullah",
+        "department": "Admin Staff",
+        "rank": "Constable",
+        "designation": "NAIB KOT MOHARRAR",
+        "cnic": "38405-1685304-9",
+        "belt_no": "2151/C"
+    },
+    {
+        "biometric_user_id": "39",
+        "full_name": "FC Tariq Mehmood",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "41",
+        "full_name": "FC Anwer Naseem",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "42",
+        "full_name": "FC Answer Nadeem",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "43",
+        "full_name": "FC Mohsin Abbas",
+        "department": "Admin Staff",
+        "rank": "Constable",
+        "designation": "NAIB READER",
+        "cnic": "38403-2065950-1",
+        "belt_no": "1819/C, 40/PTS"
+    },
+    {
+        "biometric_user_id": "44",
+        "full_name": "BC Raja Ali Raza",
+        "department": "Admin Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38403-8192052-3",
+        "belt_no": "86/BC"
+    },
+    {
+        "biometric_user_id": "45",
+        "full_name": "FC Tariq Mehmood",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "47",
+        "full_name": "FC Ahsan Naeem",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "48",
+        "full_name": "FC Muhammad Shabir",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "49",
+        "full_name": "FC Faisal Sajjad",
+        "department": "Admin Staff",
+        "rank": "Constable",
+        "designation": "STICK ORDERLY",
+        "cnic": "38403-3546008-9",
+        "belt_no": "1621/C, 72/PTS"
+    },
+    {
+        "biometric_user_id": "50",
+        "full_name": "FC M Safdar Abbas",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "51",
+        "full_name": "ASI Summer Hayat",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "52",
+        "full_name": "IP Toqueer Hussain",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "53",
+        "full_name": "SI Shahid Mehmood",
+        "department": "LIne Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "LINE STAFF",
+        "cnic": "38404-0988491-9",
+        "belt_no": "S/132"
+    },
+    {
+        "biometric_user_id": "54",
+        "full_name": "SI Hafiz Tahir Anwer",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "55",
+        "full_name": "SI Khizar Hayat",
+        "department": "LIne Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "38302-1129701-9",
+        "belt_no": "316/S"
+    },
+    {
+        "biometric_user_id": "56",
+        "full_name": "ASI Muntizar Mehdi",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "57",
+        "full_name": "ASI Muhammad Fiaz",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "58",
+        "full_name": "ASI Sarfraz Ahmed",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "60",
+        "full_name": "HC Shabir Ahmed",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "62",
+        "full_name": "HC Imran Haider",
+        "department": "LIne Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "INCHARGE ADMIN",
+        "cnic": "38403-6346800-3",
+        "belt_no": "546/HC, 48/PTS"
+    },
+    {
+        "biometric_user_id": "63",
+        "full_name": "HC Nasrullah Khan",
+        "department": "LIne Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "NAIB LINES OFFICER",
+        "cnic": "38401-6409728-7",
+        "belt_no": "329/HC, 26/PTS"
+    },
+    {
+        "biometric_user_id": "64",
+        "full_name": "HC Muhammad Asif",
+        "department": "LIne Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "NAIB MOHAROR",
+        "cnic": "37302-5228011-9",
+        "belt_no": 163
+    },
+    {
+        "biometric_user_id": "65",
+        "full_name": "HC Zulqirnain Khan",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "66",
+        "full_name": "HC Adil Shahzad",
+        "department": "LIne Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "34402-7751790-9",
+        "belt_no": "1159, 92/PTS"
+    },
+    {
+        "biometric_user_id": "67",
+        "full_name": "HC Asgher Ali",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "68",
+        "full_name": "HC Amir Abbas Khan",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "69",
+        "full_name": "HC Nadeem Aftab",
+        "department": "LIne Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "SUSPENDED",
+        "cnic": "38401-0214192-3",
+        "belt_no": "29/PTS 3150104"
+    },
+    {
+        "biometric_user_id": "70",
+        "full_name": "FC M Naeem",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "71",
+        "full_name": "FC Safdar Javed",
+        "department": "LIne Staff",
+        "rank": "Constable",
+        "designation": "INCHARGE CANTEEN",
+        "cnic": "35202-9383995-7",
+        "belt_no": "2340, 153/PTS"
+    },
+    {
+        "biometric_user_id": "72",
+        "full_name": "FC Ehsan Ullah",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "74",
+        "full_name": "FC M Danyal Rafique",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "76",
+        "full_name": "IP/Legal  Asif Ali",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "77",
+        "full_name": "IP Saqib Shahzad",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "78",
+        "full_name": "IP Tariq Ahmed Majooka",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "79",
+        "full_name": "IP Muzafar Khan",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "80",
+        "full_name": "IP Shahbaz Muhammad",
+        "department": "Law Staff",
+        "rank": "Inspector",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "38403-2760799-3",
+        "belt_no": "R/543"
+    },
+    {
+        "biometric_user_id": "81",
+        "full_name": "IP M Musaddiq kahloon",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "84",
+        "full_name": "SI Ahmed Shah",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "85",
+        "full_name": "SI Ali Husnain Shah",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "86",
+        "full_name": "SI Ijaz Ahmed",
+        "department": "Law Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "38401-0200084-9",
+        "belt_no": "1811/GL"
+    },
+    {
+        "biometric_user_id": "87",
+        "full_name": "SI Allah Ditta",
+        "department": "Law Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "DRILL INSTRUCTOR",
+        "cnic": "33201-1614438-3",
+        "belt_no": "148/HC"
+    },
+    {
+        "biometric_user_id": "89",
+        "full_name": "SI Hamid Farooq",
+        "department": "Law Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "38401-6900009-1",
+        "belt_no": "S/198"
+    },
+    {
+        "biometric_user_id": "90",
+        "full_name": "SI Ikram Ullah Khan",
+        "department": "Law Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "38302-8911915-1",
+        "belt_no": "S/03"
+    },
+    {
+        "biometric_user_id": "91",
+        "full_name": "SI Yasir Iqbal",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "92",
+        "full_name": "SI Safdar Iqbal",
+        "department": "Law Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "38401-0302755-5",
+        "belt_no": "S/324"
+    },
+    {
+        "biometric_user_id": "93",
+        "full_name": "ASI Muhammad Zafar",
+        "department": "Law Staff",
+        "rank": "ASI",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "38405-8178525-9",
+        "belt_no": "182/S"
+    },
+    {
+        "biometric_user_id": "94",
+        "full_name": "ASI Tanveer Imtiaz",
+        "department": "Law Staff",
+        "rank": "ASI",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "38401-3316838-3",
+        "belt_no": "756, 133/PTS"
+    },
+    {
+        "biometric_user_id": "95",
+        "full_name": "ASI M Ehtisham Zaib",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "96",
+        "full_name": "LHC Mubeena Noreen",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "98",
+        "full_name": "SI Shahid Iqbal",
+        "department": "Weapon Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "CHIEF WEAPON INSTRUCTOR",
+        "cnic": "38403-2148206-5",
+        "belt_no": "1862/R"
+    },
+    {
+        "biometric_user_id": "99",
+        "full_name": "SI Muhammad Shahbaz",
+        "department": "Weapon Staff",
+        "rank": "WASHER MAN",
+        "designation": "WASHER-MAN (DHOBI)",
+        "cnic": "35202-2827073-1",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "100",
+        "full_name": "ASI Kashif Hayat",
+        "department": "Weapon Staff",
+        "rank": "ASI",
+        "designation": "WEAPON INSTRUCTOR",
+        "cnic": "38403-2078244-7",
+        "belt_no": "999/S"
+    },
+    {
+        "biometric_user_id": "101",
+        "full_name": "HC Muhammad Iqbal",
+        "department": "Weapon Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "WEAPON INSTRUCTOR",
+        "cnic": "38402-5074517-7",
+        "belt_no": "144/HC, 144/PTS"
+    },
+    {
+        "biometric_user_id": "102",
+        "full_name": "HC Zulfiqar Ahmed",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "103",
+        "full_name": "HC Qamar Abbas",
+        "department": "Weapon Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "INCHARGE MARTIAL ARTS",
+        "cnic": "38403-8751330-7",
+        "belt_no": "332/HC, 11/PTS"
+    },
+    {
+        "biometric_user_id": "104",
+        "full_name": "FC Noor Zaman",
+        "department": "Weapon Staff",
+        "rank": "Constable",
+        "designation": "WEAPON INSTRUCTOR",
+        "cnic": "38403-2095089-7",
+        "belt_no": "115/PTS"
+    },
+    {
+        "biometric_user_id": "105",
+        "full_name": "FC ZafarI Iqbal",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "106",
+        "full_name": "FC Yasir Muneer",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "107",
+        "full_name": "FC Ehsan Qadir",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "108",
+        "full_name": "ASI Imran Hameed",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "109",
+        "full_name": "ASI Shahid Rasool",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "110",
+        "full_name": "FC Muhammad Aslam",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "111",
+        "full_name": "FC Raza Muhammad",
+        "department": "Weapon Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "112",
+        "full_name": "ASI Azhar Mehmoob",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "113",
+        "full_name": "ASI Muhammad Waliyat",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "114",
+        "full_name": "ASI Haroon Ahmed",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "115",
+        "full_name": "ASI Muhammad Asif",
+        "department": "Drill Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "NAIB MOHAROR",
+        "cnic": "37302-5228011-9",
+        "belt_no": 163
+    },
+    {
+        "biometric_user_id": "116",
+        "full_name": "HC Haji Ahmed",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "117",
+        "full_name": "HC Azhar Saleem",
+        "department": "Drill Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "DRILL INSTRUCTOR",
+        "cnic": "38403-5254069-1",
+        "belt_no": "1868/HC, 129/PT"
+    },
+    {
+        "biometric_user_id": "118",
+        "full_name": "HC Ghulam Abbas",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "119",
+        "full_name": "HC Muhammad Arif",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "120",
+        "full_name": "FC Muhammad Irfan",
+        "department": "Drill Staff",
+        "rank": "ASI",
+        "designation": "NAIB MESS INCHARGE",
+        "cnic": "38403-3535639-3",
+        "belt_no": "996/S"
+    },
+    {
+        "biometric_user_id": "121",
+        "full_name": "FC Sardar Ali Saqlain",
+        "department": "Drill Staff",
+        "rank": "Constable",
+        "designation": "DRILL INSTRUCTOR",
+        "cnic": "33201-2147379-1",
+        "belt_no": "21456, 81/PTS"
+    },
+    {
+        "biometric_user_id": "122",
+        "full_name": "FC M Naseer Ahmed",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "123",
+        "full_name": "FC Syed Masood ul Hassan",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "124",
+        "full_name": "FC Shahzad Hassan",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "125",
+        "full_name": "FC Tasawar Hussan",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "126",
+        "full_name": "FC Nasir Abbas",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "127",
+        "full_name": "FC Muhammad Kashif",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "128",
+        "full_name": "FC Abdul Qadeer",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "129",
+        "full_name": "FC Muhammad Kashif",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "130",
+        "full_name": "FC Muhammad Shahzad",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "131",
+        "full_name": "FC Zeeshan Ashraf",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "132",
+        "full_name": "FC Abdul Muqsit",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "133",
+        "full_name": "FC Farooq Khan",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "134",
+        "full_name": "FC Sharjeel Ahmed Khan",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "135",
+        "full_name": "FC Muhammad Ramzan",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "136",
+        "full_name": "FC Muhammad Noman",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "137",
+        "full_name": "FC Faisal Nawaz",
+        "department": "Drill Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "138",
+        "full_name": "SI M Haroon Saheed",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "139",
+        "full_name": "HC Imtiaz Ullah Khan",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "140",
+        "full_name": "HC Muhammad Javed",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "141",
+        "full_name": "HC Waqas Ahmed",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "142",
+        "full_name": "HC Amir Hayat Khan",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "143",
+        "full_name": "HC Abdul Rehman Adil",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "144",
+        "full_name": "FC Ameer Ahmed Khan",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "145",
+        "full_name": "FC Ansaar Ahmed",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "146",
+        "full_name": "FC Muhammad Akhtar",
+        "department": "MT Staff",
+        "rank": "LANGRI",
+        "designation": "LANGRI",
+        "cnic": "38401-0356839-3",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "147",
+        "full_name": "FC Maskeen Ullah",
+        "department": "MT Staff",
+        "rank": "CONSTABLE DRIVER",
+        "designation": "MT STAFF",
+        "cnic": "38302-7621539-9",
+        "belt_no": "636, 151/PTS"
+    },
+    {
+        "biometric_user_id": "148",
+        "full_name": "FC Muhammad Ashraf",
+        "department": "MT Staff",
+        "rank": "Constable",
+        "designation": "MT STAFF",
+        "cnic": "38403-2258967-7",
+        "belt_no": "1504/C-2, 99/Pt"
+    },
+    {
+        "biometric_user_id": "149",
+        "full_name": "FC Muhammad Akhtar",
+        "department": "MT Staff",
+        "rank": "LANGRI",
+        "designation": "LANGRI",
+        "cnic": "38401-0356839-3",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "150",
+        "full_name": "FC Inam Ullah",
+        "department": "MT Staff",
+        "rank": "Constable",
+        "designation": "MT BRANCH",
+        "cnic": "38403-2179014-3",
+        "belt_no": "174/C"
+    },
+    {
+        "biometric_user_id": "151",
+        "full_name": "AhtBC Muhammad Ehtisham",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "153",
+        "full_name": "IP M Sabtian Ali",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "154",
+        "full_name": "IP Asad Hassan",
+        "department": "Security Staff",
+        "rank": "Inspector",
+        "designation": "INCHARGE BUILDING",
+        "cnic": "38403-2274004-9",
+        "belt_no": "S/29"
+    },
+    {
+        "biometric_user_id": "155",
+        "full_name": "IP Imran Khan",
+        "department": "Security Staff",
+        "rank": "Inspector",
+        "designation": "INCHARGE SECURITY",
+        "cnic": "38302-1122588-3",
+        "belt_no": "S/164"
+    },
+    {
+        "biometric_user_id": "156",
+        "full_name": "SI Allah Bukhsh",
+        "department": "Security Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "SECURITY DUTY",
+        "cnic": "33201-4306333-7",
+        "belt_no": "789/M"
+    },
+    {
+        "biometric_user_id": "157",
+        "full_name": "SI Arshad Hussain",
+        "department": "Security Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "ADMIN OFFICER",
+        "cnic": "38402-1591413-5",
+        "belt_no": "S/432"
+    },
+    {
+        "biometric_user_id": "158",
+        "full_name": "SI Safdar Ali",
+        "department": "Security Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "SECURITY DUTY",
+        "cnic": "38101-0663062-3",
+        "belt_no": "S/220"
+    },
+    {
+        "biometric_user_id": "159",
+        "full_name": "SI Ilam Din",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "162",
+        "full_name": "SI Saeed Akhtar",
+        "department": "Security Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "SUB INSPECTOR",
+        "cnic": "38402-2477479-3",
+        "belt_no": "488/S"
+    },
+    {
+        "biometric_user_id": "164",
+        "full_name": "SI Muhammad Ashraf",
+        "department": "Security Staff",
+        "rank": "Constable",
+        "designation": "MT STAFF",
+        "cnic": "38403-2258967-7",
+        "belt_no": "1504/C-2, 99/Pt"
+    },
+    {
+        "biometric_user_id": "165",
+        "full_name": "SI Mahir Nazeer Ahmed",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "166",
+        "full_name": "ASI Muhammad Saqlain",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "42000-5744104-1",
+        "belt_no": "163/L"
+    },
+    {
+        "biometric_user_id": "167",
+        "full_name": "ASI Iftiqar ul Hassan",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "168",
+        "full_name": "ASI Faryad Ali",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "38201-0655149-9",
+        "belt_no": "296/S"
+    },
+    {
+        "biometric_user_id": "169",
+        "full_name": "ASI Maqbool Hussain",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "170",
+        "full_name": "ASI Tabasam Riaz",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "171",
+        "full_name": "ASI M Rafique",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "172",
+        "full_name": "ASI Muhammad Akram",
+        "department": "Security Staff",
+        "rank": "Constable",
+        "designation": "SECURITY DUTY",
+        "cnic": "38405-2268627-5",
+        "belt_no": "2005/C-2, 102/P"
+    },
+    {
+        "biometric_user_id": "173",
+        "full_name": "ASI Allah Yar",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "38302-1180224-9",
+        "belt_no": "941/S"
+    },
+    {
+        "biometric_user_id": "174",
+        "full_name": "ASI Khizar Hayat",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "38302-1129701-9",
+        "belt_no": "316/S"
+    },
+    {
+        "biometric_user_id": "175",
+        "full_name": "ASI Farzand Hussain",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "38104-0838986-1",
+        "belt_no": "778/s"
+    },
+    {
+        "biometric_user_id": "177",
+        "full_name": "ASI M Nasrullah",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "178",
+        "full_name": "ASI Hameed Ali",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "LINE STAFF",
+        "cnic": "38403-2087624-3",
+        "belt_no": "404/S"
+    },
+    {
+        "biometric_user_id": "179",
+        "full_name": "ASI Ehsan Baig",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "38405-2273624-7",
+        "belt_no": "393/S"
+    },
+    {
+        "biometric_user_id": "180",
+        "full_name": "ASI M Asghar",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "181",
+        "full_name": "ASI Sarfraz Ali",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "183",
+        "full_name": "ASI Ali Muhammad",
+        "department": "Security Staff",
+        "rank": "CONSTABLE (EX-ARMY)",
+        "designation": "WEAPON INSTRUCTOR",
+        "cnic": "45504-1123880-1",
+        "belt_no": "387, 49/PTS"
+    },
+    {
+        "biometric_user_id": "184",
+        "full_name": "ASI Muhammad Abbas",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "185",
+        "full_name": "ASI Muhammad Imran",
+        "department": "Security Staff",
+        "rank": "WATER CARRIER",
+        "designation": "WATER CARER",
+        "cnic": "38403-6967814-1",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "186",
+        "full_name": "ASI Muhammad Nawaz",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "38201-1010353-9",
+        "belt_no": "521/S"
+    },
+    {
+        "biometric_user_id": "187",
+        "full_name": "HC M Azhar Abbas",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "188",
+        "full_name": "HC Ehsan Ullah",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "189",
+        "full_name": "HC Babar Latif",
+        "department": "Security Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "NAIB KOT MOHARRAR",
+        "cnic": "38403-2078686-9",
+        "belt_no": "709/HC, 21/PTS"
+    },
+    {
+        "biometric_user_id": "190",
+        "full_name": "FC Muhammad Imran",
+        "department": "Security Staff",
+        "rank": "WATER CARRIER",
+        "designation": "WATER CARER",
+        "cnic": "38403-6967814-1",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "191",
+        "full_name": "HC Ameer Asif",
+        "department": "Security Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "LINE STAFF",
+        "cnic": "38303-6223224-9",
+        "belt_no": 1538
+    },
+    {
+        "biometric_user_id": "192",
+        "full_name": "HC Saqib Zahoor",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "193",
+        "full_name": "FC Muhammad Waqar",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "194",
+        "full_name": "HC Muhammad Adil",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "195",
+        "full_name": "HC Sultan Ahmed",
+        "department": "Security Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "CCTV CAMERA OPERATOR",
+        "cnic": "38101-5600219-5",
+        "belt_no": "896/HC"
+    },
+    {
+        "biometric_user_id": "196",
+        "full_name": "HC Summera Abbas",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "197",
+        "full_name": "HC Sami Ullah",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "198",
+        "full_name": "FC Muhammad Jahngir",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "199",
+        "full_name": "FC Bilal Ahmed",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "200",
+        "full_name": "FC Muahammd Akram",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "201",
+        "full_name": "FC Muneer Ahmed",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "202",
+        "full_name": "FC Muhammad Ameer",
+        "department": "Security Staff",
+        "rank": "MALI",
+        "designation": "MALI",
+        "cnic": "38401-7497704-9",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "203",
+        "full_name": "FC Abdul Ghafar Khan",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "204",
+        "full_name": "FC Muhammad Ramzan",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "205",
+        "full_name": "FC Muhammad Sultan",
+        "department": "Security Staff",
+        "rank": "Constable",
+        "designation": "SECURITY DUTY",
+        "cnic": "38302-5417961-7",
+        "belt_no": 13750
+    },
+    {
+        "biometric_user_id": "206",
+        "full_name": "FC Muhammad Muzhair",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "207",
+        "full_name": "FC Imran",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "208",
+        "full_name": "FC Ali Muhammad",
+        "department": "Security Staff",
+        "rank": "CONSTABLE (EX-ARMY)",
+        "designation": "WEAPON INSTRUCTOR",
+        "cnic": "45504-1123880-1",
+        "belt_no": "387, 49/PTS"
+    },
+    {
+        "biometric_user_id": "209",
+        "full_name": "FC Hafiz Mukhtar",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "210",
+        "full_name": "FC Haji Ahmed",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "211",
+        "full_name": "FC Asif Hayat",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "212",
+        "full_name": "FC Qasir Abbas",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "213",
+        "full_name": "FC Zeeshan Haider",
+        "department": "Security Staff",
+        "rank": "Constable",
+        "designation": "SECURITY DUTY",
+        "cnic": "37302-3801830-9",
+        "belt_no": 686
+    },
+    {
+        "biometric_user_id": "214",
+        "full_name": "FC Muhammad Saeed",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "215",
+        "full_name": "BC Akmal Hussain",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38403-6645246-1",
+        "belt_no": "2/BC"
+    },
+    {
+        "biometric_user_id": "216",
+        "full_name": "BC Danish Ali",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38406-0501949-7",
+        "belt_no": "14/BC"
+    },
+    {
+        "biometric_user_id": "217",
+        "full_name": "BC Nabeel Dawood",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "218",
+        "full_name": "BC Muhammad Ali",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38401-1393154-7",
+        "belt_no": "32/BC"
+    },
+    {
+        "biometric_user_id": "219",
+        "full_name": "BC Ahmed Nawaz",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "220",
+        "full_name": "BC Nabeel",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38201-4738347-1",
+        "belt_no": "52/BC"
+    },
+    {
+        "biometric_user_id": "221",
+        "full_name": "BC Rafi  Ullah Khan",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "222",
+        "full_name": "BC Amir Sohail",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "224",
+        "full_name": "BC Muhammad Asif Khan",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38402-7158988-3",
+        "belt_no": "68/BC"
+    },
+    {
+        "biometric_user_id": "225",
+        "full_name": "BC Ahsan Ameer",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38402-5621056-3",
+        "belt_no": "74/BC"
+    },
+    {
+        "biometric_user_id": "226",
+        "full_name": "BC Yasir Zia",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38403-3753123-7",
+        "belt_no": "78/BC"
+    },
+    {
+        "biometric_user_id": "228",
+        "full_name": "BC M Nadeem Shah",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "229",
+        "full_name": "BC Rizwan Haider",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38403-3790816-1",
+        "belt_no": "100/BC"
+    },
+    {
+        "biometric_user_id": "230",
+        "full_name": "Assitant Arshad Mehmood",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "231",
+        "full_name": "Assistant Naveed Akhtar",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "232",
+        "full_name": "Assistant Mian Khalid",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "233",
+        "full_name": "S/Clerk Muhammad Ishfaq",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "234",
+        "full_name": "S/Clerk M Akram",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "235",
+        "full_name": "S/Clerk Syed Usama Ali",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "236",
+        "full_name": "S/Clerk Rao Tariq Saeed",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "237",
+        "full_name": "J/Clerk Muhammad Sajjad",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "238",
+        "full_name": "J/Clerk Ahmed Zia",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "239",
+        "full_name": "J/Clerk Hafiz Tahir",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "240",
+        "full_name": "J/Clerk Imtiaz Ahmed",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "241",
+        "full_name": "J/Clerk Zanib Bibi",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "242",
+        "full_name": "Daftri Ahmed Nawaz",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "243",
+        "full_name": "Naib Qasid Waseem Abbas",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "244",
+        "full_name": "N/Qasid Farrukh Imtiaz",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "245",
+        "full_name": "Maskhi Sahadat Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "246",
+        "full_name": "Mashki Hafiz Allah Ditta",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "247",
+        "full_name": "Mashki Attique ur Rehman",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "248",
+        "full_name": "Mashki M Imran",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "249",
+        "full_name": "Mashki M Naveed",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "250",
+        "full_name": "Mali Muhammad Ameer",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "251",
+        "full_name": "Mali Ijaz Ahmed",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "252",
+        "full_name": "Mali Ghulam Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "253",
+        "full_name": "Mali Ali Raza",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "254",
+        "full_name": "Mali Jamsheed Riaz",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "255",
+        "full_name": "Mali Ansar Mehmood",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "256",
+        "full_name": "Dhobi Aziz ur Rehman",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "257",
+        "full_name": "Dhobi Sana Ullah",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "258",
+        "full_name": "Dhobi Bao Zaheer Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "259",
+        "full_name": "Dhobi M Shahbaz",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "260",
+        "full_name": "Dhobi Waseem Khalid",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "261",
+        "full_name": "Dhobi Khalid Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "262",
+        "full_name": "Dhobi Mushtaq Ahmed",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "263",
+        "full_name": "Barbar Fazal Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "264",
+        "full_name": "Barbar Hassan Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "265",
+        "full_name": "Barbar Abdul Rauf",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "266",
+        "full_name": "Barbar Azhar Iqbal",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "267",
+        "full_name": "Mochi Abdul Khaliq",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "268",
+        "full_name": "Mochi Tariq Iqbal",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "269",
+        "full_name": "Langri Naeem Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "270",
+        "full_name": "Langri Ansar Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "271",
+        "full_name": "Langri Muhammad Irfan",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "272",
+        "full_name": "Langri Jahngir Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "273",
+        "full_name": "Langri Muhammad Asghar",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "274",
+        "full_name": "Langri Muhammad Mukhtar",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "275",
+        "full_name": "Langri Shahzaib",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "276",
+        "full_name": "Langri Sarfraz Khan",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "277",
+        "full_name": "Langri Arshad Iqbal",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "278",
+        "full_name": "Langri Munawar Hussain",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "279",
+        "full_name": "Langri Ashiq Hussain",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "280",
+        "full_name": "Langri Muhammad Akhtar",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "281",
+        "full_name": "Langri Mohsin Ali",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "282",
+        "full_name": "Langri Ghulam Shabir",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "283",
+        "full_name": "Sweeper M Ehsan",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "284",
+        "full_name": "Sweeper Ghulam Hurr",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "285",
+        "full_name": "Sweeper  Shazia Mahsih",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "286",
+        "full_name": "Sweeper  Raees Mahsih",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "287",
+        "full_name": "Sweeper Arif Mah",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "288",
+        "full_name": "Sweeper Nazar Hayat",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "289",
+        "full_name": "Sweeper M Rashid",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "290",
+        "full_name": "Sweeper M Ilyas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "291",
+        "full_name": "Sweeper Sabir Mahsih",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "292",
+        "full_name": "Sweeper Haydiat Ali",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "293",
+        "full_name": "Sweeper Robin Gosh",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "294",
+        "full_name": "Sweeper M Yaseen",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "295",
+        "full_name": "Sweeper Yousaf Mahsih",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "296",
+        "full_name": "Mistri M Sharif",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "297",
+        "full_name": "Painter Sohail Abbas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "298",
+        "full_name": "Car Painter Munawar Abas",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "299",
+        "full_name": "BC Ashir Raza",
+        "department": "Misllenous Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38302-6831101-3",
+        "belt_no": "24/BC"
+    },
+    {
+        "biometric_user_id": "302",
+        "full_name": "HC Naveed ul Hassan",
+        "department": "Band Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "INCHARGE BAND STAFF",
+        "cnic": "37202-5235874-7",
+        "belt_no": "27/PTS"
+    },
+    {
+        "biometric_user_id": "303",
+        "full_name": "BC M Hunain",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "304",
+        "full_name": "Hafiz Tariq Mehmood",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "305",
+        "full_name": "BC Asfar ali",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38201-4564573-9",
+        "belt_no": "9/BC"
+    },
+    {
+        "biometric_user_id": "306",
+        "full_name": "Hc Muhammad Mumtaz",
+        "department": "Security Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38403-7747730-9",
+        "belt_no": "552, 36/PTS"
+    },
+    {
+        "biometric_user_id": "307",
+        "full_name": "Langri M Irfan",
+        "department": "Class-IV",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "308",
+        "full_name": "HC Reehana Kousar",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "518",
+        "full_name": "Ijaz Hussain",
+        "department": "Band Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38403-5433671-1",
+        "belt_no": "46/PTS"
+    },
+    {
+        "biometric_user_id": "604",
+        "full_name": "S/Clerk Muhammad Ashfaq",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1009",
+        "full_name": "Naveed Abbas",
+        "department": "Band Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "38403-9637188-5",
+        "belt_no": "59/PTS"
+    },
+    {
+        "biometric_user_id": "1010",
+        "full_name": "Zulqarnain Khan",
+        "department": "MT Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "SECURITY DUTY",
+        "cnic": "38301-2296062-5",
+        "belt_no": 1767
+    },
+    {
+        "biometric_user_id": "1157",
+        "full_name": "Muhammad Asif",
+        "department": "LIne Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "NAIB MOHAROR",
+        "cnic": "37302-5228011-9",
+        "belt_no": 163
+    },
+    {
+        "biometric_user_id": "1281",
+        "full_name": "IP Mazhar Abbas",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1282",
+        "full_name": "BC Rana Ali Raza",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1283",
+        "full_name": "SI Akhlaq Hussain",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1284",
+        "full_name": "SI Zameer Ul Hassan",
+        "department": "Law Staff",
+        "rank": "SUB INSPECTOR",
+        "designation": "LAW INSTRUCTOR",
+        "cnic": "37302-1133893-9",
+        "belt_no": "369/R"
+    },
+    {
+        "biometric_user_id": "1285",
+        "full_name": "SI Shafique",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1286",
+        "full_name": "SI Zafar Hussain",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1287",
+        "full_name": "ASI Ansar Abbas",
+        "department": "Law Staff",
+        "rank": "LANGRI",
+        "designation": "LANGRI",
+        "cnic": "38403-2450409-5",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1288",
+        "full_name": "ASI Ghulam Fareed",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1289",
+        "full_name": "IP Arshad Mehmood",
+        "department": "Law Staff",
+        "rank": "ASSISTANT",
+        "designation": "INCHARGE SRC",
+        "cnic": "33202-4298505-7",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1290",
+        "full_name": "Const. Hafiz Mukhtar",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1291",
+        "full_name": "FC Asif Mehmood",
+        "department": "MT Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1292",
+        "full_name": "FC M Ijaz",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1293",
+        "full_name": "FC  Shahzad Khan",
+        "department": "Security Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1294",
+        "full_name": "ASI Parviz Elahi",
+        "department": "Law Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1296",
+        "full_name": "ASI Muhammad Asif",
+        "department": "Security Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "NAIB MOHAROR",
+        "cnic": "37302-5228011-9",
+        "belt_no": 163
+    },
+    {
+        "biometric_user_id": "1297",
+        "full_name": "ASI Shahid Hussain",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "35202-7675130-1",
+        "belt_no": "3689/LHR"
+    },
+    {
+        "biometric_user_id": "1298",
+        "full_name": "BC Aamir Sohail",
+        "department": "Security Staff",
+        "rank": "Constable",
+        "designation": "NAIB IT SECTION",
+        "cnic": "38104-2649806-3",
+        "belt_no": "62/BC"
+    },
+    {
+        "biometric_user_id": "1299",
+        "full_name": "FC Qasir Abbas",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1300",
+        "full_name": "ASI Naeem Akhtar",
+        "department": "Security Staff",
+        "rank": "ASI",
+        "designation": "SECURITY DUTY",
+        "cnic": "35202-1092989-1",
+        "belt_no": "6615/LHR"
+    },
+    {
+        "biometric_user_id": "1301",
+        "full_name": "Hc M Ikramullah",
+        "department": "LIne Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1302",
+        "full_name": "HC M Asif",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1303",
+        "full_name": "HC Intizar Hussain",
+        "department": "Admin Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "CCTV CAMERA OPERATOR",
+        "cnic": "38201-5104419-3",
+        "belt_no": 220
+    },
+    {
+        "biometric_user_id": "1304",
+        "full_name": "BC Ahmad Faraz",
+        "department": "Security Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "SECURITY DUTY",
+        "cnic": "38406-0452320-1",
+        "belt_no": "75/BC"
+    },
+    {
+        "biometric_user_id": "1305",
+        "full_name": "Faisal  Zia",
+        "department": "Ministeral Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1306",
+        "full_name": "HC Muhammad Kamran",
+        "department": "Admin Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "SECURITY DUTY",
+        "cnic": "38201-6212075-5",
+        "belt_no": 4
+    },
+    {
+        "biometric_user_id": "1307",
+        "full_name": "Hc Azhar Abbas",
+        "department": "LIne Staff",
+        "rank": "HEAD CONSTABLE",
+        "designation": "LINE STAFF",
+        "cnic": "35202-8490993-3",
+        "belt_no": 575
+    },
+    {
+        "biometric_user_id": "1308",
+        "full_name": "HC Sultan Ahmad",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1309",
+        "full_name": "FC Amir Sohail",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1312",
+        "full_name": "FC Waseem Ahmad",
+        "department": "Admin Staff",
+        "rank": "BAND CONSTABLE",
+        "designation": "BAND STAFF",
+        "cnic": "42000-2714590-5",
+        "belt_no": "63/BC"
+    },
+    {
+        "biometric_user_id": "1313",
+        "full_name": "HC Muhammad Imran",
+        "department": "LIne Staff",
+        "rank": "WATER CARRIER",
+        "designation": "WATER CARER",
+        "cnic": "38403-6967814-1",
+        "belt_no": ""
+    },
+    {
+        "biometric_user_id": "1314",
+        "full_name": "ASI Rana Ghulam Rasool",
+        "department": "Admin Staff",
+        "rank": "",
+        "designation": "",
+        "cnic": "",
+        "belt_no": ""
+    }
+]

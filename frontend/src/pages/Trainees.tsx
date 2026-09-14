@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Users, UserCheck, UserX, Briefcase, 
   CalendarDays, FileWarning, Activity, ArrowRightLeft, Plus, ChevronRight, Monitor,
-  Search, X, Trash2
+  Search, X, Trash2, Edit
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip
 } from 'recharts';
 import api from '../api/client';
+import { EditPersonnelModal } from '../components/EditPersonnelModal';
 
 interface DashboardKPI {
   total_strength: number;
@@ -94,6 +95,7 @@ const Trainees: React.FC = () => {
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showMarkModal, setShowMarkModal] = useState(false);
   const [selectedTrainee, setSelectedTrainee] = useState<any | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -853,6 +855,12 @@ const Trainees: React.FC = () => {
               </button>
               <div className="flex gap-2">
                 <button
+                  onClick={() => setShowEditModal(true)}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 flex items-center gap-1.5"
+                >
+                  <Edit className="w-3.5 h-3.5" /> Edit
+                </button>
+                <button
                   onClick={handleToggleStatus}
                   className={`px-3 py-1.5 text-xs font-bold rounded-xl ${selectedTrainee.employment_status === 'Active' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
                 >
@@ -868,6 +876,18 @@ const Trainees: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showEditModal && selectedTrainee && (
+        <EditPersonnelModal
+          person={selectedTrainee}
+          onClose={() => setShowEditModal(false)}
+          onSuccess={() => {
+            setShowEditModal(false);
+            setSelectedTrainee(null);
+            fetchData();
+          }}
+        />
       )}
 
     </div>

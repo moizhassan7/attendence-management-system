@@ -45,8 +45,7 @@ class AttendanceService:
     ) -> None:
         """Process attendance for one person on one day."""
         # 1. Check if weekend (e.g. Sat/Sun)
-        # Assuming weekend_days setting (e.g., "5,6" for Sat/Sun). Hardcoded 5,6 for simplicity if settings missing
-        is_weekend = target_date.weekday() in (5, 6)
+        # We will handle weekends dynamically inside the default block based on duty_type
 
         # 2. Check if holiday
         holiday = (await db.execute(
@@ -125,10 +124,34 @@ class AttendanceService:
                 status = exc.exception_type  # LEAVE, OSD, MEDICAL, DUTY_REST
             elif is_holiday:
                 status = "HOLIDAY"
-            elif is_weekend:
-                status = "WEEKEND"
             else:
-                status = "ABSENT"
+                shift = personnel.shift
+                current_time = now().time()
+                is_today = target_date == now().date()
+                
+                # Non-security staff get Sunday off
+                if target_date.weekday() == 6 and personnel.duty_type != "Security":
+                    status = "WEEKEND"
+                # If today and before shift starts -> AWAITING
+                elif shift and is_today and current_time < shift.start_time:
+                    status = "AWAITING"
+                # If Security missing shift, check 24-hr cycle
+                elif personnel.duty_type == "Security":
+                    yesterday = target_date - timedelta(days=1)
+                    yesterday_att = (await db.execute(
+                        select(AttendanceDaily.id).where(
+                            AttendanceDaily.personnel_id == personnel.id,
+                            AttendanceDaily.attendance_date == yesterday,
+                            AttendanceDaily.status.in_(["PRESENT", "LATE"])
+                        )
+                    )).scalar_one_or_none()
+                    
+                    if yesterday_att:
+                        status = "DUTY_REST"
+                    else:
+                        status = "ABSENT"
+                else:
+                    status = "ABSENT"
 
         # 6. Upsert Daily Record
         existing_daily = (await db.execute(

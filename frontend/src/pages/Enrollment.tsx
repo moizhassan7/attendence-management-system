@@ -100,6 +100,7 @@ const Enrollment: React.FC = () => {
   const [masterDepartments, setMasterDepartments] = useState<MasterDepartment[]>([]);
   const [masterCourses, setMasterCourses] = useState<MasterCourse[]>([]);
   const [civilDesignations, setCivilDesignations] = useState<string[]>([]);
+  const [shiftsList, setShiftsList] = useState<any[]>([]);
   const [configRanges, setConfigRanges] = useState<ConfigRanges>({
     trainee_pin_min: 1,
     trainee_pin_max: 2000,
@@ -121,6 +122,8 @@ const Enrollment: React.FC = () => {
     custom_designation: '',
     department_id: '' as string | number,
     gender: 'Male',
+    duty_type: '',
+    shift_id: '' as string | number,
   });
 
   const showToast = (msg: string) => {
@@ -146,11 +149,12 @@ const Enrollment: React.FC = () => {
   // Fetch Master Data (Ranks, Departments, Courses, Configuration Ranges & Designations)
   const fetchMasterData = async () => {
     try {
-      const [ranksRes, deptsRes, coursesRes, settingsRes] = await Promise.all([
+      const [ranksRes, deptsRes, coursesRes, settingsRes, shiftsRes] = await Promise.all([
         api.get('/ranks?page_size=100'),
         api.get('/departments?page_size=100'),
         api.get('/courses?page_size=100'),
         api.get('/settings'),
+        api.get('/shifts?page_size=100'),
       ]);
 
       if (ranksRes.data?.data) {
@@ -166,6 +170,9 @@ const Enrollment: React.FC = () => {
       if (settingsRes.data?.data) {
         if (settingsRes.data.data.ranges) setConfigRanges(settingsRes.data.data.ranges);
         if (settingsRes.data.data.designations) setCivilDesignations(settingsRes.data.data.designations);
+      }
+      if (shiftsRes.data?.data) {
+        setShiftsList(shiftsRes.data.data);
       }
     } catch (err) {
       console.error('Failed to load master configuration data', err);
@@ -313,6 +320,8 @@ const Enrollment: React.FC = () => {
         rank_id: (isUniform || isTrainee) && formData.rank_id ? Number(formData.rank_id) : null,
         designation: finalDesignation || null,
         department_id: formData.department_id ? Number(formData.department_id) : null,
+        duty_type: formData.duty_type || null,
+        shift_id: formData.shift_id ? Number(formData.shift_id) : null,
         gender: formData.gender,
         employment_status: 'Active',
       };
@@ -1056,6 +1065,47 @@ const Enrollment: React.FC = () => {
                       ))}
                     </select>
                     <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Duty Type & Shift Assignment */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-600 mb-1">
+                      Duty Type (Optional)
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.duty_type}
+                        onChange={(e) => setFormData(prev => ({ ...prev, duty_type: e.target.value }))}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-slate-800 bg-white cursor-pointer appearance-none pr-8"
+                      >
+                        <option value="">General Duty</option>
+                        <option value="Security">Security / Guard</option>
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-600 mb-1">
+                      Shift Assignment (Optional)
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.shift_id}
+                        onChange={(e) => setFormData(prev => ({ ...prev, shift_id: e.target.value }))}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-slate-800 bg-white cursor-pointer appearance-none pr-8"
+                      >
+                        <option value="">Default Shift</option>
+                        {shiftsList.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name} ({s.start_time.substring(0,5)})
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
 

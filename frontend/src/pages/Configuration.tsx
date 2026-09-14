@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { 
   CalendarDays, Image as ImageIcon, Upload, 
   CheckCircle2, AlertTriangle, Shield, Award, Plus, 
-  Trash2, Edit3, X, Save, Building2, GraduationCap, Sliders
+  Trash2, Edit3, X, Save, Building2, GraduationCap, Sliders, Clock
 } from 'lucide-react';
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
@@ -41,9 +41,25 @@ interface CourseItem {
   id: number;
   name: string;
   code?: string | null;
-  start_date?: string | null;
-  end_date?: string | null;
+  start_time?: string | null;
+  end_time?: string | null;
   active: boolean;
+}
+
+interface ShiftItem {
+  id: number;
+  name: string;
+  start_time: string;
+  end_time: string;
+  late_grace_minutes: number;
+  early_leave_minutes: number;
+  active: boolean;
+}
+
+interface DefaultShifts {
+  uniform: string;
+  non_uniform: string;
+  trainee: string;
 }
 
 const Configuration: React.FC = () => {
@@ -68,11 +84,18 @@ const Configuration: React.FC = () => {
   const [ranks, setRanks] = useState<RankItem[]>([]);
   const [departments, setDepartments] = useState<DepartmentItem[]>([]);
   const [courses, setCourses] = useState<CourseItem[]>([]);
+  const [shifts, setShifts] = useState<ShiftItem[]>([]);
+  const [defaultShifts, setDefaultShifts] = useState<DefaultShifts>({
+    uniform: '',
+    non_uniform: '',
+    trainee: '',
+  });
 
   // UI States
   const [newDesignation, setNewDesignation] = useState('');
   const [savingBranding, setSavingBranding] = useState(false);
   const [savingRanges, setSavingRanges] = useState(false);
+  const [savingDefaultShifts, setSavingDefaultShifts] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Add / Edit Rank Modal
@@ -95,6 +118,17 @@ const Configuration: React.FC = () => {
     end_date: '',
   });
 
+  // Add / Edit Shift Modal
+  const [isShiftModalOpen, setIsShiftModalOpen] = useState(false);
+  const [editingShift, setEditingShift] = useState<ShiftItem | null>(null);
+  const [shiftForm, setShiftForm] = useState({
+    name: '',
+    start_time: '08:00',
+    end_time: '16:00',
+    late_grace_minutes: 10,
+    early_leave_minutes: 0,
+  });
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
@@ -104,11 +138,12 @@ const Configuration: React.FC = () => {
 
   const fetchAllConfig = async () => {
     try {
-      const [settingsRes, ranksRes, deptsRes, coursesRes] = await Promise.all([
+      const [settingsRes, ranksRes, deptsRes, coursesRes, shiftsRes] = await Promise.all([
         api.get('/settings'),
         api.get('/ranks?page_size=100'),
         api.get('/departments?page_size=100'),
         api.get('/courses?page_size=100'),
+        api.get('/shifts?page_size=100'),
       ]);
 
       if (settingsRes.data.success) {
@@ -116,11 +151,13 @@ const Configuration: React.FC = () => {
         updateGlobalBranding(settingsRes.data.data.branding);
         setRanges(settingsRes.data.data.ranges);
         setDesignations(settingsRes.data.data.designations || []);
+        setDefaultShifts(settingsRes.data.data.default_shifts || { uniform: '', non_uniform: '', trainee: '' });
       }
 
       setRanks(ranksRes.data.data || []);
       setDepartments(deptsRes.data.data || []);
       setCourses(coursesRes.data.data || []);
+      setShifts(shiftsRes.data.data || []);
     } catch (err) {
       console.error('Failed to load configuration', err);
     } finally {
@@ -331,6 +368,63 @@ const Configuration: React.FC = () => {
       setCourses(prev => prev.filter(c => c.id !== id));
     } catch (err: any) {
       showToast(err.response?.data?.detail || 'Failed to delete course', 'error');
+    }
+  };
+
+  // Save Shift
+  const handleSaveShift = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        name: shiftForm.name.trim(),
+        start_time: shiftForm.start_time,
+        end_time: shiftForm.end_time,
+        late_grace_minutes: shiftForm.late_grace_minutes,
+        early_leave_minutes: shiftForm.early_leave_minutes,
+        active: true,
+      };
+
+      if (editingShift) {
+        await api.put(`/shifts/${editingShift.id}`, payload);
+        showToast(`Shift "${shiftForm.name}" updated`);
+      } else {
+        await api.post('/shifts', payload);
+        showToast(`Shift "${shiftForm.name}" created`);
+      }
+      setIsShiftModalOpen(false);
+      setEditingShift(null);
+      setShiftForm({ name: '', start_time: '08:00', end_time: '16:00', late_grace_minutes: 10, early_leave_minutes: 0 });
+      const shiftsRes = await api.get('/shifts?page_size=100');
+      setShifts(shiftsRes.data.data || []);
+    } catch (err: any) {
+      showToast(err.response?.data?.detail || 'Failed to save shift', 'error');
+    }
+  };
+
+  // Delete Shift
+  const handleDeleteShift = async (id: number, name: string) => {
+    if (!confirm(`Are you sure you want to delete shift "${name}"?`)) return;
+    try {
+      await api.delete(`/shifts/${id}`);
+      showToast(`Shift "${name}" deleted`);
+      setShifts(prev => prev.filter(s => s.id !== id));
+    } catch (err: any) {
+      showToast(err.response?.data?.detail || 'Failed to delete shift', 'error');
+    }
+  };
+
+  // Save Default Shifts
+  const handleSaveDefaultShifts = async () => {
+    setSavingDefaultShifts(true);
+    try {
+      const res = await api.post('/settings/default-shifts', defaultShifts);
+      if (res.data.success) {
+        showToast('Default shifts updated successfully');
+      }
+    } catch (err: any) {
+      showToast(err.response?.data?.detail || 'Failed to save default shifts', 'error');
+    } finally {
+      setSavingDefaultShifts(false);
     }
   };
 
@@ -670,7 +764,133 @@ const Configuration: React.FC = () => {
 
       </div>
 
-      {/* Row 4: Departments & Trainee Courses */}
+      {/* Row 4: Shifts & Default Shifts */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* Card: Duty Shifts */}
+        <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+          <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-indigo-600" /> Duty Shifts
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">Manage daily operational shifts</p>
+            </div>
+            <button
+              onClick={() => {
+                setEditingShift(null);
+                setShiftForm({ name: '', start_time: '08:00', end_time: '16:00', late_grace_minutes: 10, early_leave_minutes: 0 });
+                setIsShiftModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-100 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add shift
+            </button>
+          </div>
+
+          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+            {shifts.length === 0 ? (
+              <div className="text-center py-6 text-slate-400 text-xs">No shifts configured.</div>
+            ) : (
+              shifts.map((shift) => (
+                <div key={shift.id} className="flex justify-between items-center p-3 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-slate-100/80 transition-colors">
+                  <div>
+                    <h4 className="font-bold text-slate-800 text-sm">{shift.name}</h4>
+                    <p className="text-xs text-slate-500 font-medium">
+                      {shift.start_time.substring(0,5)} to {shift.end_time.substring(0,5)} • Grace: {shift.late_grace_minutes}m
+                    </p>
+                  </div>
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={() => {
+                        setEditingShift(shift);
+                        setShiftForm({
+                          name: shift.name,
+                          start_time: shift.start_time.substring(0, 5),
+                          end_time: shift.end_time.substring(0, 5),
+                          late_grace_minutes: shift.late_grace_minutes,
+                          early_leave_minutes: shift.early_leave_minutes,
+                        });
+                        setIsShiftModalOpen(true);
+                      }}
+                      className="p-1 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors"
+                      title="Edit Shift"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteShift(shift.id, shift.name)}
+                      className="p-1 rounded-lg text-slate-400 hover:text-rose-500 transition-colors"
+                      title="Delete Shift"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Card: Default Categorical Shifts */}
+        <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Sliders className="w-4 h-4 text-indigo-600" /> Default Category Shifts
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Default assigned shifts when creating new personnel
+            </p>
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <div>
+              <label className="block text-xs font-bold text-slate-600 mb-1.5">Default Uniform Staff Shift</label>
+              <select
+                value={defaultShifts.uniform}
+                onChange={(e) => setDefaultShifts({ ...defaultShifts, uniform: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+              >
+                <option value="">-- No Default (Awaiting) --</option>
+                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0,5)} - {s.end_time.substring(0,5)})</option>)}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-600 mb-1.5">Default Non-Uniform Staff Shift</label>
+              <select
+                value={defaultShifts.non_uniform}
+                onChange={(e) => setDefaultShifts({ ...defaultShifts, non_uniform: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+              >
+                <option value="">-- No Default (Awaiting) --</option>
+                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0,5)} - {s.end_time.substring(0,5)})</option>)}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-600 mb-1.5">Default Trainee Shift</label>
+              <select
+                value={defaultShifts.trainee}
+                onChange={(e) => setDefaultShifts({ ...defaultShifts, trainee: e.target.value })}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+              >
+                <option value="">-- No Default (Awaiting) --</option>
+                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0,5)} - {s.end_time.substring(0,5)})</option>)}
+              </select>
+            </div>
+            
+            <button
+              onClick={handleSaveDefaultShifts}
+              disabled={savingDefaultShifts}
+              className="w-full py-2.5 mt-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2"
+            >
+              <Save className="w-4 h-4" /> {savingDefaultShifts ? 'Saving...' : 'Save Default Shifts'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 5: Departments & Trainee Courses */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Card: Departments & Branches */}
@@ -1025,6 +1245,101 @@ const Configuration: React.FC = () => {
                   className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all"
                 >
                   {editingCourse ? 'Save Changes' : 'Create Course'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add / Edit Shift Modal */}
+      {isShiftModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+              <h3 className="text-base font-bold text-slate-900">
+                {editingShift ? 'Edit Shift' : 'Add Shift'}
+              </h3>
+              <button 
+                onClick={() => setIsShiftModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveShift} className="space-y-3.5 text-xs">
+              <div>
+                <label className="block font-bold text-slate-600 mb-1">Shift Name</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="e.g. General Shift"
+                  value={shiftForm.name}
+                  onChange={(e) => setShiftForm({ ...shiftForm, name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-600 mb-1">Start Time</label>
+                  <input 
+                    type="time" 
+                    required
+                    value={shiftForm.start_time}
+                    onChange={(e) => setShiftForm({ ...shiftForm, start_time: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-600 mb-1">End Time</label>
+                  <input 
+                    type="time" 
+                    required
+                    value={shiftForm.end_time}
+                    onChange={(e) => setShiftForm({ ...shiftForm, end_time: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-600 mb-1">Late Grace (mins)</label>
+                  <input 
+                    type="number" 
+                    required
+                    value={shiftForm.late_grace_minutes}
+                    onChange={(e) => setShiftForm({ ...shiftForm, late_grace_minutes: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-600 mb-1">Early Leave (mins)</label>
+                  <input 
+                    type="number" 
+                    required
+                    value={shiftForm.early_leave_minutes}
+                    onChange={(e) => setShiftForm({ ...shiftForm, early_leave_minutes: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium bg-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsShiftModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all"
+                >
+                  {editingShift ? 'Save Changes' : 'Create Shift'}
                 </button>
               </div>
             </form>

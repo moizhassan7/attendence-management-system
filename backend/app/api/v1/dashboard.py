@@ -7,6 +7,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select, func, or_
+from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -24,6 +25,7 @@ from app.schemas.dashboard import (
     AttendanceDistribution,
 )
 from app.utils.timezone import today, now, to_local
+from datetime import datetime
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
@@ -501,13 +503,15 @@ async def security_dashboard(
     sec_filter = Personnel.duty_type == "Security"
     
     sec_personnel_result = await db.execute(
-        select(Personnel).where(sec_filter, Personnel.employment_status == "Active")
+        select(Personnel)
+        .options(joinedload(Personnel.rank), joinedload(Personnel.shift))
+        .where(sec_filter, Personnel.employment_status == "Active")
     )
     sec_personnel = sec_personnel_result.scalars().all()
     
     if not sec_personnel:
         return ApiResponse(data={
-            "deployment": {"morning": 0, "evening": 0, "night": 0, "awaiting": 0, "off": 0},
+            "deployment": {"Awaiting": 0, "Off / Marked": 0},
             "status": {"total": 0, "present": 0, "late": 0, "absent": 0, "leave": 0, "osd": 0, "medical": 0, "evidence": 0, "duty_rest": 0},
             "staff": []
         })
@@ -535,16 +539,56 @@ async def security_dashboard(
         .group_by(AttendanceDaily.personnel_id)
     )
     worked_7d = {r[0]: r[1] for r in worked_7d_result.all()}
+    
+    # Get yesterday's attendance to determine DUTY_REST
+    yesterday = target_date - timedelta(days=1)
+    yesterday_att_result = await db.execute(
+        select(AttendanceDaily.personnel_id)
+        .where(
+            AttendanceDaily.attendance_date == yesterday,
+            AttendanceDaily.personnel_id.in_(p_ids),
+            AttendanceDaily.status.in_(["PRESENT", "LATE"])
+        )
+    )
+    yesterday_present_pids = set(yesterday_att_result.scalars().all())
 
-    deployment = {"morning": 0, "evening": 0, "night": 0, "awaiting": 0, "off": 0}
+    from app.models.shift import Shift
+    all_shifts_result = await db.execute(select(Shift).where(Shift.active == True))
+    all_shifts = all_shifts_result.scalars().all()
+    
+    allowed_keywords = ["morning", "evening", "night"]
+    deployment = {
+        s.name: 0 
+        for s in all_shifts 
+        if any(k in s.name.lower() for k in allowed_keywords)
+    }
+    deployment["Awaiting"] = 0
+    deployment["Off / Marked"] = 0
+
     status_counts = {"total": len(sec_personnel), "present": 0, "late": 0, "absent": 0, "leave": 0, "osd": 0, "medical": 0, "evidence": 0, "duty_rest": 0}
     
     staff_list = []
+    now_time = datetime.now().time()
+    is_today = target_date == today()
     
     for p in sec_personnel:
         att = today_att.get(p.id)
-        current_status = att.status if att else "ABSENT"
         
+        if att:
+            current_status = att.status
+        else:
+            if target_date.weekday() == 6 and p.duty_type != "Security":
+                current_status = "WEEKEND"
+            elif p.shift and is_today and now_time < p.shift.start_time:
+                current_status = "AWAITING"
+            elif p.duty_type == "Security":
+                if p.id in yesterday_present_pids:
+                    current_status = "DUTY_REST"
+                else:
+                    current_status = "ABSENT"
+            else:
+                current_status = "ABSENT"
+                
         # Categorize status
         s_key = current_status.lower()
         if s_key in status_counts:
@@ -552,27 +596,19 @@ async def security_dashboard(
         elif current_status in ["PRESENT", "LATE"]:
             status_counts["present"] += 1
             
-        # Determine shift dynamically based on first_in punch time
-        shift = "Awaiting"
+        # Determine shift from personnel assigned shift
         first_in = to_local(att.first_in) if att else None
         last_out = to_local(att.last_out) if att else None
         
+        shift_name = p.shift.name if p.shift else "Awaiting"
+
         if current_status in ["LEAVE", "MEDICAL", "OSD", "DUTY_REST", "WEEKEND", "HOLIDAY", "EVIDENCE"]:
-            shift = "Off / Marked"
-            deployment["off"] += 1
-        elif first_in:
-            hour = first_in.hour
-            if 5 <= hour < 13:
-                shift = "Morning"
-                deployment["morning"] += 1
-            elif 13 <= hour < 21:
-                shift = "Evening"
-                deployment["evening"] += 1
-            else:
-                shift = "Night"
-                deployment["night"] += 1
-        else:
-            deployment["awaiting"] += 1
+            shift_name = "Off / Marked"
+            
+        if shift_name not in deployment:
+            shift_name = "Awaiting"
+            
+        deployment[shift_name] += 1
             
         hours_worked = None
         if att and att.total_work_minutes:
@@ -584,7 +620,7 @@ async def security_dashboard(
             "id": p.id,
             "name": p.full_name,
             "rank_belt": f"{p.rank.name if p.rank else 'Civilian'} - {p.employee_code or 'N/A'}",
-            "shift": shift,
+            "shift": shift_name,
             "check_in": first_in.isoformat() if first_in else None,
             "check_out": last_out.isoformat() if last_out else None,
             "hours": hours_worked,

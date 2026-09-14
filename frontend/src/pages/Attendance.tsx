@@ -5,6 +5,7 @@ import {
   X
 } from 'lucide-react';
 import api from '../api/client';
+import SearchablePersonSelect from '../components/SearchablePersonSelect';
 
 interface AttendanceRecord {
   id: number;
@@ -61,7 +62,7 @@ const Attendance: React.FC = () => {
     const fetchPersonnel = async () => {
       try {
         const isTrainee = cadre === 'Trainee';
-        const res = await api.get(`/personnel?is_trainee=${isTrainee}&page_size=200`);
+        const res = await api.get(`/personnel?is_trainee=${isTrainee}&page_size=1000`);
         setPersonnelDropdown(res.data?.data || []);
       } catch (err) {
         console.error('Failed to load personnel list', err);
@@ -220,6 +221,7 @@ const Attendance: React.FC = () => {
           </button>
           <button
             onClick={() => {
+              setSelectedPersonId('');
               setManualTime(new Date().toTimeString().substring(0, 5));
               setShowManualPunch(true);
             }}
@@ -228,7 +230,10 @@ const Attendance: React.FC = () => {
             <Clock className="w-3.5 h-3.5" /> Manual Punch
           </button>
           <button
-            onClick={() => setShowExceptionModal(true)}
+            onClick={() => {
+              setSelectedPersonId('');
+              setShowExceptionModal(true);
+            }}
             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-indigo-200 transition-all"
           >
             <Plus className="w-4 h-4" /> Mark Exception
@@ -403,20 +408,12 @@ const Attendance: React.FC = () => {
             <form onSubmit={handleManualPunchSubmit} className="space-y-4 text-xs">
               <div>
                 <label className="block font-bold text-slate-600 uppercase mb-1">Select Person *</label>
-                <select
-                  required
+                <SearchablePersonSelect
+                  personnel={personnelDropdown}
                   value={selectedPersonId}
-                  onChange={(e) => setSelectedPersonId(e.target.value)}
-                  aria-label="Select Person"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-indigo-600 font-medium"
-                >
-                  <option value="">Choose person...</option>
-                  {personnelDropdown.map(p => (
-                    <option key={p.id} value={p.id}>
-                      PIN #{p.biometric_user_id} - {p.full_name} ({p.rank_name || (p.is_trainee ? 'Trainee' : 'Staff')})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(id) => setSelectedPersonId(id)}
+                  required
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -477,20 +474,12 @@ const Attendance: React.FC = () => {
             <form onSubmit={handleExceptionSubmit} className="space-y-4 text-xs">
               <div>
                 <label className="block font-bold text-slate-600 uppercase mb-1">Select Person *</label>
-                <select
-                  required
+                <SearchablePersonSelect
+                  personnel={personnelDropdown}
                   value={selectedPersonId}
-                  onChange={(e) => setSelectedPersonId(e.target.value)}
-                  aria-label="Select Person"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-indigo-600 font-medium"
-                >
-                  <option value="">Choose person...</option>
-                  {personnelDropdown.map(p => (
-                    <option key={p.id} value={p.id}>
-                      PIN #{p.biometric_user_id} - {p.full_name} ({p.rank_name || (p.is_trainee ? 'Trainee' : 'Staff')})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(id) => setSelectedPersonId(id)}
+                  required
+                />
               </div>
 
               <div>

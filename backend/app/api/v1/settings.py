@@ -47,6 +47,9 @@ DEFAULT_SETTINGS = {
         "json",
         "Non-uniform ministerial and menial designations"
     ),
+    "default_shift_uniform": ("", "string", "Default shift ID for Uniform staff"),
+    "default_shift_non_uniform": ("", "string", "Default shift ID for Non-Uniform staff"),
+    "default_shift_trainee": ("", "string", "Default shift ID for Trainees"),
 }
 
 
@@ -132,6 +135,11 @@ async def get_all_settings(db: AsyncSession = Depends(get_db)):
             "trainee_pin_max": int(settings_map.get("trainee_pin_max", 2000)),
             "staff_pin_min": int(settings_map.get("staff_pin_min", 2001)),
         },
+        "default_shifts": {
+            "uniform": settings_map.get("default_shift_uniform", ""),
+            "non_uniform": settings_map.get("default_shift_non_uniform", ""),
+            "trainee": settings_map.get("default_shift_trainee", ""),
+        },
         "designations": designations,
     })
 
@@ -167,6 +175,25 @@ async def update_pin_ranges(payload: PinRangesUpdate, db: AsyncSession = Depends
         },
         message="PIN ranges updated successfully"
     )
+
+
+class DefaultShiftsUpdate(BaseModel):
+    uniform: str | None = None
+    non_uniform: str | None = None
+    trainee: str | None = None
+
+
+@router.post("/default-shifts", response_model=ApiResponse)
+async def update_default_shifts(payload: DefaultShiftsUpdate, db: AsyncSession = Depends(get_db)):
+    """Update default shifts for personnel categories."""
+    if payload.uniform is not None:
+        await _save_setting("default_shift_uniform", payload.uniform, db)
+    if payload.non_uniform is not None:
+        await _save_setting("default_shift_non_uniform", payload.non_uniform, db)
+    if payload.trainee is not None:
+        await _save_setting("default_shift_trainee", payload.trainee, db)
+
+    return ApiResponse(message="Default shifts updated successfully")
 
 
 @router.get("/designations", response_model=ApiResponse)

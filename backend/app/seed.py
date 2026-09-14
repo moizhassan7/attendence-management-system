@@ -64,9 +64,11 @@ async def seed_database():
         shift_count = (await db.execute(select(func.count(Shift.id)))).scalar()
         if not shift_count or shift_count == 0:
             shifts = [
-                Shift(name="General Shift", start_time=time(8, 30), end_time=time(17, 0), late_grace_minutes=10),
-                Shift(name="Evening Shift", start_time=time(14, 0), end_time=time(22, 0), late_grace_minutes=10),
-                Shift(name="Night Shift", start_time=time(22, 0), end_time=time(6, 0), late_grace_minutes=15),
+                Shift(name="Morning Shift", start_time=time(8, 0), end_time=time(16, 0), late_grace_minutes=15),
+                Shift(name="Evening Shift", start_time=time(16, 0), end_time=time(0, 0), late_grace_minutes=15),
+                Shift(name="Night Shift", start_time=time(0, 0), end_time=time(8, 0), late_grace_minutes=15),
+                Shift(name="General Shift", start_time=time(8, 0), end_time=time(17, 0), late_grace_minutes=15),
+                Shift(name="Trainee Shift", start_time=time(4, 0), end_time=time(16, 0), late_grace_minutes=15),
             ]
             for s in shifts:
                 db.add(s)
