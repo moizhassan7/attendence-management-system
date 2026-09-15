@@ -3,7 +3,7 @@ import {
   Users, UserCheck, UserX, Briefcase, 
   CalendarDays, Activity, FileWarning,
   GraduationCap, Sunrise, Sun, Moon, Clock, FileDown, X,
-  ChevronRight, Search, Plus, ArrowRightLeft, CheckCircle2, XCircle, Edit
+  ArrowRightLeft, Edit
 } from 'lucide-react';
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
@@ -38,6 +38,12 @@ const Security: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
 
+  // Bulk Shift Change State
+  const [availableShifts, setAvailableShifts] = useState<any[]>([]);
+  const [showShiftModal, setShowShiftModal] = useState(false);
+  const [targetShiftId, setTargetShiftId] = useState<number | string>('');
+  const [isChangingShift, setIsChangingShift] = useState(false);
+
   // Bulk Exception Form
   const [bulkException, setBulkException] = useState({
     exception_type: 'DUTY_REST',
@@ -60,9 +66,23 @@ const Security: React.FC = () => {
     }
   }, []);
 
+  const fetchShifts = useCallback(async () => {
+    try {
+      const res = await api.get('/shifts?page_size=100');
+      const shifts = res.data?.data || [];
+      setAvailableShifts(shifts);
+      if (shifts.length > 0 && !targetShiftId) {
+        setTargetShiftId(shifts[0].id);
+      }
+    } catch (err) {
+      console.error('Failed to fetch shifts', err);
+    }
+  }, [targetShiftId]);
+
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchShifts();
+  }, [fetchData, fetchShifts]);
 
   const handleExport = async (format: 'xlsx' | 'csv') => {
     setIsExporting(true);
@@ -131,6 +151,35 @@ const Security: React.FC = () => {
     } catch (err: any) {
       console.error('Bulk exception failed', err);
       alert(err.response?.data?.detail || 'Failed to update attendance status.');
+    }
+  };
+
+  const handleBulkShiftSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedIds.length === 0 || !targetShiftId) return;
+
+    setIsChangingShift(true);
+    try {
+      const shiftNum = parseInt(targetShiftId.toString(), 10);
+      await api.post('/personnel/bulk-shift', {
+        personnel_ids: selectedIds,
+        shift_id: shiftNum,
+      });
+
+      const shiftObj = availableShifts.find((s: any) => s.id === shiftNum);
+      const shiftName = shiftObj ? shiftObj.name : 'selected shift';
+      const updatedCount = selectedIds.length;
+
+      setShowShiftModal(false);
+      setSelectedIds([]);
+      setActionNotice(`Successfully transferred ${updatedCount} security personnel to ${shiftName}.`);
+      setTimeout(() => setActionNotice(null), 4000);
+      fetchData();
+    } catch (err: any) {
+      console.error('Bulk shift update failed', err);
+      alert(err.response?.data?.detail || 'Failed to update shift for selected personnel.');
+    } finally {
+      setIsChangingShift(false);
     }
   };
 
@@ -254,15 +303,38 @@ const Security: React.FC = () => {
             </span>
           </button>
         ))}
-        <div className="ml-auto">
-          <button 
-            disabled={selectedIds.length === 0}
-            onClick={() => setShowMarkModal(true)}
-            className="flex items-center gap-2 bg-indigo-600 disabled:bg-slate-300 text-white px-5 py-2 rounded-full text-sm font-bold shadow-sm hover:bg-indigo-700 transition-colors disabled:cursor-not-allowed"
-          >
-            Mark selected ({selectedIds.length})
-          </button>
-        </div>
+        {selectedIds.length > 0 && (
+          <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200/90 px-3 py-1.5 rounded-full shadow-sm ml-auto animate-in fade-in duration-200">
+            <span className="text-xs font-bold text-indigo-700 px-1 whitespace-nowrap">
+              {selectedIds.length} Selected
+            </span>
+            <button
+              onClick={() => {
+                if (availableShifts.length > 0 && !targetShiftId) {
+                  setTargetShiftId(availableShifts[0].id);
+                }
+                setShowShiftModal(true);
+              }}
+              className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm active:scale-95 whitespace-nowrap"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+              Change Shift ({selectedIds.length})
+            </button>
+            <button
+              onClick={() => setShowMarkModal(true)}
+              className="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 whitespace-nowrap"
+            >
+              Mark Status
+            </button>
+            <button
+              onClick={() => setSelectedIds([])}
+              className="p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-white transition-colors"
+              title="Clear selection"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Table Section */}
@@ -435,6 +507,119 @@ const Security: React.FC = () => {
                   className="px-5 py-2 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md"
                 >
                   Apply Status
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Shift Change Modal */}
+      {showShiftModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100">
+            <div className="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                  <ArrowRightLeft className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-slate-800">Change Shift Assignment</h3>
+                  <p className="text-xs text-slate-400">{selectedIds.length} security personnel selected</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowShiftModal(false)} 
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Selected personnel preview list */}
+            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 mb-5 max-h-36 overflow-y-auto">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Selected Personnel:</div>
+              <div className="flex flex-wrap gap-1.5">
+                {staff
+                  .filter((s: any) => selectedIds.includes(s.id))
+                  .map((s: any) => (
+                    <span 
+                      key={s.id} 
+                      className="inline-flex items-center gap-1.5 text-xs bg-white border border-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-lg shadow-xs"
+                    >
+                      <span>{s.name}</span>
+                      <span className="text-[10px] text-slate-400 font-normal">({s.shift})</span>
+                    </span>
+                  ))}
+              </div>
+            </div>
+
+            <form onSubmit={handleBulkShiftSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">
+                  Select Target Shift *
+                </label>
+                <select
+                  required
+                  value={targetShiftId}
+                  onChange={(e) => setTargetShiftId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent bg-white shadow-xs"
+                >
+                  <option value="" disabled>Select a shift...</option>
+                  {availableShifts.map((sh: any) => (
+                    <option key={sh.id} value={sh.id}>
+                      {sh.name} ({sh.start_time?.substring(0, 5)} - {sh.end_time?.substring(0, 5)})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Shift Timing Details Preview Card */}
+              {(() => {
+                const cur = availableShifts.find((s: any) => s.id === parseInt(targetShiftId.toString(), 10));
+                if (!cur) return null;
+                return (
+                  <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-3.5 flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-indigo-900">{cur.name}</div>
+                      <div className="text-slate-500 text-[11px] mt-0.5">
+                        Hours: <span className="font-semibold text-slate-700">{cur.start_time?.substring(0, 5)}</span> to <span className="font-semibold text-slate-700">{cur.end_time?.substring(0, 5)}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                        Grace: {cur.late_grace_minutes || 0}m
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+                <button 
+                  type="button" 
+                  onClick={() => setShowShiftModal(false)}
+                  disabled={isChangingShift}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isChangingShift || !targetShiftId}
+                  className="flex items-center gap-2 px-5 py-2 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                >
+                  {isChangingShift ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Updating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ArrowRightLeft className="w-4 h-4" />
+                      <span>Update Shift ({selectedIds.length})</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

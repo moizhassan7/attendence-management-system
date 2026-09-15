@@ -48,6 +48,11 @@ class PersonnelUpdate(BaseModel):
     has_face: bool | None = None
 
 
+class PersonnelBulkShiftUpdate(BaseModel):
+    personnel_ids: list[int]
+    shift_id: int | None = None
+
+
 class PersonnelOut(BaseModel):
     id: int
     biometric_user_id: str

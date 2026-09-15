@@ -7,7 +7,7 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func, or_, update
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,8 +15,14 @@ from app.database import get_db
 from app.models.device import Device
 from app.models.personnel import Personnel
 from app.models.settings import SystemSetting
+from app.models.shift import Shift
 from app.schemas.common import ApiResponse, PaginatedResponse, PaginationMeta
-from app.schemas.personnel import PersonnelCreate, PersonnelOut, PersonnelUpdate
+from app.schemas.personnel import (
+    PersonnelCreate,
+    PersonnelOut,
+    PersonnelUpdate,
+    PersonnelBulkShiftUpdate,
+)
 from app.zk.device_manager import DeviceManager, create_device_adapter
 
 logger = logging.getLogger(__name__)
@@ -174,6 +180,37 @@ async def list_personnel(
     return PaginatedResponse(
         data=out_data,
         pagination=PaginationMeta(page=page, page_size=page_size, total=total),
+    )
+
+
+@router.post("/bulk-shift", response_model=ApiResponse)
+async def bulk_update_shift(
+    payload: PersonnelBulkShiftUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Bulk update shift assignment for multiple personnel."""
+    if not payload.personnel_ids:
+        raise HTTPException(status_code=400, detail="No personnel selected")
+
+    shift_name = "Unassigned"
+    if payload.shift_id is not None:
+        shift_res = await db.execute(select(Shift).where(Shift.id == payload.shift_id))
+        shift = shift_res.scalar_one_or_none()
+        if not shift:
+            raise HTTPException(status_code=404, detail="Selected shift not found")
+        shift_name = shift.name
+
+    stmt = (
+        update(Personnel)
+        .where(Personnel.id.in_(payload.personnel_ids))
+        .values(shift_id=payload.shift_id)
+    )
+    result = await db.execute(stmt)
+    await db.flush()
+
+    return ApiResponse(
+        data={"updated_count": result.rowcount, "shift_id": payload.shift_id, "shift_name": shift_name},
+        message=f"Successfully changed shift to {shift_name} for {result.rowcount} personnel."
     )
 
 
