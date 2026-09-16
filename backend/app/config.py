@@ -52,10 +52,12 @@ class Settings(BaseSettings):
     # ── Business days ──
     weekend_days: str = "5,6"  # comma-separated, 0=Mon..6=Sun
 
-    # ── Frontend ──
+    # ── Frontend / CORS ──
     frontend_url: str = "http://localhost:5173"
+    cors_origins: str = ""
 
     # ── Admin seed ──
+    seed_on_start: bool = True
     admin_username: str = "admin"
     admin_password: str = "admin123"
     admin_email: str = "admin@local.attendance"
@@ -69,6 +71,17 @@ class Settings(BaseSettings):
     def weekend_day_numbers(self) -> list[int]:
         """Return weekend day numbers as list of ints (0=Mon..6=Sun)."""
         return [int(d.strip()) for d in self.weekend_days.split(",") if d.strip()]
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        origins: list[str] = []
+        seen: set[str] = set()
+        extras = [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+        for origin in [self.frontend_url, *extras, "http://localhost:5173", "http://localhost:3000"]:
+            if origin and origin not in seen:
+                seen.add(origin)
+                origins.append(origin)
+        return origins
 
     @property
     def is_development(self) -> bool:

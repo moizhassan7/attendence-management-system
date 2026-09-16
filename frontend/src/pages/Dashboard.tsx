@@ -9,6 +9,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from 'recharts';
 import api from '../api/client';
+import { dashboardWebSocketUrl } from '../api/ws';
 import TraineesOverview from '../components/TraineesOverview';
 
 // Types matching backend schemas
@@ -168,9 +169,7 @@ const Dashboard: React.FC = () => {
     let isMounted = true;
 
     try {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = window.location.hostname || 'localhost';
-      ws = new WebSocket(`${protocol}//${host}:8000/ws/dashboard`);
+      ws = new WebSocket(dashboardWebSocketUrl());
       
       ws.onmessage = (event) => {
         if (!isMounted) return;

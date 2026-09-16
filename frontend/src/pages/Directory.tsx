@@ -318,7 +318,6 @@ const Directory: React.FC = () => {
                   <th className="px-4 py-3">PIN / BELT</th>
                   <th className="px-4 py-3">{activeTab === 'Staff' ? 'RANK' : 'COURSE'}</th>
                   <th className="px-4 py-3">NAME</th>
-                  <th className="px-4 py-3">FATHER NAME</th>
                   <th className="px-4 py-3">CNIC</th>
                   <th className="px-4 py-3">{activeTab === 'Staff' ? 'BRANCH' : 'PHONE'}</th>
                   <th className="px-4 py-3">STATUS</th>
@@ -328,7 +327,7 @@ const Directory: React.FC = () => {
               <tbody className="divide-y divide-slate-50 text-xs">
                 {personnel.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-4 py-12 text-center text-slate-400 font-medium">
+                    <td colSpan={8} className="px-4 py-12 text-center text-slate-400 font-medium">
                       No records found matching current query.
                     </td>
                   </tr>
@@ -355,7 +354,6 @@ const Directory: React.FC = () => {
                           <span className="uppercase font-bold tracking-tight text-slate-800">{p.full_name}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 uppercase text-slate-500">{p.father_name || '—'}</td>
                       <td className="px-4 py-3.5 text-slate-500 tracking-wide">{p.cnic || '—'}</td>
                       <td className="px-4 py-3.5 text-slate-600">
                         {activeTab === 'Staff' ? (p.department_name || 'Admin') : (p.phone || '—')}
@@ -423,10 +421,6 @@ const Directory: React.FC = () => {
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-400 font-medium">Service / Roll Code:</span>
                 <span className="font-semibold text-slate-700">{selectedPerson.employee_code || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-slate-50">
-                <span className="text-slate-400 font-medium">Father's Name:</span>
-                <span className="font-semibold text-slate-700">{selectedPerson.father_name || 'N/A'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-400 font-medium">{selectedPerson.is_trainee ? 'Course:' : 'Rank:'}</span>

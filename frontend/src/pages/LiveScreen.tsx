@@ -9,6 +9,7 @@ import {
   Sun, Moon
 } from 'lucide-react';
 import api from '../api/client';
+import { dashboardWebSocketUrl } from '../api/ws';
 import { useBranding } from '../context/BrandingContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -228,9 +229,7 @@ const LiveScreen: React.FC = () => {
     let isMounted = true;
 
     try {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const host = window.location.hostname || 'localhost';
-      ws = new WebSocket(`${protocol}//${host}:8000/ws/dashboard`);
+      ws = new WebSocket(dashboardWebSocketUrl());
       
       ws.onopen = () => {
         if (isMounted) setWsConnected(true);
