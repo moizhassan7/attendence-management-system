@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 from app.seeding.personnel_config import EMP_DATA_PATH, NAFRI_PATH, resolve_department
-from app.seeding.personnel_normalize import biometric_from_ac_no, canonical_belt, is_platoon_department
+from app.seeding.personnel_normalize import biometric_from_ac_no, canonical_belt, extract_primary_belt, is_platoon_department
 
 
 @dataclass(frozen=True)
@@ -65,7 +65,7 @@ def load_emp_data(path: Path | None = None) -> list[EmpRecord]:
     for idx, row in df.iterrows():
         dept_raw = _cell(row.get("Department"))
         resolved = resolve_department(dept_raw)
-        belt_raw = _cell(row.get("No."))
+        belt_raw = extract_primary_belt(_cell(row.get("No."))) or _cell(row.get("No."))
         records.append(
             EmpRecord(
                 row_index=int(idx),

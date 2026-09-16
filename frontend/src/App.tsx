@@ -74,7 +74,7 @@ const AppRoutes = () => {
         <Route path="users" element={<Users />} />
         <Route path="settings" element={<Configuration />} />
         <Route path="configuration" element={<Configuration />} />
-        <Route path="backup" element={<Backup />} />
+        <Route path="backup" element={<ProtectedRoute requireAdmin><Backup /></ProtectedRoute>} />
       </Route>
 
       {/* Fallback */}

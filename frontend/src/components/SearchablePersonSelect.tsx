@@ -22,11 +22,29 @@ interface SearchablePersonSelectProps {
   disabled?: boolean;
 }
 
+function initials(name: string) {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '—';
+  return parts.slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+}
+
+function pinLabel(raw: string | null | undefined) {
+  const s = String(raw || '').trim();
+  if (!s) return '—';
+  if (s.toUpperCase().startsWith('TEMP-')) return `T-${s.slice(-4)}`;
+  if (s.length > 8) return s.slice(-6);
+  return s;
+}
+
+function rankLabel(person: PersonnelOption) {
+  return person.course_name || person.rank_name || person.designation || (person.is_trainee ? 'Trainee' : 'Staff');
+}
+
 export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
   personnel,
   value,
   onChange,
-  placeholder = 'Search by name, PIN, belt #, rank...',
+  placeholder = 'Search name, PIN or belt number',
   required = false,
   disabled = false,
 }) => {
@@ -38,37 +56,34 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Find currently selected person
   const selectedPerson = useMemo(() => {
     if (!value) return null;
     return personnel.find((p) => String(p.id) === String(value)) || null;
   }, [personnel, value]);
 
-  // Filter personnel based on search query
   const filteredPersonnel = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return personnel.slice(0, 50);
 
     return personnel
       .filter((p) => {
-        const name = (p.full_name || '').toLowerCase();
-        const pin = String(p.biometric_user_id || '').toLowerCase();
-        const belt = (p.employee_code || '').toLowerCase();
-        const rank = (p.rank_name || p.designation || '').toLowerCase();
-        const dept = (p.department_name || '').toLowerCase();
-
-        return (
-          name.includes(q) ||
-          pin.includes(q) ||
-          belt.includes(q) ||
-          rank.includes(q) ||
-          dept.includes(q)
-        );
+        const hay = [
+          p.full_name,
+          p.biometric_user_id,
+          p.employee_code,
+          p.rank_name,
+          p.designation,
+          p.department_name,
+          p.course_name,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        return hay.includes(q);
       })
       .slice(0, 50);
   }, [personnel, searchQuery]);
 
-  // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -79,18 +94,14 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Reset active index when filtered results change
   useEffect(() => {
     setActiveIndex(0);
   }, [searchQuery]);
 
-  // Scroll active item into view
   useEffect(() => {
     if (!isOpen || !listRef.current) return;
-    const activeItem = listRef.current.children[activeIndex] as HTMLElement;
-    if (activeItem) {
-      activeItem.scrollIntoView({ block: 'nearest' });
-    }
+    const activeItem = listRef.current.children[activeIndex] as HTMLElement | undefined;
+    activeItem?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex, isOpen]);
 
   const handleSelect = (person: PersonnelOption) => {
@@ -124,9 +135,7 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
       setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (filteredPersonnel[activeIndex]) {
-        handleSelect(filteredPersonnel[activeIndex]);
-      }
+      if (filteredPersonnel[activeIndex]) handleSelect(filteredPersonnel[activeIndex]);
     } else if (e.key === 'Escape') {
       e.preventDefault();
       setIsOpen(false);
@@ -135,7 +144,6 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
 
   return (
     <div ref={containerRef} className="relative w-full">
-      {/* Hidden input for HTML5 required form validation */}
       <input
         type="text"
         tabIndex={-1}
@@ -146,7 +154,6 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
         className="sr-only"
       />
 
-      {/* Selected Person Pill Card (When selected and dropdown closed) */}
       {selectedPerson && !isOpen ? (
         <div
           onClick={() => {
@@ -154,48 +161,32 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
             setIsOpen(true);
             setTimeout(() => inputRef.current?.focus(), 50);
           }}
-          className="w-full flex items-center justify-between p-2.5 bg-indigo-50/60 border border-indigo-200 hover:border-indigo-300 rounded-xl transition-all cursor-pointer shadow-xs group"
+          className="w-full flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 hover:border-indigo-300 rounded-2xl cursor-pointer"
         >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold flex flex-col items-center justify-center shrink-0 shadow-xs">
-              <span className="text-[9px] uppercase tracking-wider font-semibold opacity-75">PIN</span>
-              <span className="text-xs leading-none">#{selectedPerson.biometric_user_id}</span>
-            </div>
-            <div className="min-w-0 truncate">
-              <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5 truncate">
-                <span className="truncate">{selectedPerson.full_name}</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700 shrink-0">
-                  {selectedPerson.course_name || selectedPerson.rank_name || (selectedPerson.is_trainee ? 'Trainee' : 'Staff')}
-                </span>
-              </div>
-              <div className="text-[11px] text-slate-500 truncate mt-0.5 flex items-center gap-1.5">
-                {selectedPerson.employee_code && (
-                  <span>Belt #{selectedPerson.employee_code}</span>
-                )}
-                {selectedPerson.employee_code && selectedPerson.department_name && <span>•</span>}
-                {selectedPerson.department_name && <span>{selectedPerson.department_name}</span>}
-              </div>
+          <div className="w-10 h-10 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0">
+            {initials(selectedPerson.full_name)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-bold text-slate-900 truncate">{selectedPerson.full_name}</div>
+            <div className="text-[11px] text-slate-500 truncate mt-0.5">
+              PIN {pinLabel(selectedPerson.biometric_user_id)}
+              {selectedPerson.employee_code ? ` · ${selectedPerson.employee_code}` : ''}
+              {` · ${rankLabel(selectedPerson)}`}
             </div>
           </div>
-
-          <div className="flex items-center gap-1 shrink-0 ml-2">
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={disabled}
-              className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-              title="Change / Clear"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleClear}
+            disabled={disabled}
+            className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+            title="Clear selection"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       ) : (
-        /* Search Input Box */
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-            <Search className="w-4 h-4" />
-          </div>
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             ref={inputRef}
             type="text"
@@ -207,10 +198,10 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
             }}
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
-            placeholder={selectedPerson ? `${selectedPerson.full_name} (#${selectedPerson.biometric_user_id})` : placeholder}
-            className="w-full pl-9 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all shadow-xs"
+            placeholder={placeholder}
+            className="w-full h-11 pl-10 pr-10 bg-white border border-slate-200 rounded-2xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
           />
-          <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1">
+          <div className="absolute inset-y-0 right-2 flex items-center">
             {searchQuery ? (
               <button
                 type="button"
@@ -218,42 +209,30 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
                   setSearchQuery('');
                   inputRef.current?.focus();
                 }}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
             ) : (
-              <ChevronDown
-                className={`w-4 h-4 text-slate-400 transition-transform cursor-pointer ${
-                  isOpen ? 'rotate-180 text-indigo-600' : ''
-                }`}
-                onClick={() => {
-                  setIsOpen(!isOpen);
-                  inputRef.current?.focus();
-                }}
-              />
+              <ChevronDown className={`w-4 h-4 text-slate-400 mr-1.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             )}
           </div>
         </div>
       )}
 
-      {/* Floating Dropdown Results */}
       {isOpen && (
-        <div className="absolute z-50 mt-1.5 w-full bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
-          <div className="p-2 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center text-[10px] text-slate-500 font-semibold px-3">
-            <span>
-              {searchQuery
-                ? `Results for "${searchQuery}" (${filteredPersonnel.length})`
-                : `Available Personnel (${personnel.length})`}
-            </span>
-            <span className="text-slate-400">↑↓ to navigate, Enter to select</span>
+        <div className="relative z-50 mt-2 w-full bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+          <div className="px-3 py-2 text-[11px] font-semibold text-slate-500 border-b border-slate-100">
+            {searchQuery
+              ? `${filteredPersonnel.length} match${filteredPersonnel.length === 1 ? '' : 'es'}`
+              : `${personnel.length} personnel`}
           </div>
 
-          <div ref={listRef} className="max-h-56 overflow-y-auto divide-y divide-slate-50 p-1">
+          <div ref={listRef} className="max-h-40 overflow-y-auto">
             {filteredPersonnel.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400">
-                <User className="w-6 h-6 mx-auto mb-1 text-slate-300 opacity-60" />
-                No person found matching <span className="font-semibold text-slate-600">"{searchQuery}"</span>
+              <div className="py-8 text-center text-sm text-slate-400">
+                <User className="w-6 h-6 mx-auto mb-2 text-slate-300" />
+                No match for “{searchQuery}”
               </div>
             ) : (
               filteredPersonnel.map((person, idx) => {
@@ -261,50 +240,37 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
                 const isHighlighted = idx === activeIndex;
 
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={person.id}
                     onMouseEnter={() => setActiveIndex(idx)}
                     onClick={() => handleSelect(person)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs cursor-pointer transition-colors ${
-                      isHighlighted
-                        ? 'bg-indigo-50/80 text-indigo-900'
-                        : isSelected
-                        ? 'bg-indigo-50/40 text-slate-900'
-                        : 'hover:bg-slate-50 text-slate-700'
+                    className={`w-full text-left flex items-start gap-3 px-3 py-2.5 border-b border-slate-50 last:border-0 ${
+                      isHighlighted ? 'bg-indigo-50' : isSelected ? 'bg-slate-50' : 'hover:bg-slate-50'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-[11px] shrink-0 ${
-                          isSelected || isHighlighted
-                            ? 'bg-indigo-600 text-white shadow-xs'
-                            : 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        #{person.biometric_user_id}
+                    <div
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
+                        isHighlighted || isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {initials(person.full_name)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-bold text-slate-900 truncate">{person.full_name}</span>
+                        {isSelected && <Check className="w-4 h-4 text-indigo-600 shrink-0" />}
                       </div>
-                      <div className="min-w-0 truncate">
-                        <div className="font-bold truncate text-slate-900 flex items-center gap-1.5">
-                          <span>{person.full_name}</span>
-                          {(person.course_name || person.rank_name || person.is_trainee) && (
-                            <span className="text-[10px] font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
-                              {person.course_name || person.rank_name || (person.is_trainee ? 'Trainee' : 'Staff')}
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-[11px] text-slate-400 truncate flex items-center gap-2">
-                          {person.employee_code && <span>Belt: {person.employee_code}</span>}
-                          {person.department_name && <span>• {person.department_name}</span>}
-                        </div>
+                      <div className="text-[11px] text-slate-500 mt-0.5 truncate">
+                        {rankLabel(person)}
+                        {person.department_name ? ` · ${person.department_name}` : ''}
+                      </div>
+                      <div className="text-[11px] text-slate-400 mt-0.5 truncate">
+                        PIN {pinLabel(person.biometric_user_id)}
+                        {person.employee_code ? ` · Belt ${person.employee_code}` : ''}
                       </div>
                     </div>
-
-                    {isSelected && (
-                      <div className="shrink-0 text-indigo-600 ml-2">
-                        <Check className="w-4 h-4" />
-                      </div>
-                    )}
-                  </div>
+                  </button>
                 );
               })
             )}

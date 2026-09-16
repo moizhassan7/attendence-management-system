@@ -39,6 +39,24 @@ DEPARTMENTS: dict[str, tuple[str, str]] = {
 
 NON_UNIFORM_DEPARTMENT_CODES = frozenset({"CLASS_IV", "MINISTERIAL"})
 
+MINISTERIAL_RANK_NAMES = frozenset(
+    {
+        "SENIOR CLERK",
+        "JUNIOR CLERK",
+        "ASSISTANT",
+        "DAFTRI",
+        "NAIB QASID",
+        "N/QASID",
+        "OFFICE SUPERINTENDENT",
+        "PSYCHOLOGIST",
+        "MEDICAL OFFICER (DOCTOR) BPS",
+        "MEDICAL OFFICER",
+        "DOCTOR",
+        "ACCOUNTANT",
+        "COMPUTER OPERATOR",
+    }
+)
+
 NON_UNIFORM_RANK_NAMES = frozenset(
     {
         "LANGRI",
@@ -84,7 +102,13 @@ DESIGNATION_LABELS = {
     "SENIOR CLERK": "Senior Clerk",
     "JUNIOR CLERK": "Junior Clerk",
     "BARBER": "Barber",
-    "ASSISTANT": "Assistant",
+    "ASSITANT": "Assistant",
+    "S CLERK": "Senior Clerk",
+    "J CLERK": "Junior Clerk",
+    "MASKHI": "Mashki",
+    "BARBAR": "Barber",
+    "MOCHI": "Cobbler",
+    "CAR PAINTER": "Painter",
     "COBBLER": "Cobbler",
     "SANITARY WORKER": "Sanitary Worker",
     "NAIB QASID": "Naib Qasid",
@@ -105,16 +129,16 @@ DESIGNATION_LABELS = {
 
 RANK_ORDER = [
     "Inspector",
-    "INSPECTOR LEGAL",
-    "SUB INSPECTOR",
+    "Inspector Legal",
+    "Sub Inspector",
     "ASI",
-    "HEAD CONSTABLE",
-    "HEAD CONSTABLE DRIVER",
-    "LADY HC",
+    "Head Constable",
+    "Head Constable Driver",
+    "Lady HC",
     "Constable",
-    "CONSTABLE DRIVER",
-    "CONSTABLE (EX-ARMY)",
-    "BAND CONSTABLE",
+    "Constable Driver",
+    "Constable (Ex-Army)",
+    "Band Constable",
 ]
 
 NAME_RANK_PREFIXES = frozenset(
@@ -128,6 +152,9 @@ NAME_RANK_PREFIXES = frozenset(
         "LC",
         "CONSTABLE",
         "CT",
+        "FC",
+        "SC",
+        "BC",
         "SP",
         "DSP",
         "SSP",
@@ -135,6 +162,129 @@ NAME_RANK_PREFIXES = frozenset(
         "IG",
     }
 )
+
+# Leading job titles in emp_data names ("Assistant Naveed Akhtar", "S/Clerk M Akram").
+NAME_TITLE_PREFIXES = tuple(
+    sorted(
+        (
+            "MEDICAL OFFICER (DOCTOR) BPS",
+            "MEDICAL OFFICER",
+            "OFFICE SUPERINTENDENT",
+            "SANITARY WORKER",
+            "WATER CARRIER",
+            "WASHER MAN",
+            "SENIOR CLERK",
+            "JUNIOR CLERK",
+            "NAIB QASID",
+            "CAR PAINTER",
+            "S CLERK",
+            "J CLERK",
+            "N QASID",
+            "COMPUTER OPERATOR",
+            "ASSISTANT",
+            "ASSITANT",
+            "DAFTRI",
+            "LANGRI",
+            "SWEEPER",
+            "MALI",
+            "DHOBI",
+            "MASHKI",
+            "MASKHI",
+            "BARBAR",
+            "BARBER",
+            "MOCHI",
+            "MISTRI",
+            "PAINTER",
+            "MASON",
+            "ELECTRICIAN",
+            "CARPENTER",
+            "PSYCHOLOGIST",
+            "DOCTOR",
+            "COOK",
+            "FOLLOWER",
+            "PLUMBER",
+            "ACCOUNTANT",
+            "DRIVER",
+            "COBBLER",
+        ),
+        key=len,
+        reverse=True,
+    )
+)
+
+NAME_NOISE_TOKENS = NAME_RANK_PREFIXES | {
+    "ASSISTANT",
+    "ASSITANT",
+    "CLERK",
+    "DAFTRI",
+    "QASID",
+    "NAIB",
+    "LANGRI",
+    "SWEEPER",
+    "MALI",
+    "DHOBI",
+    "MASHKI",
+    "MASKHI",
+    "BARBAR",
+    "BARBER",
+    "MOCHI",
+    "MISTRI",
+    "PAINTER",
+    "MASON",
+    "ELECTRICIAN",
+    "CARPENTER",
+    "PSYCHOLOGIST",
+    "DOCTOR",
+    "DR",
+    "COOK",
+    "FOLLOWER",
+    "PLUMBER",
+    "DRIVER",
+    "ACCOUNTANT",
+    "COMPUTER",
+    "OPERATOR",
+    "SUPERINTENDENT",
+    "OFFICE",
+    "MEDICAL",
+    "OFFICER",
+    "BPS",
+    "WASHER",
+    "WATER",
+    "CARRIER",
+    "SANITARY",
+    "WORKER",
+    "COBBLER",
+    "S",
+    "J",
+    "N",
+}
+
+NAME_PARTICLE_TOKENS = frozenset({"UL", "UR", "AL", "BIN", "BINTI", "BINT"})
+
+NAME_TOKEN_ALIASES = {
+    "AHMAD": "AHMED",
+    "MOHAMMAD": "MUHAMMAD",
+    "MOHAMMED": "MUHAMMAD",
+    "SYED": "SAYYED",
+    "MAHSIH": "MASIH",
+    "MASIH": "MASIH",
+    "HURR": "HUR",
+    "SHABIR": "SHABBIR",
+    "RAHMAN": "REHMAN",
+    "WASEEM": "WASIM",
+    "WASIM": "WASIM",
+    "FARRUKH": "FARUKH",
+    "FARUKH": "FARUKH",
+    "MUAHAMMD": "MUHAMMAD",
+    "JAHNGIR": "JAHANGIR",
+    "TABASAM": "TABASSUM",
+    "SABTIAN": "SABTAIN",
+    "SIBTIAN": "SABTAIN",
+    "GHAFAR": "GHAFFAR",
+    "QASIR": "QAISAR",
+    "MUZHAIR": "MUZAHIR",
+    "SUMMERA": "SUMERA",
+}
 
 
 def _norm_dept_key(raw: str) -> str:
@@ -179,7 +329,18 @@ def category_for_rank(rank_name: str | None) -> str:
     return "Uniform"
 
 
+def department_for_civil_title(rank_name: str | None) -> tuple[str, str] | None:
+    """Default wing for unmatched Nafri civil titles (not Admin)."""
+    if not is_civil_title(rank_name):
+        return None
+    if _title_key(rank_name) in MINISTERIAL_RANK_NAMES:
+        return ("MINISTERIAL", "Ministerial Staff")
+    return ("CLASS_IV", "Class IV")
+
+
 def category_for_record(department_code: str | None, rank_name: str | None) -> str:
+    if is_civil_title(rank_name):
+        return "Non-Uniform"
     if department_code:
         return category_for_department(department_code)
     return category_for_rank(rank_name)

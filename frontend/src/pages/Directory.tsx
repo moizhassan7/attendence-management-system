@@ -7,6 +7,7 @@ import {
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
+import { rankDisplayName } from '../utils/rankLabels';
 
 const Directory: React.FC = () => {
   const { branding } = useBranding();
@@ -344,7 +345,7 @@ const Directory: React.FC = () => {
                         {p.employee_code && <span className="text-slate-400 text-[11px] ml-1.5">({p.employee_code})</span>}
                       </td>
                       <td className="px-4 py-3.5 text-slate-500 font-bold">
-                        {activeTab === 'Staff' ? (p.rank_name || 'Civilian') : (p.course_name || 'Unassigned')}
+                        {activeTab === 'Staff' ? (rankDisplayName(p.rank_name) !== '—' ? rankDisplayName(p.rank_name) : (p.designation || 'Civilian')) : (p.course_name || 'Unassigned')}
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2.5">
@@ -356,7 +357,7 @@ const Directory: React.FC = () => {
                       </td>
                       <td className="px-4 py-3.5 text-slate-500 tracking-wide">{p.cnic || '—'}</td>
                       <td className="px-4 py-3.5 text-slate-600">
-                        {activeTab === 'Staff' ? (p.department_name || 'Admin') : (p.phone || '—')}
+                        {activeTab === 'Staff' ? (p.department_name || '—') : (p.phone || '—')}
                       </td>
                       <td className="px-4 py-3.5">
                         {getStatusBadge(p.attendance_today?.status, p.attendance_today?.first_in, p.attendance_today?.last_out)}
@@ -425,13 +426,13 @@ const Directory: React.FC = () => {
               <div className="flex justify-between py-1 border-b border-slate-50">
                 <span className="text-slate-400 font-medium">{selectedPerson.is_trainee ? 'Course:' : 'Rank:'}</span>
                 <span className="font-bold text-indigo-600">
-                  {selectedPerson.is_trainee ? (selectedPerson.course_name || 'Unassigned') : (selectedPerson.rank_name || 'Civilian')}
+                  {selectedPerson.is_trainee ? (selectedPerson.course_name || 'Unassigned') : (selectedPerson.rank_name || selectedPerson.designation || 'Civilian')}
                 </span>
               </div>
               {!selectedPerson.is_trainee && (
                 <div className="flex justify-between py-1 border-b border-slate-50">
                   <span className="text-slate-400 font-medium">Department:</span>
-                  <span className="font-semibold text-slate-700">{selectedPerson.department_name || 'Admin'}</span>
+                  <span className="font-semibold text-slate-700">{selectedPerson.department_name || '—'}</span>
                 </div>
               )}
               <div className="flex justify-between py-1 border-b border-slate-50">

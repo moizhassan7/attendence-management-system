@@ -22,6 +22,8 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+        board: ['IBM Plex Sans', 'Inter', 'sans-serif'],
+        parade: ['IBM Plex Serif', 'Georgia', 'serif'],
       },
       backgroundImage: {
         'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',

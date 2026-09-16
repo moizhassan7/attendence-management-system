@@ -53,15 +53,15 @@ interface TraineesOverviewProps {
 }
 
 const SmallKPICard = ({ title, value, subtitle, colorClass, icon: Icon }: any) => (
-  <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between">
+  <div className="bg-white dark:bg-[#151D2E] px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-sm flex flex-col justify-between min-h-[88px]">
     <div className="flex items-center gap-2 mb-2">
       {Icon && <Icon className={`w-4 h-4 ${colorClass}`} />}
-      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{title}</span>
+      <span className="text-xs text-slate-500">{title}</span>
     </div>
     <div className="flex items-baseline gap-2">
-      <span className={`text-2xl font-extrabold ${colorClass || 'text-primary'}`}>{value}</span>
+      <span className={`font-parade text-2xl tabular-nums ${colorClass || 'text-[#1A2332] dark:text-[#F4EFE4]'}`}>{value}</span>
     </div>
-    {subtitle && <div className="text-[10px] text-slate-400 mt-1">{subtitle}</div>}
+    {subtitle && <div className="text-[11px] text-slate-400 mt-1">{subtitle}</div>}
   </div>
 );
 
@@ -97,8 +97,8 @@ const TraineesOverview: React.FC<TraineesOverviewProps> = ({ targetDate, externa
 
   if (loading && !data) {
     return (
-      <div className="mt-8 p-12 bg-white rounded-3xl border border-slate-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      <div className="mt-2 p-10 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#151D2E] flex items-center justify-center rounded-md">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1A2332]"></div>
       </div>
     );
   }

@@ -397,17 +397,17 @@ const Attendance: React.FC = () => {
 
       {/* Manual Punch Modal */}
       {showManualPunch && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 space-y-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-base text-slate-900">Add Manual Biometric Punch</h3>
+              <h3 className="font-bold text-lg text-slate-900">Add Manual Punch</h3>
               <button onClick={() => setShowManualPunch(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleManualPunchSubmit} className="space-y-4 text-xs">
+            <form onSubmit={handleManualPunchSubmit} className="space-y-4">
               <div>
-                <label className="block font-bold text-slate-600 uppercase mb-1">Select Person *</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Select Person *</label>
                 <SearchablePersonSelect
                   personnel={personnelDropdown}
                   value={selectedPersonId}
@@ -418,22 +418,22 @@ const Attendance: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-600 uppercase mb-1">Time (HH:MM) *</label>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Time *</label>
                   <input 
                     type="time"
                     required
                     value={manualTime}
                     onChange={(e) => setManualTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-indigo-600 font-bold"
+                    className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-600 uppercase mb-1">Punch State</label>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Punch State</label>
                   <select
                     value={punchState}
                     onChange={(e) => setPunchState(parseInt(e.target.value, 10))}
                     aria-label="Punch State"
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-indigo-600 font-medium"
+                    className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
                   >
                     <option value={1}>Check-In</option>
                     <option value={2}>Check-Out</option>
@@ -445,13 +445,13 @@ const Attendance: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowManualPunch(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md"
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold"
                 >
                   Record Punch
                 </button>
@@ -463,17 +463,20 @@ const Attendance: React.FC = () => {
 
       {/* Mark Exception Modal */}
       {showExceptionModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 space-y-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-base text-slate-900">Record Attendance Exception</h3>
+              <div>
+                <h3 className="font-bold text-lg text-slate-900">Record Exception</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Leave, OSD, medical, duty rest, or court duty</p>
+              </div>
               <button onClick={() => setShowExceptionModal(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleExceptionSubmit} className="space-y-4 text-xs">
+            <form onSubmit={handleExceptionSubmit} className="space-y-4">
               <div>
-                <label className="block font-bold text-slate-600 uppercase mb-1">Select Person *</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Select Person *</label>
                 <SearchablePersonSelect
                   personnel={personnelDropdown}
                   value={selectedPersonId}
@@ -483,12 +486,12 @@ const Attendance: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-600 uppercase mb-1">Exception Type *</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Exception Type *</label>
                 <select
                   value={exceptionType}
                   onChange={(e) => setExceptionType(e.target.value)}
                   aria-label="Exception Type"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-indigo-600 font-bold"
+                  className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
                 >
                   <option value="LEAVE">Leave</option>
                   <option value="OSD">OSD (On Special Duty)</option>
@@ -500,13 +503,13 @@ const Attendance: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-600 uppercase mb-1">Reason / Office Order</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Reason / Office Order</label>
                 <input 
                   type="text"
                   placeholder="e.g. Order #78/Admin"
                   value={exceptionReason}
                   onChange={(e) => setExceptionReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-1 focus:ring-indigo-600"
+                  className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
                 />
               </div>
 
@@ -514,13 +517,13 @@ const Attendance: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowExceptionModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md"
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold"
                 >
                   Apply Exception
                 </button>

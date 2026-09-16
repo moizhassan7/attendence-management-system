@@ -24,6 +24,7 @@ from app.schemas.dashboard import (
     RankSummary,
     AttendanceDistribution,
 )
+from app.services.attendance_engine import infer_shift_for_punch, status_for_security_without_punch
 from app.utils.timezone import today, now, to_local
 from datetime import datetime
 
@@ -539,18 +540,6 @@ async def security_dashboard(
         .group_by(AttendanceDaily.personnel_id)
     )
     worked_7d = {r[0]: r[1] for r in worked_7d_result.all()}
-    
-    # Get yesterday's attendance to determine DUTY_REST
-    yesterday = target_date - timedelta(days=1)
-    yesterday_att_result = await db.execute(
-        select(AttendanceDaily.personnel_id)
-        .where(
-            AttendanceDaily.attendance_date == yesterday,
-            AttendanceDaily.personnel_id.in_(p_ids),
-            AttendanceDaily.status.in_(["PRESENT", "LATE"])
-        )
-    )
-    yesterday_present_pids = set(yesterday_att_result.scalars().all())
 
     from app.models.shift import Shift
     all_shifts_result = await db.execute(select(Shift).where(Shift.active == True))
@@ -568,46 +557,38 @@ async def security_dashboard(
     status_counts = {"total": len(sec_personnel), "present": 0, "late": 0, "absent": 0, "leave": 0, "osd": 0, "medical": 0, "evidence": 0, "duty_rest": 0}
     
     staff_list = []
-    now_time = datetime.now().time()
-    is_today = target_date == today()
-    
+
     for p in sec_personnel:
         att = today_att.get(p.id)
-        
+
         if att:
             current_status = att.status
         else:
-            if target_date.weekday() == 6 and p.duty_type != "Security":
-                current_status = "WEEKEND"
-            elif p.shift and is_today and now_time < p.shift.start_time:
-                current_status = "AWAITING"
-            elif p.duty_type == "Security":
-                if p.id in yesterday_present_pids:
-                    current_status = "DUTY_REST"
-                else:
-                    current_status = "ABSENT"
-            else:
-                current_status = "ABSENT"
-                
-        # Categorize status
+            current_status = status_for_security_without_punch(None)
+
         s_key = current_status.lower()
         if s_key in status_counts:
             status_counts[s_key] += 1
         elif current_status in ["PRESENT", "LATE"]:
             status_counts["present"] += 1
-            
-        # Determine shift from personnel assigned shift
-        first_in = to_local(att.first_in) if att else None
-        last_out = to_local(att.last_out) if att else None
-        
-        shift_name = p.shift.name if p.shift else "Awaiting"
 
-        if current_status in ["LEAVE", "MEDICAL", "OSD", "DUTY_REST", "WEEKEND", "HOLIDAY", "EVIDENCE"]:
+        first_in = to_local(att.first_in) if att and att.first_in else None
+        last_out = to_local(att.last_out) if att and att.last_out else None
+
+        if first_in:
+            inferred = infer_shift_for_punch(first_in, all_shifts)
+            shift_name = inferred.name if inferred else "Awaiting"
+        elif current_status in ["LEAVE", "MEDICAL", "OSD", "DUTY_REST", "WEEKEND", "HOLIDAY", "EVIDENCE", "ABSENT"]:
             shift_name = "Off / Marked"
-            
-        if shift_name not in deployment:
+        else:
             shift_name = "Awaiting"
-            
+
+        if shift_name not in deployment:
+            if current_status in ["LEAVE", "MEDICAL", "OSD", "DUTY_REST", "WEEKEND", "HOLIDAY", "EVIDENCE", "ABSENT"]:
+                shift_name = "Off / Marked"
+            else:
+                shift_name = "Awaiting"
+
         deployment[shift_name] += 1
             
         hours_worked = None

@@ -60,7 +60,7 @@ const Security: React.FC = () => {
       setData(res.data?.data);
       if (res.data?.data?.deployment && !activeShift) {
         const keys = Object.keys(res.data.data.deployment);
-        setActiveShift(keys.length > 0 ? keys[0] : 'Awaiting');
+        setActiveShift(keys.includes('Off / Marked') ? 'Off / Marked' : (keys[0] || 'Awaiting'));
       }
     } catch (error) {
       console.error('Failed to fetch security data', error);
@@ -235,7 +235,7 @@ const Security: React.FC = () => {
             {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} <span className="font-normal">{new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit'})}</span>
           </div>
           <h1 className="text-2xl font-black tracking-tight text-slate-900">Security Attendance</h1>
-          <p className="text-xs font-medium text-slate-400 mt-1">Shifts are mapped based on assigned Configuration</p>
+          <p className="text-xs font-medium text-slate-400 mt-1">No punch = Duty Rest. A punch is present on the shift they actually worked. Mark Absent only when needed.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -469,6 +469,7 @@ const Security: React.FC = () => {
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
                 >
                   <option value="DUTY_REST">Duty Rest</option>
+                  <option value="ABSENT">Absent</option>
                   <option value="OSD">OSD (On Special Duty)</option>
                   <option value="LEAVE">Leave</option>
                   <option value="MEDICAL">Medical Leave</option>

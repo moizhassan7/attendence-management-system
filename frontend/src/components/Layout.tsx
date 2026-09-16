@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
+import {
+  LayoutDashboard,
   GraduationCap,
-  Users, 
+  Users,
   ShieldCheck,
   BookOpen,
   UserPlus,
@@ -17,11 +17,26 @@ import {
   MonitorPlay,
   LogOut,
   Sun,
-  Moon
+  Moon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBranding } from '../context/BrandingContext';
 import { useTheme } from '../context/ThemeContext';
+
+const navItems = [
+  { to: '/', icon: LayoutDashboard, label: 'Overview', end: true },
+  { to: '/trainees', icon: GraduationCap, label: 'Trainees' },
+  { to: '/personnel', icon: Users, label: 'Staff' },
+  { to: '/security', icon: ShieldCheck, label: 'Security' },
+  { to: '/directory', icon: BookOpen, label: 'Directory' },
+  { to: '/enrollment', icon: UserPlus, label: 'Enrollment' },
+  { to: '/attendance', icon: UserCheck, label: 'Attendance' },
+  { to: '/reports', icon: FileText, label: 'Reports' },
+  { to: '/users', icon: UserCog, label: 'User Management' },
+  { to: '/devices', icon: Link, label: 'Connection' },
+  { to: '/settings', icon: Settings, label: 'Configuration' },
+  { to: '/backup', icon: DatabaseBackup, label: 'Backup & Restore' },
+];
 
 const Layout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -39,123 +54,98 @@ const Layout: React.FC = () => {
     navigate('/login');
   };
 
-  // Expanded nav items matching the mockup
-  const navItems = [
-    { to: '/', icon: LayoutDashboard, label: 'Overview' },
-    { to: '/trainees', icon: GraduationCap, label: 'Trainees' },
-    { to: '/personnel', icon: Users, label: 'Staff' },
-    { to: '/security', icon: ShieldCheck, label: 'Security' },
-    { to: '/directory', icon: BookOpen, label: 'Directory' },
-    { to: '/enrollment', icon: UserPlus, label: 'Enrollment' },
-    { to: '/attendance', icon: UserCheck, label: 'Attendance' },
-    { to: '/reports', icon: FileText, label: 'Reports' },
-    { to: '/users', icon: UserCog, label: 'User Management' },
-    { to: '/devices', icon: Link, label: 'Connection' },
-    { to: '/settings', icon: Settings, label: 'Configuration' },
-    { to: '/backup', icon: DatabaseBackup, label: 'Backup & Restore' },
-  ];
-
   return (
-    <div className="flex h-screen overflow-hidden bg-background dark:bg-[#0B0F19] transition-colors duration-200">
-      {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#151D2E] m-3 rounded-3xl flex flex-col justify-between overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/80 dark:border-slate-800/80 transition-colors duration-200">
-        <div className="flex-1 overflow-y-auto no-scrollbar">
-          {/* Logo Area */}
-          <div className="p-6 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 flex items-center justify-center text-slate-700 dark:text-slate-300 overflow-hidden flex-shrink-0 shadow-xs p-1">
-              {branding.logo_url && !logoFailed ? (
-                <img 
-                  src={branding.logo_url} 
-                  alt={branding.display_name} 
-                  className="w-full h-full object-contain"
-                  onError={() => setLogoFailed(true)} 
-                />
-              ) : branding.acronym ? (
-                <span className="font-black text-xs text-primary dark:text-indigo-400 tracking-tight">{branding.acronym}</span>
-              ) : (
-                <Fingerprint className="w-6 h-6 text-primary dark:text-indigo-400" />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 
-                className="font-bold text-sm tracking-tight text-slate-800 dark:text-slate-100 leading-snug truncate"
-                title={branding.display_name || 'Organization'}
-              >
-                {branding.display_name || 'Organization'}
-              </h1>
-              <p 
-                className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5 truncate"
-                title={branding.system_name || 'Attendance System'}
-              >
-                {branding.system_name || 'Attendance System'}
-              </p>
-            </div>
+    <div className="flex h-screen overflow-hidden bg-[#EEF2FF] dark:bg-[#0B0F19] p-3 gap-3">
+      <aside className="w-[252px] flex-shrink-0 h-full flex flex-col bg-white dark:bg-[#121826] rounded-[28px] shadow-sm border border-white/80 dark:border-white/5 px-3.5 py-4">
+        <div className="flex items-center gap-3 px-2 pb-3">
+          <div className="w-11 h-11 rounded-full bg-slate-50 dark:bg-slate-800 ring-1 ring-slate-100 dark:ring-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0 p-1.5">
+            {branding.logo_url && !logoFailed ? (
+              <img
+                src={branding.logo_url}
+                alt={branding.display_name}
+                className="w-full h-full object-contain"
+                onError={() => setLogoFailed(true)}
+              />
+            ) : branding.acronym ? (
+              <span className="font-bold text-xs text-indigo-600">{branding.acronym}</span>
+            ) : (
+              <Fingerprint className="w-5 h-5 text-indigo-600" />
+            )}
           </div>
-          
-          {/* Navigation Links */}
-          <nav className="px-4 mt-2 space-y-1 pb-6">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium ${
-                    isActive
-                      ? 'bg-blue-50 dark:bg-indigo-950/60 text-primary dark:text-indigo-400 font-semibold'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-850'
-                  }`
-                }
-              >
-                <item.icon className="w-4 h-4" />
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+          <div className="min-w-0 flex-1">
+            <h1
+              className="text-[13.5px] font-bold text-slate-800 dark:text-slate-100 leading-snug truncate"
+              title={branding.display_name || 'Organization'}
+            >
+              {branding.display_name || 'Organization'}
+            </h1>
+            <p className="text-[10px] font-medium text-slate-400 mt-0.5 truncate">
+              Biometric Attendance Management
+            </p>
+          </div>
         </div>
 
-        {/* Bottom Area */}
-        <div className="p-4 bg-white dark:bg-[#151D2E] border-t border-slate-50 dark:border-slate-800/80 space-y-2.5">
-          {/* Dark / Light Mode Switcher */}
-          <button 
+        <nav className="flex-1 overflow-y-auto no-scrollbar space-y-0.5">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-[7px] rounded-2xl text-[13px] font-semibold transition-colors ${
+                  isActive
+                    ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-100'
+                }`
+              }
+            >
+              <item.icon className="w-[18px] h-[18px] shrink-0" strokeWidth={1.75} />
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="pt-3 space-y-2.5">
+          <button
             type="button"
             onClick={toggleTheme}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-all border border-slate-200/70 dark:border-slate-700/70 cursor-pointer"
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl bg-slate-50 dark:bg-white/5 text-[13px] font-semibold text-slate-600 dark:text-slate-300"
             title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
-            <div className="flex items-center gap-2">
-              {isDark ? (
-                <Moon className="w-4 h-4 text-indigo-400" />
-              ) : (
-                <Sun className="w-4 h-4 text-amber-500" />
-              )}
-              <span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
-            </div>
-            <div className="w-8 h-4.5 rounded-full p-0.5 bg-slate-200 dark:bg-indigo-600 transition-colors flex items-center">
-              <div className={`w-3.5 h-3.5 rounded-full bg-white dark:bg-white shadow-xs transition-transform duration-200 ${isDark ? 'translate-x-3.5' : 'translate-x-0'}`} />
-            </div>
+            <span className="flex items-center gap-2">
+              {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4 text-amber-500" />}
+              {isDark ? 'Dark Mode' : 'Light Mode'}
+            </span>
+            <span className={`w-9 h-5 rounded-full p-0.5 flex ${isDark ? 'bg-indigo-500 justify-end' : 'bg-slate-200'}`}>
+              <span className="w-4 h-4 rounded-full bg-white shadow-sm" />
+            </span>
           </button>
 
-          <button 
+          <button
             onClick={() => navigate('/live-screen')}
-            className="w-full flex items-center justify-center gap-2 bg-dark dark:bg-indigo-600 text-white rounded-xl py-2.5 px-4 text-sm font-medium hover:bg-slate-700 dark:hover:bg-indigo-500 transition-colors shadow-lg shadow-dark/10"
+            className="w-full flex items-center justify-center gap-2 py-3 px-3 rounded-2xl text-[13px] font-bold text-white bg-[#1B2437] hover:bg-[#111827] dark:bg-indigo-600 dark:hover:bg-indigo-500"
           >
             <MonitorPlay className="w-4 h-4" />
             Live Screen
           </button>
-          
-          <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 rounded-xl p-2.5 border border-slate-100 dark:border-slate-800">
+
+          <div className="flex items-center justify-between px-2 py-2 rounded-2xl bg-slate-50 dark:bg-white/5">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-indigo-900/60 text-primary dark:text-indigo-400 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                {user?.full_name?.substring(0, 2).toUpperCase() || 'BI'}
+              <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300 flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                {user?.full_name?.substring(0, 2).toUpperCase() || 'AD'}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">{user?.full_name || 'Bio Incharge'}</p>
-                <p className="text-[10px] font-medium text-slate-400 truncate">{user?.role || 'ADMIN'}</p>
+                <p className="text-[12px] font-bold text-slate-800 dark:text-slate-100 truncate">
+                  {user?.full_name || 'Administrator'}
+                </p>
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide truncate">
+                  {user?.role || 'ADMIN'}
+                </p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="text-slate-400 hover:text-danger transition-colors p-1 flex-shrink-0"
+              className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 flex-shrink-0"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />
@@ -164,9 +154,8 @@ const Layout: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative bg-background dark:bg-[#0B0F19] transition-colors duration-200">
-        <div className="flex-1 overflow-y-auto p-4 lg:p-6 pb-20">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        <div className="flex-1 overflow-y-auto p-3 lg:p-5 pb-16">
           <div className="max-w-[1400px] mx-auto">
             <Outlet />
           </div>

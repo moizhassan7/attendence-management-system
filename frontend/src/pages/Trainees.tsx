@@ -592,8 +592,42 @@ const Trainees: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">
-                <span>Manage</span> <ChevronRight className="w-3 h-3 ml-2 opacity-50 group-hover:opacity-100" />
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={async () => {
+                    const newStatus = trainee.employment_status === 'Active' ? 'Inactive' : 'Active';
+                    if (!window.confirm(`${newStatus === 'Inactive' ? 'Deactivate' : 'Activate'} "${trainee.full_name}"?`)) return;
+                    try {
+                      await api.put(`/personnel/${trainee.id}`, { employment_status: newStatus });
+                      setActionNotice(`Trainee status updated to ${newStatus}.`);
+                      setTimeout(() => setActionNotice(null), 4000);
+                      fetchData();
+                      fetchTraineeList();
+                    } catch (err: any) {
+                      alert(err.response?.data?.detail || 'Failed to update status.');
+                    }
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${trainee.employment_status === 'Active' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
+                >
+                  {trainee.employment_status === 'Active' ? 'Deactivate' : 'Activate'}
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!window.confirm(`Permanently delete trainee "${trainee.full_name}"?`)) return;
+                    try {
+                      await api.delete(`/personnel/${trainee.id}`);
+                      setActionNotice('Trainee deleted from database.');
+                      setTimeout(() => setActionNotice(null), 4000);
+                      fetchData();
+                      fetchTraineeList();
+                    } catch (err: any) {
+                      alert(err.response?.data?.detail || 'Failed to delete trainee.');
+                    }
+                  }}
+                  className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-50 text-rose-600 hover:bg-rose-50 flex items-center gap-1"
+                >
+                  <Trash2 className="w-3 h-3" /> Delete
+                </button>
               </div>
             </div>
           ))}

@@ -28,7 +28,10 @@ logger = logging.getLogger(__name__)
 
 
 def departments_from_emp(emp_rows: Iterable[EmpRecord]) -> list[tuple[str, str]]:
-    seen: dict[str, str] = {}
+    seen: dict[str, str] = {
+        "MINISTERIAL": "Ministerial Staff",
+        "CLASS_IV": "Class IV",
+    }
     for emp in emp_rows:
         if emp.is_platoon:
             continue
@@ -45,6 +48,7 @@ def departments_from_emp(emp_rows: Iterable[EmpRecord]) -> list[tuple[str, str]]
 
 def ranks_from_nafri(nafri_rows: Iterable[NafriRecord]) -> list[tuple[str, str, int]]:
     order_index = {name.upper(): i for i, name in enumerate(RANK_ORDER)}
+    canonical_name = {name.upper(): name for name in RANK_ORDER}
     by_name: dict[str, str] = {}
     used_codes: set[str] = set()
     for rec in nafri_rows:
@@ -69,8 +73,9 @@ def ranks_from_nafri(nafri_rows: Iterable[NafriRecord]) -> list[tuple[str, str, 
     for display_name, code in by_name.items():
         # display_name is uppercased key; recover original from first matching row
         original = next(r.rank_name.strip() for r in nafri_rows if (r.rank_name or "").strip().upper() == display_name)
+        name = canonical_name.get(display_name, original)
         sort_order = order_index.get(display_name, 100)
-        rows.append((original, code, sort_order))
+        rows.append((name, code, sort_order))
     rows.sort(key=lambda item: (item[2], item[0]))
     return rows
 

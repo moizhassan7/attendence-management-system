@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
-from app.seeding.personnel_config import category_for_department, category_for_rank, resolve_department
+from app.seeding.personnel_config import (
+    category_for_department,
+    category_for_rank,
+    department_for_civil_title,
+    resolve_department,
+)
 from app.seeding.personnel_match import build_canonical_records, build_trainee_records, match_personnel
 from app.seeding.personnel_normalize import (
     belt_variants,
     canonical_belt,
+    extract_primary_belt,
     is_platoon_department,
     name_tokens,
     platoon_course_code,
@@ -23,6 +29,8 @@ def test_ac_no_is_biometric_not_belt():
 def test_belt_variants_swap():
     assert "R/221" in belt_variants("221/R")
     assert "221/R" in belt_variants("R/221")
+    assert extract_primary_belt("S/29 C/791") == "S/29"
+    assert "S/29" in belt_variants("S/29 C/791")
 
 
 def test_platoon_skip_rule():
@@ -50,6 +58,51 @@ def test_name_tokens_strip_rank_and_expand_m():
     assert name_tokens("IP Aftab Ahmed") == name_tokens("AFTAB AHMED")
     assert "MUHAMMAD" in name_tokens("M Shafqat Khan")
     assert "MUHAMMAD" in name_tokens("MUHAMMAD SHAFQAT KHAN")
+    assert name_tokens("Assitant Arshad Mehmood") == name_tokens("ARSHAD MEHMOOD")
+    assert name_tokens("S/Clerk M Akram") == name_tokens("MUHAMMAD AKRAM")
+
+
+def test_unmatched_civil_nafri_is_not_admin():
+    nafri = NafriRecord(
+        0, "ARSHAD MEHMOOD", "Male", "ASSISTANT", "11111-1111111-1", "", "", None, "POSTED", None, None
+    )
+    recs = build_canonical_records(match_personnel([], [nafri]))
+    assert recs[0]["department_code"] == "MINISTERIAL"
+    assert recs[0]["category"] == "Non-Uniform"
+    sweeper = NafriRecord(
+        1, "GHULAM", "Male", "SWEEPER", "33333-3333333-3", "IV/1", "IV/1", None, "POSTED", None, None
+    )
+    recs = build_canonical_records(match_personnel([], [sweeper]))
+    assert recs[0]["department_code"] == "CLASS_IV"
+    assert department_for_civil_title("ASSISTANT") == ("MINISTERIAL", "Ministerial Staff")
+
+
+def test_ministerial_emp_matches_nafri_despite_title_prefix():
+    emp = EmpRecord(
+        0, 230, "", "", "Assitant Arshad Mehmood", "09:00", None,
+        "Ministeral Staff", "MINISTERIAL", "Ministerial Staff", False,
+    )
+    nafri = NafriRecord(
+        0, "ARSHAD MEHMOOD", "Male", "ASSISTANT", "38401-0000000-1", "", "", None, "POSTED", None, None
+    )
+    recs = build_canonical_records(match_personnel([emp], [nafri]))
+    assert len(recs) == 1
+    assert recs[0]["department_code"] == "MINISTERIAL"
+    assert recs[0]["full_name"] == "ARSHAD MEHMOOD"
+    assert recs[0]["category"] == "Non-Uniform"
+
+
+def test_unmatched_ministerial_emp_is_seeded():
+    emp = EmpRecord(
+        0, 233, "", "", "S/Clerk Muhammad Ishfaq", "09:00", None,
+        "Ministeral Staff", "MINISTERIAL", "Ministerial Staff", False,
+    )
+    recs = build_canonical_records(match_personnel([emp], []))
+    assert len(recs) == 1
+    assert recs[0]["biometric_user_id"] == "233"
+    assert recs[0]["department_code"] == "MINISTERIAL"
+    assert recs[0]["category"] == "Non-Uniform"
+    assert recs[0]["designation"] == "Senior Clerk"
 
 
 def test_belt_match_keeps_nafri_name_and_emp_biometric():
@@ -149,20 +202,16 @@ def test_unmapped_placeholder_is_not_numeric_device_id():
     assert not bio.isdigit()
 
 
-def test_only_nafri_people_are_seeded():
+def test_unmatched_staff_emp_is_kept_with_nafri():
     emp_only = EmpRecord(
         0, 88, "X/1", "X/1", "Device Only", "09:00", None, "Admin Staff", "ADMIN", "Admin Staff", False
     )
     nafri = NafriRecord(
         0, "SAADAT ALI SHAH", "Male", "Inspector", "38402-1591309-7", "S/264", "S/264", None, "POSTED", None, None
     )
-    report = match_personnel([emp_only], [nafri])
-    recs = build_canonical_records(report)
-    assert len(recs) == 1
-    assert recs[0]["full_name"] == "SAADAT ALI SHAH"
-    assert recs[0]["biometric_user_id"].startswith("TEMP-")
-    assert recs[0]["category"] == "Uniform"
-    assert recs[0].get("duty_type") is None
+    recs = build_canonical_records(match_personnel([emp_only], [nafri]))
+    names = {row["full_name"] for row in recs}
+    assert names == {"SAADAT ALI SHAH", "Device Only"}
 
 
 def test_security_staff_duty_type():
@@ -175,3 +224,23 @@ def test_security_staff_duty_type():
     recs = build_canonical_records(match_personnel([emp], [nafri]))
     assert recs[0]["department_code"] == "SECURITY"
     assert recs[0]["duty_type"] == "Security"
+
+
+def test_security_compound_belt_and_unmatched_device_staff():
+    emp_match = EmpRecord(
+        0, 154, "S/29 C/791", "S/29", "C/791IP Asad Hassan", "09:00", None,
+        "Security Staff", "SECURITY", "Security Staff", False,
+    )
+    emp_extra = EmpRecord(
+        1, 153, "R/383", "R/383", "IP M Sabtian Ali", "09:00", None,
+        "Security Staff", "SECURITY", "Security Staff", False,
+    )
+    nafri = NafriRecord(
+        0, "ASAD HASSAN", "Male", "Inspector", "11111-1111111-1", "S/29", "S/29", None, "POSTED", None, None
+    )
+    recs = build_canonical_records(match_personnel([emp_match, emp_extra], [nafri]))
+    by_name = {row["full_name"]: row for row in recs}
+    assert by_name["ASAD HASSAN"]["department_code"] == "SECURITY"
+    assert by_name["IP M Sabtian Ali"]["department_code"] == "SECURITY"
+    assert by_name["IP M Sabtian Ali"]["biometric_user_id"] == "153"
+    assert by_name["IP M Sabtian Ali"]["duty_type"] == "Security"

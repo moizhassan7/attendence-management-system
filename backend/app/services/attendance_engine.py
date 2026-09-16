@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import logging
 from datetime import date, datetime, timedelta
+from typing import Sequence
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.attendance import AttendanceDaily, AttendancePunch
@@ -17,16 +19,60 @@ from app.utils.timezone import get_tz, now, to_local
 
 logger = logging.getLogger(__name__)
 
+SECURITY_SHIFT_KEYWORDS = ("morning", "evening", "night")
+
+
+def is_security_staff(duty_type: str | None) -> bool:
+    return (duty_type or "").strip().lower() == "security"
+
+
+def status_for_security_without_punch(exception_type: str | None) -> str:
+    """No biometric punch: duty rest unless staff marked an exception (including ABSENT)."""
+    if exception_type:
+        return exception_type.upper()
+    return "DUTY_REST"
+
+
+def infer_shift_for_punch(punch_local: datetime, shifts: Sequence) -> Shift | None:
+    """Pick the shift that started most recently before the punch (rotation, not assigned roster)."""
+    named = [s for s in shifts if any(k in (s.name or "").lower() for k in SECURITY_SHIFT_KEYWORDS)]
+    pool = named or list(shifts)
+    if not pool:
+        return None
+    punch_m = punch_local.hour * 60 + punch_local.minute
+    best = None
+    best_delta = 24 * 60
+    for s in pool:
+        start = s.start_time
+        start_m = start.hour * 60 + start.minute
+        delta = (punch_m - start_m) % (24 * 60)
+        if delta < best_delta:
+            best_delta = delta
+            best = s
+    return best
+
 
 class AttendanceService:
     """Core logic for calculating daily attendance from raw punches."""
+
+    def __init__(self) -> None:
+        self._active_shifts: list[Shift] | None = None
+
+    async def _get_active_shifts(self, db: AsyncSession) -> list[Shift]:
+        if self._active_shifts is None:
+            self._active_shifts = list((await db.execute(select(Shift).where(Shift.active == True))).scalars().all())
+        return self._active_shifts
 
     async def process_daily_attendance(
         self, db: AsyncSession, target_date: date, personnel_id: int | None = None
     ) -> int:
         """Process attendance for a given date. Returns number of records processed."""
-        # 1. Get all active personnel
-        personnel_query = select(Personnel).where(Personnel.employment_status == "Active")
+        self._active_shifts = None
+        personnel_query = (
+            select(Personnel)
+            .options(selectinload(Personnel.shift))
+            .where(Personnel.employment_status == "Active")
+        )
         if personnel_id:
             personnel_query = personnel_query.where(Personnel.id == personnel_id)
 
@@ -90,28 +136,30 @@ class AttendanceService:
         status = "ABSENT"
         late_minutes = 0
         overtime_minutes = 0
+        security = is_security_staff(personnel.duty_type)
 
         if first_in:
-            shift = personnel.shift
-            if not shift:
-                # Default shift lookup if not assigned
-                shift = (await db.execute(select(Shift).limit(1))).scalar_one_or_none()
+            first_in_local = to_local(first_in)
+            if security:
+                # Punch counts as present on whatever rotation they actually worked.
+                status = "PRESENT"
+                all_shifts = await self._get_active_shifts(db)
+                shift = infer_shift_for_punch(first_in_local, all_shifts) if first_in_local else None
+            else:
+                shift = personnel.shift
+                if not shift:
+                    shift = (await db.execute(select(Shift).limit(1))).scalar_one_or_none()
+                status = "PRESENT"
 
-            status = "PRESENT"
-
-            if shift:
-                # Calculate expected start time in local timezone
-                first_in_local = to_local(first_in)
+            if shift and not security:
                 expected_start = datetime.combine(target_date, shift.start_time, tzinfo=tz)
                 grace_period = timedelta(minutes=shift.late_grace_minutes if shift.late_grace_minutes is not None else 10)
 
-                # Check late
                 if first_in_local and first_in_local > expected_start + grace_period:
                     status = "LATE"
                     late_delta = first_in_local - expected_start
                     late_minutes = max(0, int(late_delta.total_seconds() / 60))
 
-                # Check overtime
                 if last_out:
                     last_out_local = to_local(last_out)
                     expected_end = datetime.combine(target_date, shift.end_time, tzinfo=tz)
@@ -119,37 +167,21 @@ class AttendanceService:
                         ot_delta = last_out_local - expected_end
                         overtime_minutes = max(0, int(ot_delta.total_seconds() / 60))
         else:
-            # Base default cases when no punch was registered
-            if exc:
-                status = exc.exception_type  # LEAVE, OSD, MEDICAL, DUTY_REST
+            if security:
+                status = status_for_security_without_punch(exc.exception_type if exc else None)
+            elif exc:
+                status = exc.exception_type
             elif is_holiday:
                 status = "HOLIDAY"
             else:
                 shift = personnel.shift
                 current_time = now().time()
                 is_today = target_date == now().date()
-                
-                # Non-security staff get Sunday off
-                if target_date.weekday() == 6 and personnel.duty_type != "Security":
+
+                if target_date.weekday() == 6:
                     status = "WEEKEND"
-                # If today and before shift starts -> AWAITING
                 elif shift and is_today and current_time < shift.start_time:
                     status = "AWAITING"
-                # If Security missing shift, check 24-hr cycle
-                elif personnel.duty_type == "Security":
-                    yesterday = target_date - timedelta(days=1)
-                    yesterday_att = (await db.execute(
-                        select(AttendanceDaily.id).where(
-                            AttendanceDaily.personnel_id == personnel.id,
-                            AttendanceDaily.attendance_date == yesterday,
-                            AttendanceDaily.status.in_(["PRESENT", "LATE"])
-                        )
-                    )).scalar_one_or_none()
-                    
-                    if yesterday_att:
-                        status = "DUTY_REST"
-                    else:
-                        status = "ABSENT"
                 else:
                     status = "ABSENT"
 

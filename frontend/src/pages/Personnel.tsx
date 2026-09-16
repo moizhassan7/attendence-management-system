@@ -12,6 +12,7 @@ import {
 import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
 import PaginationBar from '../components/PaginationBar';
+import { rankChartLabel, rankDisplayName } from '../utils/rankLabels';
 
 const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28`}>
@@ -259,7 +260,8 @@ const Personnel: React.FC = () => {
   const filteredRanks = ranks.filter((r: any) => r[currentCategoryKey] > 0);
   
   const barData = filteredRanks.map((r: any) => ({
-    name: r.rank_name,
+    name: rankChartLabel(r.rank_name),
+    fullName: rankDisplayName(r.rank_name),
     Strength: r[currentCategoryKey]
   }));
 
@@ -397,187 +399,227 @@ const Personnel: React.FC = () => {
           </div>
 
           {/* Progress Bars */}
-          <div className="md:col-span-2 grid grid-cols-2 gap-x-8 gap-y-4">
-            {pieData.map((stat, idx) => {
-              const percent = kpi.total_strength > 0 ? (stat.value / kpi.total_strength) * 100 : 0;
-              return (
-                <div key={idx} className="flex flex-col">
-                  <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 mb-1">
-                    <span>{stat.name}</span>
-                    <span className="text-slate-400">{stat.value} · {Math.round(percent)}%</span>
+            <div className="md:col-span-2 grid grid-cols-2 gap-x-8 gap-y-4">
+              {pieData.map((stat, idx) => {
+                const percent = kpi.total_strength > 0 ? (stat.value / kpi.total_strength) * 100 : 0;
+                return (
+                  <div key={idx} className="flex flex-col">
+                    <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 mb-1">
+                      <span>{stat.name}</span>
+                      <span className="text-slate-400">{stat.value} · {Math.round(percent)}%</span>
+                    </div>
+                    <ProgressBar current={stat.value} total={kpi.total_strength} color={getStatusColor(stat.name)} />
                   </div>
-                  <ProgressBar current={stat.value} total={kpi.total_strength} color={getStatusColor(stat.name)} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Rank-Wise Breakdown */}
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col h-[400px]">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h3 className="text-sm font-bold text-slate-800">Rank-Wise Breakdown</h3>
-            <p className="text-[11px] text-slate-400 font-medium">Sanctioned strength by rank — click a rank to view in directory</p>
-          </div>
-          <div className="flex bg-slate-100 p-1 rounded-lg">
-            <button 
-              onClick={() => setActiveTab('Uniform')}
-              className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'Uniform' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Uniform Staff
-            </button>
-            <button 
-              onClick={() => setActiveTab('Non-Uniform')}
-              className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'Non-Uniform' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Non-Uniform Staff
-            </button>
-          </div>
-        </div>
-
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 min-h-0">
-          {/* Table */}
-          <div className="overflow-y-auto no-scrollbar">
-            <table className="w-full text-sm text-left">
-              <thead className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100 sticky top-0 bg-white">
-                <tr>
-                  <th className="px-4 py-3 w-16">SR</th>
-                  <th className="px-4 py-3">RANK</th>
-                  <th className="px-4 py-3 text-right text-slate-800">TOTAL</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50 text-xs">
-                {filteredRanks.map((rank: any, idx: number) => (
-                  <tr 
-                    key={idx} 
-                    onClick={() => navigate(`/directory?tab=Staff&rank_id=${rank.rank_id}`)}
-                    className="hover:bg-slate-50 transition-colors font-bold text-slate-600 cursor-pointer"
-                    title={`View ${rank.rank_name} staff in directory`}
-                  >
-                    <td className="px-4 py-3 text-slate-400 font-medium">{idx + 1}</td>
-                    <td className="px-4 py-3 flex items-center gap-1.5">
-                      <span>{rank.rank_name}</span>
-                      <ChevronRight className="w-3 h-3 text-slate-300" />
-                    </td>
-                    <td className="px-4 py-3 text-right text-slate-800">{rank[currentCategoryKey]}</td>
-                  </tr>
-                ))}
-                {/* Total */}
-                <tr className="bg-indigo-50/50 font-black text-indigo-700 border-t border-indigo-100 sticky bottom-0">
-                  <td className="px-4 py-3"></td>
-                  <td className="px-4 py-3">Total</td>
-                  <td className="px-4 py-3 text-right">{filteredRanks.reduce((sum: number, r: any) => sum + r[currentCategoryKey], 0)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* Bar Chart */}
-          <div className="flex flex-col min-h-0">
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <Activity className="w-3.5 h-3.5" /> 
-              {activeTab.toUpperCase()} STRENGTH BY RANK
-            </div>
-            <div className="flex-1 min-h-0 w-full pr-4 pb-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barData} layout="vertical" margin={{ top: 0, right: 30, left: 30, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F1F5F9" />
-                  <XAxis type="number" hide />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: '#64748B', fontSize: 10, fontWeight: 600 }} 
-                    width={100} 
-                  />
-                  <RechartsTooltip 
-                    cursor={{fill: '#F8FAFC'}} 
-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600 }} 
-                  />
-                  <Bar dataKey="Strength" fill="#6366F1" radius={[0, 4, 4, 0]} barSize={16} label={{ position: 'right', fill: '#64748B', fontSize: 10, fontWeight: 600 }} />
-                </BarChart>
-              </ResponsiveContainer>
+                );
+              })}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Staff List */}
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-50 pb-4">
-          <div>
-            <h3 className="text-sm font-bold text-slate-800">Staff Members</h3>
-            <p className="text-[11px] text-slate-400 font-medium">{totalRecords} records</p>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Search staff by name, PIN..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary"
-              />
+        {/* Rank-Wise Breakdown */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col h-[400px]">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-sm font-bold text-slate-800">Rank-Wise Breakdown</h3>
+              <p className="text-[11px] text-slate-400 font-medium">Sanctioned strength by rank — click a rank to view in directory</p>
             </div>
-            <button 
-              onClick={() => navigate('/directory?tab=Staff')}
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center whitespace-nowrap"
-            >
-              Full directory <ChevronRight className="w-3 h-3 ml-1" />
-            </button>
-          </div>
-        </div>
-        
-        <div className="space-y-1">
-          {staffList.length === 0 && <div className="p-8 text-center text-sm text-slate-400">No staff found matching search.</div>}
-          {staffList.map((staff) => (
-            <div 
-              key={staff.id} 
-              onClick={() => setSelectedStaff(staff)}
-              className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer group"
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(staff.id)}`}>
-                  {staff.full_name ? staff.full_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'NA'}
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-700 uppercase">{staff.full_name}</h4>
-                  <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400">
-                    <span>{staff.rank_name || 'Civil'} · {staff.department_name || 'Admin'}</span>
-                    <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${staff.employment_status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                      {staff.employment_status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center text-[11px] font-bold text-slate-400 group-hover:text-indigo-600 transition-colors uppercase">
-                PIN {staff.biometric_user_id} <ChevronRight className="w-3 h-3 ml-2 opacity-50 group-hover:opacity-100" />
-              </div>
-            </div>
-          ))}
-        </div>
-        <PaginationBar page={page} pageSize={pageSize} total={totalRecords} onPageChange={setPage} />
-      </div>
-      {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100">
-            <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
-              <h3 className="font-bold text-lg text-slate-800">Add Staff Personnel</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+            <div className="flex bg-slate-100 p-1 rounded-lg">
+              <button 
+                onClick={() => setActiveTab('Uniform')}
+                className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'Uniform' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Uniform Staff
+              </button>
+              <button 
+                onClick={() => setActiveTab('Non-Uniform')}
+                className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'Non-Uniform' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Non-Uniform Staff
               </button>
             </div>
-            <form onSubmit={handleAddStaff} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Full Name *</label>
+          </div>
+
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 min-h-0">
+            {/* Table */}
+            <div className="overflow-y-auto no-scrollbar">
+              <table className="w-full text-sm text-left">
+                <thead className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-100 sticky top-0 bg-white">
+                  <tr>
+                    <th className="px-4 py-3 w-16">SR</th>
+                    <th className="px-4 py-3">RANK</th>
+                    <th className="px-4 py-3 text-right text-slate-800">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50 text-xs">
+                  {filteredRanks.map((rank: any, idx: number) => (
+                    <tr 
+                      key={idx} 
+                      onClick={() => navigate(`/directory?tab=Staff&rank_id=${rank.rank_id}`)}
+                      className="hover:bg-slate-50 transition-colors font-bold text-slate-600 cursor-pointer"
+                      title={`View ${rankDisplayName(rank.rank_name)} staff in directory`}
+                    >
+                      <td className="px-4 py-3 text-slate-400 font-medium">{idx + 1}</td>
+                      <td className="px-4 py-3 flex items-center gap-1.5">
+                        <span>{rankDisplayName(rank.rank_name)}</span>
+                        <ChevronRight className="w-3 h-3 text-slate-300" />
+                      </td>
+                      <td className="px-4 py-3 text-right text-slate-800">{rank[currentCategoryKey]}</td>
+                    </tr>
+                  ))}
+                  {/* Total */}
+                  <tr className="bg-indigo-50/50 font-black text-indigo-700 border-t border-indigo-100 sticky bottom-0">
+                    <td className="px-4 py-3"></td>
+                    <td className="px-4 py-3">Total</td>
+                    <td className="px-4 py-3 text-right">{filteredRanks.reduce((sum: number, r: any) => sum + r[currentCategoryKey], 0)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Bar Chart */}
+            <div className="flex flex-col min-h-0">
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <Activity className="w-3.5 h-3.5" /> 
+                {activeTab.toUpperCase()} STRENGTH BY RANK
+              </div>
+              <div className="flex-1 min-h-0 w-full pr-4 pb-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={barData} layout="vertical" margin={{ top: 0, right: 36, left: 8, bottom: 0 }} barCategoryGap={10}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F1F5F9" />
+                    <XAxis type="number" hide />
+                    <YAxis 
+                      dataKey="name" 
+                      type="category" 
+                      axisLine={false} 
+                      tickLine={false}
+                      interval={0}
+                      tick={{ fill: '#64748B', fontSize: 11, fontWeight: 600 }} 
+                      width={118} 
+                    />
+                    <RechartsTooltip 
+                      cursor={{fill: '#F8FAFC'}}
+                      formatter={(value: number) => [value, 'Strength']}
+                      labelFormatter={(_label, payload) => payload?.[0]?.payload?.fullName || ''}
+                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600 }} 
+                    />
+                    <Bar dataKey="Strength" fill="#6366F1" radius={[0, 4, 4, 0]} barSize={16} label={{ position: 'right', fill: '#64748B', fontSize: 10, fontWeight: 600 }} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Staff List */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-50 pb-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-800">Staff Members</h3>
+              <p className="text-[11px] text-slate-400 font-medium">{totalRecords} records</p>
+            </div>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input 
                   type="text" 
-                  required
-                  placeholder="e.g. Inspector Tariq Mehmood"
+                  placeholder="Search staff by name, PIN..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+              <button 
+                onClick={() => navigate('/directory?tab=Staff')}
+                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center whitespace-nowrap"
+              >
+                Full directory <ChevronRight className="w-3 h-3 ml-1" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="space-y-1">
+            {staffList.length === 0 && <div className="p-8 text-center text-sm text-slate-400">No staff found matching search.</div>}
+            {staffList.map((staff) => (
+              <div 
+                key={staff.id} 
+                onClick={() => setSelectedStaff(staff)}
+                className="flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(staff.id)}`}>
+                    {staff.full_name ? staff.full_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'NA'}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-700 uppercase">{staff.full_name}</h4>
+                    <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400">
+                      <span>{staff.rank_name || staff.designation || 'Civil'} · {staff.department_name || '—'}</span>
+                      <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${staff.employment_status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                        {staff.employment_status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      const newStatus = staff.employment_status === 'Active' ? 'Inactive' : 'Active';
+                      if (!window.confirm(`${newStatus === 'Inactive' ? 'Deactivate' : 'Activate'} "${staff.full_name}"?`)) return;
+                      try {
+                        await api.put(`/personnel/${staff.id}`, { employment_status: newStatus });
+                        setActionNotice(`Staff status updated to ${newStatus}.`);
+                        setTimeout(() => setActionNotice(null), 4000);
+                        fetchData();
+                        fetchStaffList();
+                      } catch (err: any) {
+                        alert(err.response?.data?.detail || 'Failed to update status.');
+                      }
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${staff.employment_status === 'Active' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
+                  >
+                    {staff.employment_status === 'Active' ? 'Deactivate' : 'Activate'}
+                  </button>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!window.confirm(`Permanently delete "${staff.full_name}"?`)) return;
+                      try {
+                        await api.delete(`/personnel/${staff.id}`);
+                        setActionNotice('Staff member deleted from database.');
+                        setTimeout(() => setActionNotice(null), 4000);
+                        fetchData();
+                        fetchStaffList();
+                      } catch (err: any) {
+                        alert(err.response?.data?.detail || 'Failed to delete staff.');
+                      }
+                    }}
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-50 text-rose-600 hover:bg-rose-50 flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3 h-3" /> Delete
+                  </button>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase">PIN {staff.biometric_user_id}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <PaginationBar page={page} pageSize={pageSize} total={totalRecords} onPageChange={setPage} />
+        </div>
+        {showAddModal && (
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100">
+              <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
+                <h3 className="font-bold text-lg text-slate-800">Add Staff Personnel</h3>
+                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <form onSubmit={handleAddStaff} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Full Name *</label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="e.g. Inspector Tariq Mehmood"
                   value={newStaff.full_name}
                   onChange={(e) => setNewStaff({...newStaff, full_name: e.target.value})}
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
