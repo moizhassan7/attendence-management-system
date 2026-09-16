@@ -46,6 +46,8 @@ class PersonnelUpdate(BaseModel):
     dob: date | None = None
     has_fingerprint: bool | None = None
     has_face: bool | None = None
+    is_trainee: bool | None = None
+    course_id: int | None = None
 
 
 class PersonnelBulkShiftUpdate(BaseModel):
@@ -81,6 +83,7 @@ class PersonnelOut(BaseModel):
     department_name: str | None = None
     rank_name: str | None = None
     shift_name: str | None = None
+    course_name: str | None = None
     
     # Optional attendance data
     attendance_today: dict | None = None

@@ -43,6 +43,8 @@ interface CourseItem {
   code?: string | null;
   start_time?: string | null;
   end_time?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
   active: boolean;
 }
 
@@ -437,7 +439,7 @@ const Configuration: React.FC = () => {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
+    <div className="space-y-6 animate-in fade-in duration-500">
       
       {/* Toast Notification */}
       {toast && (

@@ -1,0 +1,2277 @@
+========================================
+EMPLOYEE DATA IMPORT AUDIT
+========================================
+Generated: 2026-09-16T20:38:02
+
+Source: emp_data.xls
+Total biometric records: 1217
+Skipped platoon records: 894
+Staff biometric records (imported): 323
+
+Matched employees (biometric<->master links): 112
+Unmatched biometric records: 211
+Master employees found: 110
+Employees without biometric mapping: 178
+Multi-biometric master identities: 3
+
+Seed personnel rows: 501
+Uniform employees: 358
+Non-uniform employees: 143
+
+Non-uniform employees:
+Class IV (department): 55
+Ministerial (department): 17
+
+Conflicts:
+Name conflicts: 109
+Belt conflicts: 47
+Rank conflicts: 0
+Department conflicts: 0
+
+Validation errors: 0
+Validation warnings: 407
+========================================
+
+SKIPPED PLATOON RECORDS
+-----------------------
+1. AC-No=309 No.=1130 Name=Awais Khan Cap 1 Department=Z (Platoon No.1)
+2. AC-No=310 No.=775 Name=Muddsir Riaz Cap 2 Department=Z (Platoon No.1)
+3. AC-No=311 No.=1226 Name=Zaryab Khalid Cap 3 Department=Z (Platoon No.1)
+4. AC-No=312 No.=488 Name=M Kamran Cap 4 Department=Z (Platoon No.1)
+5. AC-No=313 No.=2880 Name=M. Yousaf Cap 5 Department=Z (Platoon No.1)
+6. AC-No=314 No.=6443 Name=M Ahtisham Cap 6 Department=Z (Platoon No.1)
+7. AC-No=315 No.=7269 Name=Yashwa Masih Cap 7 Department=Z (Platoon No.1)
+8. AC-No=316 No.=579 Name=M Sajjad Cap 8 Department=Z (Platoon No.1)
+9. AC-No=317 No.=570 Name=Rashid Ali Cap 9 Department=Z (Platoon No.1)
+10. AC-No=318 No.=72 Name=Liaqat Ali Cap 10 Department=Z (Platoon No.1)
+11. AC-No=319 No.=575 Name=M Kashif Cap 11 Department=Z (Platoon No.1)
+12. AC-No=320 No.=990 Name=Gulsher Ali Cap 12 Department=Z (Platoon No.1)
+13. AC-No=321 No.=919 Name=Abdul Rehman Cap 13 Department=Z (Platoon No.1)
+14. AC-No=322 No.=926 Name=Abdulllah Asif  Cap 14 Department=Z (Platoon No.1)
+15. AC-No=323 No.=6432 Name=Zameer Haider Cap 15 Department=Z (Platoon No.1)
+16. AC-No=324 No.=249 Name=Zubair Ahmed Cap 16 Department=Z (Platoon No.1)
+17. AC-No=325 No.=1678 Name=Wajahat Hussain Cap 17 Department=Z (Platoon No.1)
+18. AC-No=326 No.=390 Name=M Saleem Cap 18 Department=Z (Platoon No.1)
+19. AC-No=327 No.=306 Name=M Saqlain Cap 19 Department=Z (Platoon No.1)
+20. AC-No=328 No.=1133 Name=M Atif Khan Cap 20 Department=Z (Platoon No.1)
+21. AC-No=329 No.=42 Name=Meesam Temar Cap 21 Department=Z (Platoon No.1)
+22. AC-No=330 No.=922 Name=M Rehan Cap 22 Department=Z (Platoon No.1)
+23. AC-No=331 No.=5233 Name=Zeeshan Alli Cap 23 Department=Z (Platoon No.1)
+24. AC-No=332 No.=5533 Name=Ahmad Raza Cap 24 Department=Z (Platoon No.1)
+25. AC-No=333 No.=5487 Name=M Sulman Cap 25 Department=Z (Platoon No.1)
+26. AC-No=334 No.=752 Name=Mubashar Ali Cap 26 Department=Z (Platoon No.1)
+27. AC-No=335 No.=902 Name=M Saqlain Cap 27 Department=Z (Platoon No.1)
+28. AC-No=336 No.=1729 Name=Sadam Hussain Cap 28 Department=Z (Platoon No.1)
+29. AC-No=337 No.=567 Name=Haji Qurban Cap 29 Department=Z (Platoon No.1)
+30. AC-No=338 No.=1223 Name=M Shabir Cap 30 Department=Z (Platoon No.1)
+31. AC-No=339 No.=1516 Name=M Abdullah Cap 31 Department=Z (Platoon No.1)
+32. AC-No=340 No.=6553 Name=Sadi Ahmad Cap 32 Department=Z (Platoon No.1)
+33. AC-No=341 No.=5617 Name=Faizan Hussain Cap 33 Department=Z (Platoon No.1)
+34. AC-No=342 No.=5259 Name=Ansar Ali Cap 34 Department=Z (Platoon No.1)
+35. AC-No=343 No.=121 Name=M Asif Cap 35 Department=Z (Platoon No.1)
+36. AC-No=344 No.=831 Name=M Farooq Cap 36 Department=Z (Platoon No.1)
+37. AC-No=345 No.=81 Name=M. Zahid Khan Cap 37 Department=Z(Platoon No. 2)
+38. AC-No=346 No.=445 Name=Hubdar Cap 38 Department=Z(Platoon No. 2)
+39. AC-No=347 No.=59 Name=Hassan Ali Cap 39 Department=Z(Platoon No. 2)
+40. AC-No=348 No.=76 Name=Kaleem Ullah Cap 41 Department=Z(Platoon No. 2)
+41. AC-No=349 No.=228 Name=Abrar ul Haq Cap 42 Department=Z(Platoon No. 2)
+42. AC-No=350 No.=295 Name=M Shoaib Allam Cap 43 Department=Z(Platoon No. 2)
+43. AC-No=351 No.=538 Name=M Mehroz Khan Cap 44 Department=Z(Platoon No. 2)
+44. AC-No=352 No.=17 Name=Ghazanfar Abbas Cap 45 Department=Z(Platoon No. 2)
+45. AC-No=353 No.=265 Name=Bilawal Khan Cao 46 Department=Z(Platoon No. 2)
+46. AC-No=354 No.=20 Name=Humair Hayat Cap 47 Department=Z(Platoon No. 2)
+47. AC-No=355 No.=175 Name=Hafiz M Bilal Cap 48 Department=Z(Platoon No. 2)
+48. AC-No=356 No.=1713 Name=Zain Amjad Cap 49 Department=Z(Platoon No. 2)
+49. AC-No=357 No.=1738 Name=Bilal Hassan Cap 50 Department=Z(Platoon No. 2)
+50. AC-No=358 No.=1088 Name=Syed Ali Shah Cap 51 Department=Z(Platoon No. 2)
+51. AC-No=359 No.=780 Name=Yasir Riaz Cap 52 Department=Z(Platoon No. 2)
+52. AC-No=360 No.=743 Name=M Abu Bakar Cap 53 Department=Z(Platoon No. 2)
+53. AC-No=361 No.=1178 Name=Hafiz Haseeb cap 54 Department=Z(Platoon No. 2)
+54. AC-No=362 No.=909 Name=M Kashif Cap 55 Department=Z(Platoon No. 2)
+55. AC-No=363 No.=2310 Name=Danish Ali Cap 56 Department=Z(Platoon No. 2)
+56. AC-No=364 No.=1054 Name=Ali Nawaz Cap 57 Department=Z(Platoon No. 2)
+57. AC-No=365 No.=942 Name=Muntazir  Haider Cap 58 Department=Z(Platoon No. 2)
+58. AC-No=366 No.=453 Name=M Waseem Cap 59 Department=Z(Platoon No. 2)
+59. AC-No=367 No.=4805 Name=Haroon Masih Cap 60 Department=Z(Platoon No. 2)
+60. AC-No=368 No.=5523 Name=Zain ul Abdeen  Cap 61 Department=Z(Platoon No. 2)
+61. AC-No=369 No.=5538 Name=M. Umair Cap 62 Department=Z(Platoon No. 2)
+62. AC-No=370 No.=6021 Name=Raheel Cap 63 Department=Z(Platoon No. 2)
+63. AC-No=371 No.=3251 Name=M Asif Cap 64 Department=Z(Platoon No. 2)
+64. AC-No=372 No.=201 Name=M Yousaf Cap 65 Department=Z(Platoon No. 2)
+65. AC-No=373 No.=4438 Name=M Shahzaib Cap  66 Department=Z(Platoon No. 2)
+66. AC-No=374 No.=6368 Name=Ali Hassan Cap 67 Department=Z(Platoon No. 2)
+67. AC-No=375 No.=6360 Name=Hanan Umar Cap 68 Department=Z(Platoon No. 2)
+68. AC-No=376 No.=2813 Name=Allah Ditta Cap 69 Department=Z(Platoon No. 2)
+69. AC-No=377 No.=5937 Name=M Saeed Cap 70 Department=Z(Platoon No. 2)
+70. AC-No=378 No.=5041 Name=Zahid Iqbal Cap 71 Department=Z(Platoon No. 2)
+71. AC-No=379 No.=2412 Name=Sohail Aslam Cap 72 Department=Z(Platoon No. 2)
+72. AC-No=380 No.=971 Name=M Awais Cap 73 Department=Z(Platoon No. 3
+73. AC-No=381 No.=846 Name=M Yawar Abbas Cap 74 Department=Z(Platoon No. 3
+74. AC-No=382 No.=6497 Name=Gul Shair Cap 75 Department=Z(Platoon No. 3
+75. AC-No=383 No.=392 Name=Moeen ul Hassan  Cap 76 Department=Z(Platoon No. 3
+76. AC-No=384 No.=242 Name=M Imran Cap 77 Department=Z(Platoon No. 3
+77. AC-No=385 No.=1731 Name=Farhan Ali  Cap 78 Department=Z(Platoon No. 3
+78. AC-No=386 No.=1840 Name=Rana Ali Zaib Cap 79 Department=Z(Platoon No. 3
+79. AC-No=387 No.=101 Name=Asad M Khan Cap 80 Department=Z(Platoon No. 3
+80. AC-No=388 No.=162 Name=Ameer Hamza  Cap 81 Department=Z(Platoon No. 3
+81. AC-No=389 No.=195 Name=Subhan Ahmed Cap 82 Department=Z(Platoon No. 3
+82. AC-No=390 No.=1257 Name=Aakash Arif Cap 83 Department=Z(Platoon No. 3
+83. AC-No=391 No.=513 Name=Abaid ur Rehman  Cap 84 Department=Z(Platoon No. 3
+84. AC-No=392 No.=186 Name=Shahzad Ali Cap 85 Department=Z(Platoon No. 3
+85. AC-No=393 No.=186 Name=Gh.Naseer ul Din  86 Department=Z(Platoon No. 3
+86. AC-No=394 No.=5096 Name=M Shahzaib Cap 87 Department=Z(Platoon No. 3
+87. AC-No=395 No.=1219 Name=M Usman Cap 88 Department=Z(Platoon No. 3
+88. AC-No=396 No.=225 Name=M Usman Cap 89 Department=Z(Platoon No. 3
+89. AC-No=397 No.=3940 Name=Ahmed Hashim Cap 90 Department=Z(Platoon No. 3
+90. AC-No=398 No.=270 Name=M Kamran Cap 91 Department=Z(Platoon No. 3
+91. AC-No=399 No.=775 Name=Anas Bilal Cap 92 Department=Z(Platoon No. 3
+92. AC-No=400 No.=4922 Name=Ali Usman Cap 93 Department=Z(Platoon No. 3
+93. AC-No=401 No.=879 Name=Bilal Khan Cap 94 Department=Z(Platoon No. 3
+94. AC-No=402 No.=1171 Name=Mesum teemar Cap 95 Department=Z(Platoon No. 3
+95. AC-No=403 No.=6001 Name=Umer Riaz Cap 96 Department=Z(Platoon No. 3
+96. AC-No=404 No.=7066 Name=Faisal ul Rehman Cap 97 Department=Z(Platoon No. 3
+97. AC-No=405 No.=466 Name=M Asim Iqbal Cap 98 Department=Z(Platoon No. 3
+98. AC-No=406 No.=727 Name=Arslan Haider Cap 99 Department=Z(Platoon No. 3
+99. AC-No=407 No.=682 Name=Zain Ali Cap 100 Department=Z(Platoon No. 3
+100. AC-No=408 No.=548 Name=Abu Bakar Cap 101 Department=Z(Platoon No. 3
+101. AC-No=409 No.=882 Name=Bilal Hassan  Cap 103 Department=Z(Platoon No. 3
+102. AC-No=471 No.=151 Name=Noman Khan Cap 40 Department=Z(Platoon No. 2)
+103. AC-No=472 No.=5649 Name=Sana Ullah cap 104 Department=Z(Platoon No. 3
+104. AC-No=473 No.=4424 Name=Muhammad Shoaib cap 105 Department=Z(Platoon No. 3
+105. AC-No=474 No.=639 Name=Muhammad Ilyas cap 106 Department=Z(Platoon No. 3
+106. AC-No=475 No.=152 Name=Farhan kham cap 107 Department=Z(Platoon No. 3
+107. AC-No=476 No.=155 Name=Muhammad Qadeer cap 108 Department=Z(Platoon No. 3
+108. AC-No=477 No.=4935 Name=Bilal Ahmad cap 103 Department=Z(Platoon No. 3
+109. AC-No=482 No.=1378 Name=Atif Nawaz cap 109 Department=Z(Platoon No. 4)
+110. AC-No=483 No.=69 Name=Nasir Mahmood cap 110 Department=Z(Platoon No. 4)
+111. AC-No=484 No.=918 Name=Waqas Ahmad cap 111 Department=Z(Platoon No. 4)
+112. AC-No=485 No.=1427 Name=Arslan Safdar cap 112 Department=Z(Platoon No. 4)
+113. AC-No=486 No.=261 Name=Ghulam Dastgeer cap 113 Department=Z(Platoon No. 4)
+114. AC-No=487 No.=216 Name=Umar Daraz cap 114 Department=Z(Platoon No. 4)
+115. AC-No=488 No.=5625 Name=Mubashar Hussain Cap 115 Department=Z(Platoon No. 4)
+116. AC-No=489 No.=5341 Name=Ali Nawaz Khan cap 116 Department=Z(Platoon No. 4)
+117. AC-No=490 No.=4136 Name=Kamran Aslam  cap 117 Department=Z(Platoon No. 4)
+118. AC-No=491 No.=4650 Name=Ali  Abbas cap 118 Department=Z(Platoon No. 4)
+119. AC-No=492 No.=282 Name=Zaheer Abbas cap 119 Department=Z(Platoon No. 4)
+120. AC-No=493 No.=537 Name=Muzmmil Khan Cap 120 Department=Z(Platoon No. 4)
+121. AC-No=494 No.=289 Name=Abdul Jabar Khan cap 121 Department=Z(Platoon No. 4)
+122. AC-No=495 No.=265 Name=Mubeen Islam cap 122 Department=Z(Platoon No. 4)
+123. AC-No=496 No.=5671 Name=Muhammad Adeel cap 123 Department=Z(Platoon No. 4)
+124. AC-No=497 No.=4998 Name=Muhammad Kashif cap 124 Department=Z(Platoon No. 4)
+125. AC-No=498 No.=1662 Name=Muhammad Usman cap 125 Department=Z(Platoon No. 4)
+126. AC-No=499 No.=6758 Name=Tariq Mushtaq cap 126 Department=Z(Platoon No. 4)
+127. AC-No=500 No.=811 Name=Muhammad Shafi cap 127 Department=Z(Platoon No. 4)
+128. AC-No=501 No.=713 Name=Muhammad Akbar cap 128 Department=Z(Platoon No. 4)
+129. AC-No=502 No.=21 Name=Aftab Ahmad cap 129 Department=Z(Platoon No. 4)
+130. AC-No=503 No.=1506 Name=M Usman Shabir Cap 130 Department=Z(Platoon No. 4)
+131. AC-No=504 No.=2011 Name=M.Mudasir Mumtaz Cap131 Department=Z(Platoon No. 4)
+132. AC-No=505 No.=2783 Name=Naseem Abbas cap 132 Department=Z(Platoon No. 4)
+133. AC-No=506 No.=3385 Name=Abdul Rehman cap 133 Department=Z(Platoon No. 4)
+134. AC-No=507 No.=5756 Name=M Hamza Atta cap 134 Department=Z(Platoon No. 4)
+135. AC-No=508 No.=301 Name=Ali Sufyan Cap 135 Department=Z(Platoon No. 4)
+136. AC-No=509 No.=104 Name=Muhammad Kaleem cap 136 Department=Z(Platoon No. 4)
+137. AC-No=510 No.=767 Name=Ahmad Mujtaba cap137 Department=Z(Platoon No. 4)
+138. AC-No=511 No.=100 Name=Rao Mubeen cap 138 Department=Z(Platoon No. 4)
+139. AC-No=512 No.=240 Name=Niaz Ullah cap 139 Department=Z(Platoon No. 4)
+140. AC-No=513 No.=6323 Name=Asad Ali cap 140 Department=Z(Platoon No. 4)
+141. AC-No=514 No.=22 Name=Azeem Nawaz cap 141 Department=Z(Platoon No. 4)
+142. AC-No=515 No.=329 Name=M Asif cap 142 Department=Z(Platoon No. 4)
+143. AC-No=516 No.=307 Name=M Afzaal cap 143 Department=Z(Platoon No. 4)
+144. AC-No=517 No.=805 Name=Ayat Ullah cap 144 Department=Z(Platoon No. 4)
+145. AC-No=519 No.=1194 Name=Muhammad Ali Cap 145 Department=Z(Platoon No. 5)
+146. AC-No=520 No.=220 Name=Kamran Mumtaz Cap 146 Department=Z(Platoon No. 5)
+147. AC-No=521 No.=1246 Name=Sharoon Talib Cap 147 Department=Z(Platoon No. 5)
+148. AC-No=522 No.=910 Name=Asad Hayyat Cap 148 Department=Z(Platoon No. 5)
+149. AC-No=523 No.=285 Name=Ghulam Abbas Cap 149 Department=Z(Platoon No. 5)
+150. AC-No=524 No.=857 Name=Muhammad Sadiq Cap 150 Department=Z(Platoon No. 5)
+151. AC-No=525 No.=611 Name=Sami Ullah Cap 151 Department=Z(Platoon No. 5)
+152. AC-No=526 No.=606 Name=M Hayat Khan Cap 152 Department=Z(Platoon No. 5)
+153. AC-No=527 No.=502 Name=Zareen Khan Cap 153 Department=Z(Platoon No. 5)
+154. AC-No=528 No.=217 Name=Asmat Ullah khan Cap 154 Department=Z(Platoon No. 5)
+155. AC-No=529 No.=677 Name=Ali Atif Cap 155 Department=Z(Platoon No. 5)
+156. AC-No=530 No.=135 Name=Malik Amjad Cap 156 Department=Z(Platoon No. 5)
+157. AC-No=531 No.=164 Name=M Rakheel Cap 157 Department=Z(Platoon No. 5)
+158. AC-No=532 No.=1018 Name=Noman Ahmad Cap 158 Department=Z(Platoon No. 5)
+159. AC-No=533 No.=1564 Name=Abdul Rehman Cap 159 Department=Z(Platoon No. 5)
+160. AC-No=534 No.=1648 Name=Arslan Tahir Cap 160 Department=Z(Platoon No. 5)
+161. AC-No=535 No.=133 Name=Muhammad Zoahib Cap 161 Department=Z(Platoon No. 5)
+162. AC-No=536 No.=256 Name=Ali Abbas Cap 162 Department=Z(Platoon No. 5)
+163. AC-No=537 No.=452 Name=Jabar Ali  Cap 163 Department=Z(Platoon No. 5)
+164. AC-No=538 No.=1929 Name=Muhammad Mubashir Cap164 Department=Z(Platoon No. 5)
+165. AC-No=539 No.=93 Name=Muhammad Sami Cap 165 Department=Z(Platoon No. 5)
+166. AC-No=540 No.=118 Name=Zaffar Abbas Cap 166 Department=Z(Platoon No. 5)
+167. AC-No=541 No.=88 Name=Cap 167 Department=Z(Platoon No. 5)
+168. AC-No=542 No.=954 Name=Muhammad Mahboob Cap 168 Department=Z(Platoon No. 5)
+169. AC-No=543 No.=2850 Name=Adan Hayyat Cap 169 Department=Z(Platoon No. 5)
+170. AC-No=544 No.=5960 Name=Fizan Ahmad Cap 170 Department=Z(Platoon No. 5)
+171. AC-No=545 No.=3788 Name=M Ahsan  Baig Cap 171 Department=Z(Platoon No. 5)
+172. AC-No=546 No.=5879 Name=M Ghzanfar Cap 172 Department=Z(Platoon No. 5)
+173. AC-No=547 No.=5851 Name=Numan Kareem Cap 173 Department=Z(Platoon No. 5)
+174. AC-No=548 No.=1736 Name=Abid Raza Cap 397 Department=Z(Platoon No.12)
+175. AC-No=549 No.=1159 Name=Furqan Ali Cap 175 Department=Z(Platoon No. 5)
+176. AC-No=550 No.=1152 Name=Qurban Ali Cap 176 Department=Z(Platoon No. 5)
+177. AC-No=551 No.=5103 Name=Hasnain Latif Cap 174 Department=Z(Platoon No. 5)
+178. AC-No=552 No.=1187 Name=Rashid Mahmood Cap 177 Department=Z(Platoon No. 5)
+179. AC-No=553 No.=4886 Name=Abu Sufyyan Cap 178 Department=Z(Platoon No. 5)
+180. AC-No=554 No.=5669 Name=Muammad Sami Cap 179 Department=Z(Platoon No. 5)
+181. AC-No=555 No.=3572 Name=Adeel Hussain Cap 180 Department=Z(Platoon No. 5)
+182. AC-No=556 No.=383 Name=Muhammad Ehsan Cap 181 Department=Z(Platoon No. 6)
+183. AC-No=557 No.=533 Name=M Arbab Cap 182 Department=Z(Platoon No. 6)
+184. AC-No=558 No.=124 Name=Zia Ullah Cap 183 Department=Z(Platoon No. 6)
+185. AC-No=559 No.=151 Name=Abdul waheed Cap 184 Department=Z(Platoon No. 6)
+186. AC-No=560 No.=553 Name=Farhaan Abdullah Cap 185 Department=Z(Platoon No. 6)
+187. AC-No=561 No.=890 Name=Ulfat Hussain Cap 186 Department=Z(Platoon No. 6)
+188. AC-No=562 No.=2124 Name=Sohail Ahmad Cap 187 Department=Z(Platoon No. 6)
+189. AC-No=563 No.=225 Name=Jawad Hassan Cap 188 Department=Z(Platoon No. 6)
+190. AC-No=564 No.=665 Name=Naveed Ul Hassan Cap 189 Department=Z(Platoon No. 6)
+191. AC-No=565 No.=2061 Name=Shahamand  Nawaz Cap 190 Department=Z(Platoon No. 6)
+192. AC-No=566 No.=156 Name=Ali Hassan Cap 191 Department=Z(Platoon No. 6)
+193. AC-No=567 No.=4198 Name=Muhammad Saleem Cap 192 Department=Z(Platoon No. 6)
+194. AC-No=568 No.=703 Name=Khurram Shahzad Cap 193 Department=Z(Platoon No. 6)
+195. AC-No=569 No.=582 Name=Abdul Majid Cap 194 Department=Z(Platoon No. 6)
+196. AC-No=570 No.=39 Name=Akmal Cap 195 Department=Z(Platoon No. 6)
+197. AC-No=571 No.=471 Name=Ali Hamza 196 Department=Z(Platoon No. 6)
+198. AC-No=572 No.=3979 Name=Zain ul Abideen Cap 197 Department=Z(Platoon No. 6)
+199. AC-No=573 No.=1081 Name=Mubeen Ahmad Cap 198 Department=Z(Platoon No. 6)
+200. AC-No=574 No.=725 Name=Ali Raza Cap 199 Department=Z(Platoon No. 6)
+201. AC-No=575 No.=243 Name=Ali Hassan Cap 200 Department=Z(Platoon No. 6)
+202. AC-No=576 No.=697 Name=M Faizan Sattar Cap 201 Department=Z(Platoon No. 6)
+203. AC-No=577 No.=2017 Name=Ali Hamza Cap 202 Department=Z(Platoon No. 6)
+204. AC-No=578 No.=3971 Name=MuNeen ul Hassan Cap 203 Department=Z(Platoon No. 6)
+205. AC-No=579 No.=3942 Name=Asif Naveed Cap 204 Department=Z(Platoon No. 6)
+206. AC-No=580 No.=6359 Name=M Shoaib Cap 205 Department=Z(Platoon No. 6)
+207. AC-No=581 No.=2580 Name=M Shahbaz  Cap 206 Department=Z(Platoon No. 6)
+208. AC-No=582 No.=144 Name=Kashif Mehmood Cap 207 Department=Z(Platoon No. 6)
+209. AC-No=583 No.=4547 Name=M Rehan Cap 208 Department=Z(Platoon No. 6)
+210. AC-No=584 No.=442 Name=Bilal Hussain Cap 209 Department=Z(Platoon No. 6)
+211. AC-No=585 No.=182 Name=Bilal Haider Cap 210 Department=Z(Platoon No. 6)
+212. AC-No=586 No.=691 Name=Sulman Sajid Cap 211 Department=Z(Platoon No. 6)
+213. AC-No=587 No.=545 Name=Ansar Hayat Cap 212 Department=Z(Platoon No. 6)
+214. AC-No=588 No.=300 Name=Rohan Ali Cap 213 Department=Z(Platoon No. 6)
+215. AC-No=589 No.=1779 Name=Muhammad Zain Cap 214 Department=Z(Platoon No. 6)
+216. AC-No=590 No.=2281 Name=Ali Raza Cap 215 Department=Z(Platoon No. 6)
+217. AC-No=591 No.=2831 Name=Muhammad Afnan Cap 216 Department=Z(Platoon No. 6)
+218. AC-No=592 No.=1471 Name=Ali Raza Cap 217 Department=Z(Platoon No. 7)
+219. AC-No=593 No.=962 Name=Zaryab Hassan Cap 218 Department=Z(Platoon No. 7)
+220. AC-No=594 No.=597 Name=Farhan Ali Cap 219 Department=Z(Platoon No. 7)
+221. AC-No=595 No.=665 Name=Muhammad Kamran Cap 220 Department=Z(Platoon No. 7)
+222. AC-No=596 No.=120 Name=Ubaid Ullah Cap 221 Department=Z(Platoon No. 7)
+223. AC-No=597 No.=108 Name=Muhammad Faraz Cap 222 Department=Z(Platoon No. 7)
+224. AC-No=598 No.=4909 Name=Ghanzanfar Abbas Cap 223 Department=Z(Platoon No. 7)
+225. AC-No=599 No.=7054 Name=M Waqas Khan Cap 224 Department=Z(Platoon No. 7)
+226. AC-No=600 No.=1002 Name=Muhammad Hasnat Cap 225 Department=Z(Platoon No. 7)
+227. AC-No=601 No.=236 Name=Hassan Zahoor Cap 226 Department=Z(Platoon No. 7)
+228. AC-No=602 No.=128 Name=Muhammad Noman Cap 227 Department=Z(Platoon No. 7)
+229. AC-No=603 No.=2119 Name=Aamir Sajjad Cap 228 Department=Z(Platoon No. 7)
+230. AC-No=605 No.=743 Name=Zohaib Hassan Cap 229 Department=Z(Platoon No. 7)
+231. AC-No=606 No.=541 Name=Usman Haider Cap 230 Department=Z(Platoon No. 7)
+232. AC-No=607 No.=761 Name=M Bilal Cap 231 Department=Z(Platoon No. 7)
+233. AC-No=608 No.=761 Name=Muhammad Ali Cap 232 Department=Z(Platoon No. 7)
+234. AC-No=609 No.=1252 Name=M Kashif Khan Cap 233 Department=Z(Platoon No. 7)
+235. AC-No=610 No.=272 Name=Ali Akbar Khan Cap 234 Department=Z(Platoon No. 7)
+236. AC-No=611 No.=762 Name=M Ijaz Cap 235 Department=Z(Platoon No. 7)
+237. AC-No=612 No.=1267 Name=Junaid Ahmad Cap 236 Department=Z(Platoon No. 7)
+238. AC-No=613 No.=552 Name=M  Riaz Cap 237 Department=Z(Platoon No. 7)
+239. AC-No=614 No.=933 Name=Arslan Ghfoor Cap 238 Department=Z(Platoon No. 7)
+240. AC-No=615 No.=2915 Name=Muhammad Sohaib  Cap 239 Department=Z(Platoon No. 7)
+241. AC-No=616 No.=3577 Name=Ahmad Faraz Cap 240 Department=Z(Platoon No. 7)
+242. AC-No=617 No.=1045 Name=Hamza Hasnain Cap 241 Department=Z(Platoon No. 7)
+243. AC-No=618 No.=1666 Name=Basit Ali Cap 242 Department=Z(Platoon No. 7)
+244. AC-No=619 No.=6832 Name=Sharif Cap 243 Department=Z(Platoon No. 7)
+245. AC-No=620 No.=813 Name=Zahid Saddique Cap 244 Department=Z(Platoon No. 7)
+246. AC-No=621 No.=859 Name=Shajar Islam Cap 245 Department=Z(Platoon No. 7)
+247. AC-No=622 No.=468 Name=Sarmad Iftikhar Cap 246 Department=Z(Platoon No. 7)
+248. AC-No=623 No.=77 Name=Shehryar Hassan Cap 247 Department=Z(Platoon No. 7)
+249. AC-No=624 No.=455 Name=M Zahid Mahmood Cap 248 Department=Z(Platoon No. 7)
+250. AC-No=625 No.=2810 Name=M Khuzaima Cap 249 Department=Z(Platoon No. 7)
+251. AC-No=626 No.=3038 Name=M Haseeb Cap 250 Department=Z(Platoon No. 7)
+252. AC-No=627 No.=3300 Name=Waleed Khalid Cap 251 Department=Z(Platoon No. 7)
+253. AC-No=628 No.=655 Name=Muzmail Abbas Cap 252 Department=Z(Platoon No. 7)
+254. AC-No=629 No.=1532 Name=Hassanat Cap 253 Department=Z(Platoon No. 8)
+255. AC-No=630 No.=2951 Name=M Asif Cap 254 Department=Z(Platoon No. 8)
+256. AC-No=631 No.=509 Name=Saqlain Cap 255 Department=Z(Platoon No. 8)
+257. AC-No=632 No.=581 Name=Qandeel Asghar Cap 256 Department=Z(Platoon No. 8)
+258. AC-No=633 No.=80 Name=Naymet Ullah Cap 257 Department=Z(Platoon No. 8)
+259. AC-No=634 No.=263 Name=Ali Haseeb Cap 258 Department=Z(Platoon No. 8)
+260. AC-No=635 No.=1209 Name=M Haseeb Cap 259 Department=Z(Platoon No. 8)
+261. AC-No=636 No.=1028 Name=M Ajmal Cap 260 Department=Z(Platoon No. 8)
+262. AC-No=637 No.=91 Name=M Asad Cap 261 Department=Z(Platoon No. 8)
+263. AC-No=638 No.=773 Name=Abdul Rasheed Cap 262 Department=Z(Platoon No. 8)
+264. AC-No=639 No.=2094 Name=M Sarfraz Cap 263 Department=Z(Platoon No. 8)
+265. AC-No=640 No.=1363 Name=M Abubakr Cap 264 Department=Z(Platoon No. 8)
+266. AC-No=641 No.=616 Name=Yasir Ali Cap 265 Department=Z(Platoon No. 8)
+267. AC-No=642 No.=1472 Name=Talal Hassan  Cap 266 Department=Z(Platoon No. 8)
+268. AC-No=643 No.=533 Name=Haseeb Riaz Cap 267 Department=Z(Platoon No. 8)
+269. AC-No=644 No.=4333 Name=M Danish Cap 268 Department=Z(Platoon No. 8)
+270. AC-No=645 No.=4245 Name=Ameer Hamza Cap 269 Department=Z(Platoon No. 8)
+271. AC-No=646 No.=117 Name=Ghulam Murtaza Cap 270 Department=Z(Platoon No. 8)
+272. AC-No=647 No.=739 Name=Zahid Abbas Cap 271 Department=Z(Platoon No. 8)
+273. AC-No=648 No.=175 Name=Muzmil Abbas Cap 272 Department=Z(Platoon No. 8)
+274. AC-No=649 No.=661 Name=M Sohaib Cap 273 Department=Z(Platoon No. 8)
+275. AC-No=650 No.=94 Name=Umair Mushtaiq Cap 274 Department=Z(Platoon No. 8)
+276. AC-No=651 No.=590 Name=Anas Ali Cap 275 Department=Z(Platoon No. 8)
+277. AC-No=652 No.=57 Name=M Talha Cap 276 Department=Z(Platoon No. 8)
+278. AC-No=653 No.=5270 Name=M Danish Cap 277 Department=Z(Platoon No. 8)
+279. AC-No=654 No.=1910 Name=Tasawar Qayyum Cap 278 Department=Z(Platoon No. 8)
+280. AC-No=655 No.=2852 Name=M Sufyan Cap 279 Department=Z(Platoon No. 8)
+281. AC-No=656 No.=3394 Name=Muhammad Fareed Cap 280 Department=Z(Platoon No. 8)
+282. AC-No=657 No.=6989 Name=Muhammad Ahmad Cap 281 Department=Z(Platoon No. 8)
+283. AC-No=658 No.=894 Name=Muhammad Sajid Cap 282 Department=Z(Platoon No. 8)
+284. AC-No=659 No.=823 Name=M Waqar Abbas Cap 283 Department=Z(Platoon No. 8)
+285. AC-No=660 No.=3206 Name=Ammar Nazqat Cap 284 Department=Z(Platoon No. 8)
+286. AC-No=661 No.=224 Name=Shavaiz Cap 285 Department=Z(Platoon No. 8)
+287. AC-No=662 No.=1427 Name=Aziz Ullah Cap 286 Department=Z(Platoon No. 8)
+288. AC-No=663 No.=197 Name=Asfand Cap 287 Department=Z(Platoon No. 8)
+289. AC-No=664 No.=366 Name=Shahzaib Cap 288 Department=Z(Platoon No. 8)
+290. AC-No=665 No.=39 Name=M Afzal Cap 289 Department=Z(Platoon No. 9)
+291. AC-No=666 No.=44 Name=M Usama Cap 290 Department=Z(Platoon No. 9)
+292. AC-No=667 No.=649 Name=Naeem Khan Cap 291 Department=Z(Platoon No. 9)
+293. AC-No=668 No.=1137 Name=M Abrar Cap 292 Department=Z(Platoon No. 9)
+294. AC-No=669 No.=433 Name=Sheharyar Cap 293 Department=Z(Platoon No. 9)
+295. AC-No=670 No.=860 Name=Auon Farooq Cap 294 Department=Z(Platoon No. 9)
+296. AC-No=671 No.=770 Name=Numan Allah Baksh Cap295 Department=Z(Platoon No. 9)
+297. AC-No=672 No.=473 Name=Tayyab Cap 296 Department=Z(Platoon No. 9)
+298. AC-No=673 No.=868 Name=Saqlain Ali Cap 297 Department=Z(Platoon No. 9)
+299. AC-No=674 No.=30 Name=Ehsan Sajjad Cap 298 Department=Z(Platoon No. 9)
+300. AC-No=675 No.=688 Name=Numan Qamar Cap 299 Department=Z(Platoon No. 9)
+301. AC-No=676 No.=315 Name=Hamza Abbas Cap 300 Department=Z(Platoon No. 9)
+302. AC-No=677 No.=1849 Name=Hassan Jahnigr Cap 301 Department=Z(Platoon No. 9)
+303. AC-No=678 No.=394 Name=Faisl Zia Cap 302 Department=Z(Platoon No. 9)
+304. AC-No=679 No.=1469 Name=Aoun Abbas Cap 303 Department=Z(Platoon No. 9)
+305. AC-No=680 No.=1283 Name=Zain Abdul Sattar Cap304 Department=Z(Platoon No. 9)
+306. AC-No=681 No.=2 Name=Abdullah Cap 305 Department=Z(Platoon No. 9)
+307. AC-No=682 No.=419 Name=M Zaman Ghfar Cap 306 Department=Z(Platoon No. 9)
+308. AC-No=683 No.=412 Name=Asad Ali Cap 307 Department=Z(Platoon No. 9)
+309. AC-No=684 No.=181 Name=Fazal Hussain Cap 308 Department=Z(Platoon No. 9)
+310. AC-No=685 No.=452 Name=M Mohsin Khan Cap 309 Department=Z(Platoon No. 9)
+311. AC-No=686 No.=109 Name=Ali Hassan Cap 310 Department=Z(Platoon No. 9)
+312. AC-No=687 No.=73 Name=Ali Raza Cap 311 Department=Z(Platoon No. 9)
+313. AC-No=688 No.=355 Name=M Zubair Cap 312 Department=Z(Platoon No. 9)
+314. AC-No=689 No.=5462 Name=Sehran Hameed Cap 313 Department=Z(Platoon No. 9)
+315. AC-No=690 No.=3165 Name=Yashwa Cap 314 Department=Z(Platoon No. 9)
+316. AC-No=691 No.=1978 Name=Ahsan Masih Cap 315 Department=Z(Platoon No. 9)
+317. AC-No=692 No.=6493 Name=Sulman Gill Cap 316 Department=Z(Platoon No. 9)
+318. AC-No=693 No.=7527 Name=M Qasim Cap 317 Department=Z(Platoon No. 9)
+319. AC-No=694 No.=1871 Name=Umar Farooq Cap 318 Department=Z(Platoon No. 9)
+320. AC-No=695 No.=6358 Name=Hassan Bilal Cap 319 Department=Z(Platoon No. 9)
+321. AC-No=696 No.=1582 Name=M Adnan Cap 320 Department=Z(Platoon No. 9)
+322. AC-No=697 No.=5296 Name=Usama Javeed Cap 321 Department=Z(Platoon No. 9)
+323. AC-No=698 No.=3569 Name=Sajid Ali Cap 322 Department=Z(Platoon No. 9)
+324. AC-No=699 No.=2341 Name=Muhammad Adnan Cap 323 Department=Z(Platoon No. 9)
+325. AC-No=700 No.=6397 Name=Nasir Ali Cap 324 Department=Z(Platoon No. 9)
+326. AC-No=701 No.=84 Name=Farhan Saleem Cap 325 Department=Z(Platoon No.10)
+327. AC-No=702 No.=920 Name=M Bilal Cap 326 Department=Z(Platoon No.10)
+328. AC-No=703 No.=1348 Name=Farhan Aslam Cap 327 Department=Z(Platoon No.10)
+329. AC-No=704 No.=525 Name=Farhan Akram Cap 328 Department=Z(Platoon No.10)
+330. AC-No=705 No.=2142 Name=M Akash  Cap 329 Department=Z(Platoon No.10)
+331. AC-No=706 No.=1439 Name=Jawad Hassan Cap 330 Department=Z(Platoon No.10)
+332. AC-No=707 No.=764 Name=M Ehtisham Cap 331 Department=Z(Platoon No.10)
+333. AC-No=708 No.=1039 Name=Mola Dad Cap 332 Department=Z(Platoon No.10)
+334. AC-No=709 No.=231 Name=M Yasin Cap 333 Department=Z(Platoon No.10)
+335. AC-No=710 No.=940 Name=Danish Ali Cap 334 Department=Z(Platoon No.10)
+336. AC-No=711 No.=857 Name=Ali Raza Cap 335 Department=Z(Platoon No.10)
+337. AC-No=712 No.=362 Name=Wikyat Hussain Cap 336 Department=Z(Platoon No.10)
+338. AC-No=713 No.=102 Name=Arslan Arshad Cap 337 Department=Z(Platoon No.10)
+339. AC-No=714 No.=322 Name=Zohaib Hassan Cap 338 Department=Z(Platoon No.10)
+340. AC-No=715 No.=2786 Name=Adil Umar Cap 339 Department=Z(Platoon No.10)
+341. AC-No=716 No.=3707 Name=M Arslan Cap 340 Department=Z(Platoon No.10)
+342. AC-No=717 No.=4314 Name=Sohail Basheer Cap 341 Department=Z(Platoon No.10)
+343. AC-No=718 No.=5841 Name=M Nadeem Cap 342 Department=Z(Platoon No.10)
+344. AC-No=719 No.=3079 Name=Ameer Hamza Cap 343 Department=Z(Platoon No.10)
+345. AC-No=720 No.=2469 Name=Mohsin Zafar Cap 344 Department=Z(Platoon No.10)
+346. AC-No=721 No.=4786 Name=Ahsan Ali Cap 345 Department=Z(Platoon No.10)
+347. AC-No=722 No.=4797 Name=c Cap 346 Department=Z(Platoon No.10)
+348. AC-No=723 No.=214 Name=M Asif Cap 347 Department=Z(Platoon No.10)
+349. AC-No=724 No.=228 Name=Qasir Abbas Cap 348 Department=Z(Platoon No.10)
+350. AC-No=725 No.=778 Name=Haji Javen Cap 349 Department=Z(Platoon No.10)
+351. AC-No=726 No.=1488 Name=Ahmad Shar Cap 350 Department=Z(Platoon No.10)
+352. AC-No=727 No.=341 Name=Ahsan Abbas Cap 351 Department=Z(Platoon No.10)
+353. AC-No=728 No.=2921 Name=Faheem Hassan Cap 352 Department=Z(Platoon No.10)
+354. AC-No=729 No.=7149 Name=Tayyab Ali Cap 353 Department=Z(Platoon No.10)
+355. AC-No=730 No.=6480 Name=M Tayyab Cap 354 Department=Z(Platoon No.10)
+356. AC-No=731 No.=3096 Name=Nayyar Abbas Cap 355 Department=Z(Platoon No.10)
+357. AC-No=732 No.=504 Name=Ghulam Sajjad Cap 356 Department=Z(Platoon No.10)
+358. AC-No=733 No.=290 Name=Tayyab Sultan Cap 357 Department=Z(Platoon No.10)
+359. AC-No=734 No.=454 Name=Muhammad Qasim Cap 358 Department=Z(Platoon No.10)
+360. AC-No=735 No.=1183 Name=Muhammad Numan Cap 359 Department=Z(Platoon No.10)
+361. AC-No=736 No.=112 Name=Muhammad Awais Cap 360 Department=Z(Platoon No.10)
+362. AC-No=737 No.=379 Name=Faisal Ali Cap 361 Department=Z(Platoon No.11)
+363. AC-No=738 No.=740 Name=Abdul Qayyum Cap 362 Department=Z(Platoon No.11)
+364. AC-No=739 No.=407 Name=Ali Khan Cap 363 Department=Z(Platoon No.11)
+365. AC-No=740 No.=562 Name=Asim Azeem Cap 364 Department=Z(Platoon No.11)
+366. AC-No=741 No.=1066 Name=Abdul Wahid Khan Cap 365 Department=Z(Platoon No.11)
+367. AC-No=742 No.=182 Name=Saqib Nawaz Cap 366 Department=Z(Platoon No.11)
+368. AC-No=743 No.=97 Name=Mohsin Raza Cap 367 Department=Z(Platoon No.11)
+369. AC-No=744 No.=1743 Name=Shareyar Ahmad Cap 368 Department=Z(Platoon No.11)
+370. AC-No=745 No.=80 Name=Muhammad Faqooq Cap 369 Department=Z(Platoon No.11)
+371. AC-No=746 No.=187 Name=Zaryaib Naseer Cap 370 Department=Z(Platoon No.11)
+372. AC-No=747 No.=175 Name=Arslan Ali Cap 371 Department=Z(Platoon No.11)
+373. AC-No=748 No.=318 Name=Faisal Iqbal Cap 372 Department=Z(Platoon No.11)
+374. AC-No=749 No.=79 Name=Qasir Iqbal Cap 373 Department=Z(Platoon No.11)
+375. AC-No=750 No.=2045 Name=Muzammil Jhangeer 374 Department=Z(Platoon No.11)
+376. AC-No=751 No.=554 Name=M Kashif Cap 376 Department=Z(Platoon No.11)
+377. AC-No=752 No.=730 Name=Hasnain Tahir Cap 377 Department=Z(Platoon No.11)
+378. AC-No=753 No.=512 Name=M Anas Imran Cap 378 Department=Z(Platoon No.11)
+379. AC-No=754 No.=34 Name=Zasheen Haider Cap 379 Department=Z(Platoon No.11)
+380. AC-No=755 No.=1097 Name=M Shoaib Cap 380 Department=Z(Platoon No.11)
+381. AC-No=757 No.=4291 Name=Shraaz Ahmad Cap 381 Department=Z(Platoon No.11)
+382. AC-No=758 No.=4953 Name=Shoaib Arif Cap 382 Department=Z(Platoon No.11)
+383. AC-No=759 No.=5360 Name=Asad Ali Cap 383 Department=Z(Platoon No.11)
+384. AC-No=760 No.=2795 Name=M Ramzan Cap 384 Department=Z(Platoon No.11)
+385. AC-No=761 No.=624 Name=M Azem Cap 385 Department=Z(Platoon No.11)
+386. AC-No=762 No.=6118 Name=Abdul Raoof Cap 386 Department=Z(Platoon No.11)
+387. AC-No=763 No.=1031 Name=Nabeel Shafeeq Cap 387 Department=Z(Platoon No.11)
+388. AC-No=764 No.=1192 Name=Zain Ul Abdeen Cap 388 Department=Z(Platoon No.11)
+389. AC-No=765 No.=1512 Name=Bin Yameen Cap 389 Department=Z(Platoon No.11)
+390. AC-No=766 No.=1900 Name=Wasif Imtiaz Cap 390 Department=Z(Platoon No.11)
+391. AC-No=767 No.=89 Name=Arongzaib Cap 391 Department=Z(Platoon No.11)
+392. AC-No=768 No.=1176 Name=Muzmal Ali Cap 392 Department=Z(Platoon No.11)
+393. AC-No=769 No.=5852 Name=Hassan Raza Cap 393 Department=Z(Platoon No.11)
+394. AC-No=770 No.=6479 Name=Ghulam Fareed Cap 394 Department=Z(Platoon No.11)
+395. AC-No=771 No.=6053 Name=Khalid Mahmood Cap 395 Department=Z(Platoon No.11)
+396. AC-No=772 No.=1491 Name=M Fahad Sohail Cap 396 Department=Z(Platoon No.11)
+397. AC-No=773 No.=722 Name=Rehan Arshad Cap 398 Department=Z(Platoon No.12)
+398. AC-No=774 No.=706 Name=Awais Ahmad Cap 399 Department=Z(Platoon No.12)
+399. AC-No=775 No.=538 Name=M Irfan Haider Cap 400 Department=Z(Platoon No.12)
+400. AC-No=776 No.=631 Name=M Mohsin Khan Cap 401 Department=Z(Platoon No.12)
+401. AC-No=777 No.=335 Name=Malik Jawad Ahmad Cap402 Department=Z(Platoon No.12)
+402. AC-No=778 No.=261 Name=Zohaib Ali Cap 403 Department=Z(Platoon No.12)
+403. AC-No=779 No.=462 Name=Ali Raza Cap 404 Department=Z(Platoon No.12)
+404. AC-No=780 No.=5436 Name=Arosh Iqbal Cap 405 Department=Z(Platoon No.12)
+405. AC-No=781 No.=424 Name=Faraz Khan Cap 406 Department=Z(Platoon No.12)
+406. AC-No=782 No.=72 Name=M fahad Javid Cap 407 Department=Z(Platoon No.12)
+407. AC-No=783 No.=1266 Name=Sharjeel Ashir Cap 408 Department=Z(Platoon No.12)
+408. AC-No=784 No.=123 Name=Haider Ali Cap 409 Department=Z(Platoon No.12)
+409. AC-No=785 No.=201 Name=M Zashan Cap 410 Department=Z(Platoon No.12)
+410. AC-No=786 No.=290 Name=Shan Ali Cap 411 Department=Z(Platoon No.12)
+411. AC-No=787 No.=3662 Name=Ali Raza Cap 412 Department=Z(Platoon No.12)
+412. AC-No=788 No.=6315 Name=Babar Ali Cap 413 Department=Z(Platoon No.12)
+413. AC-No=789 No.=1736 Name=Waqas Abbas Cap 414 Department=Z(Platoon No.12)
+414. AC-No=790 No.=476 Name=M Zubair Cap 415 Department=Z(Platoon No.12)
+415. AC-No=791 No.=399 Name=Awais Sulman Cap 416 Department=Z(Platoon No.12)
+416. AC-No=792 No.=1130 Name=M Zubair Cap 417 Department=Z(Platoon No.12)
+417. AC-No=793 No.=2009 Name=M Tahir Majeed Cap 418 Department=Z(Platoon No.12)
+418. AC-No=794 No.=2059 Name=Tahir Qayyum Cap 419 Department=Z(Platoon No.12)
+419. AC-No=795 No.=5958 Name=Ahmad Yar Cap 420 Department=Z(Platoon No.12)
+420. AC-No=796 No.=5628 Name=Zunair Cap 421 Department=Z(Platoon No.12)
+421. AC-No=797 No.=1369 Name=Shalim Shahid Cap 422 Department=Z(Platoon No.12)
+422. AC-No=798 No.=580 Name=Azhar Khan Cap 423 Department=Z(Platoon No.12)
+423. AC-No=799 No.=933 Name=M Qamar Abbas Cap 424 Department=Z(Platoon No.12)
+424. AC-No=800 No.=532 Name=Sharyar Skinder Cap 425 Department=Z(Platoon No.12)
+425. AC-No=801 No.=1764 Name=Mohsin Ali Cap 426 Department=Z(Platoon No.12)
+426. AC-No=802 No.=118 Name=Ali Hassan Cap 427 Department=Z(Platoon No.12)
+427. AC-No=803 No.=5184 Name=M Awais Cap 428 Department=Z(Platoon No.12)
+428. AC-No=804 No.=105 Name=Waqas Shahbaz Cap 429 Department=Z(Platoon No.12)
+429. AC-No=805 No.=6437 Name=Ghulam Ali Cap 430 Department=Z(Platoon No.12)
+430. AC-No=806 No.=5017 Name=Atif Raza Ali Cap 431 Department=Z(Platoon No.12)
+431. AC-No=807 No.=847 Name=M Hassan Shahzad Cap 432 Department=Z(Platoon No.12)
+432. AC-No=808 No.=1348 Name=kanth Cap 433 Department=Z(Platoon No.13)
+433. AC-No=809 No.=1349 Name=Chan Zaib Khalid Cap 434 Department=Z(Platoon No.13)
+434. AC-No=810 No.=1619 Name=irfan ali cap 435 Department=Z(Platoon No.13)
+435. AC-No=811 No.=6474 Name=Atizaz ashfaq cap 436 Department=Z(Platoon No.13)
+436. AC-No=812 No.=913 Name=Muhammad Saad Cap 437 Department=Z(Platoon No.13)
+437. AC-No=813 No.=4211 Name=Shahzaib Cap 438 Department=Z(Platoon No.13)
+438. AC-No=814 No.=130 Name=M Tayyab Ghfoor Cap 439 Department=Z(Platoon No.13)
+439. AC-No=815 No.=4647 Name=Aftab Ahmad Cap 440 Department=Z(Platoon No.13)
+440. AC-No=816 No.=5616 Name=Shahraam Iftakhar Cap441 Department=Z(Platoon No.13)
+441. AC-No=817 No.=6103 Name=Zubair Ahmad Cap 442 Department=Z(Platoon No.13)
+442. AC-No=818 No.=4783 Name=Zeshan Ahmad Cap 443 Department=Z(Platoon No.13)
+443. AC-No=819 No.=4199 Name=Muhammad Talha Cap 444 Department=Z(Platoon No.13)
+444. AC-No=820 No.=4522 Name=Awais Ali Cap 445 Department=Z(Platoon No.13)
+445. AC-No=821 No.=7165 Name=Fasial Nadeem Cap 446 Department=Z(Platoon No.13)
+446. AC-No=822 No.=1048 Name=Ali Hassan Cap 447 Department=Z(Platoon No.13)
+447. AC-No=823 No.=212 Name=Muhammad Taimoor Cap 449 Department=Z(Platoon No.13)
+448. AC-No=824 No.=193 Name=Farhan Haider Cap 450 Department=Z(Platoon No.13)
+449. AC-No=825 No.=2277 Name=Muhammad Naeem Cap 451 Department=Z(Platoon No.13)
+450. AC-No=826 No.=274 Name=Mehtaab Ahmad Cap 452 Department=Z(Platoon No.13)
+451. AC-No=827 No.=677 Name=Mohsin Khan Cap 453 Department=Z(Platoon No.13)
+452. AC-No=828 No.=794 Name=Azaan Ali Cap 454 Department=Z(Platoon No.13)
+453. AC-No=829 No.=676 Name=M Zulqairnain Cap 455 Department=Z(Platoon No.13)
+454. AC-No=830 No.=530 Name=Zain Ali Cap 456 Department=Z(Platoon No.13)
+455. AC-No=831 No.=631 Name=M Zohaib Cap 457 Department=Z(Platoon No.13)
+456. AC-No=832 No.=557 Name=Sajid Ali Cap 458 Department=Z(Platoon No.13)
+457. AC-No=833 No.=147 Name=Zashan Haider Cap459 Department=Z(Platoon No.13)
+458. AC-No=834 No.=2141 Name=Asad Abbas Cap 460 Department=Z(Platoon No.13)
+459. AC-No=835 No.=220 Name=Muhammad Imran Cap 461 Department=Z(Platoon No.13)
+460. AC-No=836 No.=596 Name=M Talal Asghar Cap 462 Department=Z(Platoon No.13)
+461. AC-No=837 No.=924 Name=Ghulam Mujtaba Cap 463 Department=Z(Platoon No.13)
+462. AC-No=838 No.=129 Name=M Kamran Cap 464 Department=Z(Platoon No.13)
+463. AC-No=839 No.=67 Name=Muzmail Abbas Cap 465 Department=Z(Platoon No.13)
+464. AC-No=840 No.=566 Name=Sohail Hassan Cap 466 Department=Z(Platoon No.13)
+465. AC-No=841 No.=26 Name=Mujhaid Ali Cap 467 Department=Z(Platoon No.13)
+466. AC-No=842 No.=680 Name=M Saqib Sana Cap 468 Department=Z(Platoon No.13)
+467. AC-No=843 No.=346 Name=M Wasi  Haider Cap 469 Department=Z(Platoon No.14)
+468. AC-No=844 No.=124 Name=Sami Ullah Cap 470 Department=Z(Platoon No.14)
+469. AC-No=845 No.=446 Name=Roheel Aslam  Cap 471 Department=Z(Platoon No.14)
+470. AC-No=846 No.=1753 Name=Haseeb Jameel Cap 472 Department=Z(Platoon No.14)
+471. AC-No=847 No.=67 Name=Javed Yasir Khan Cap 473 Department=Z(Platoon No.14)
+472. AC-No=848 No.=326 Name=M Awais Khan Cap 474 Department=Z(Platoon No.14)
+473. AC-No=849 No.=765 Name=Abdul  Kabir Cap 475 Department=Z(Platoon No.14)
+474. AC-No=850 No.=4853 Name=Talha Ali Cap 476 Department=Z(Platoon No.14)
+475. AC-No=851 No.=6455 Name=Ali Cap 477 Department=Z(Platoon No.14)
+476. AC-No=852 No.=3669 Name=Faraz Micheal Cap 478 Department=Z(Platoon No.14)
+477. AC-No=853 No.=3903 Name=Adeel Masih Cap 479 Department=Z(Platoon No.14)
+478. AC-No=854 No.=5929 Name=Ramish Qasim Cap 480 Department=Z(Platoon No.14)
+479. AC-No=855 No.=3006 Name=Ali Raza Cap 481 Department=Z(Platoon No.14)
+480. AC-No=856 No.=3123 Name=Sher Ali Cap 482 Department=Z(Platoon No.14)
+481. AC-No=857 No.=6842 Name=Uzair Bakhtiar Cap 483 Department=Z(Platoon No.14)
+482. AC-No=858 No.=6917 Name=Hammad Cap 484 Department=Z(Platoon No.14)
+483. AC-No=859 No.=2931 Name=Intasam  Asim Cap 486 Department=Z(Platoon No.14)
+484. AC-No=860 No.=2008 Name=Ahmed Javed Cap 487 Department=Z(Platoon No.14)
+485. AC-No=861 No.=261 Name=Waqas Ahmad Cap 488 Department=Z(Platoon No.14)
+486. AC-No=862 No.=58 Name=M Rizwan Cap 489 Department=Z(Platoon No.14)
+487. AC-No=863 No.=348 Name=M Rizwan Cap 490 Department=Z(Platoon No.14)
+488. AC-No=864 No.=402 Name=Ali Murtaza Cap 491 Department=Z(Platoon No.14)
+489. AC-No=865 No.=22 Name=Faisal Abbas Cap 492 Department=Z(Platoon No.14)
+490. AC-No=866 No.=166 Name=Waseem Akram Cap 493 Department=Z(Platoon No.14)
+491. AC-No=867 No.=497 Name=Mudassar Iqbal Cap 494 Department=Z(Platoon No.14)
+492. AC-No=868 No.=1047 Name=Abdul Rehman Cap 495 Department=Z(Platoon No.14)
+493. AC-No=869 No.=806 Name=M Haroon Cap 496 Department=Z(Platoon No.14)
+494. AC-No=870 No.=233 Name=M Noman Cap 497 Department=Z(Platoon No.14)
+495. AC-No=871 No.=925 Name=M Aryan Anjum Cap 498 Department=Z(Platoon No.14)
+496. AC-No=872 No.=24 Name=Sohaib Akhtar Cap 499 Department=Z(Platoon No.14)
+497. AC-No=873 No.=462 Name=Akhlaq Ahmad Cap 500 Department=Z(Platoon No.14)
+498. AC-No=874 No.=154 Name=Ishtiaq Ahmad Cap 501 Department=Z(Platoon No.14)
+499. AC-No=875 No.=1823 Name=M Shafqat Cap 502 Department=Z(Platoon No.14)
+500. AC-No=876 No.=621 Name=Tanveer Hussain  Cap 503 Department=Z(Platoon No.14)
+501. AC-No=877 No.=828 Name=Ali Hussnain Cap 504 Department=Z(Platoon No.14)
+502. AC-No=878 No.=5667 Name=M Ahad Cap 505 Department=Z(Platoon No.15)
+503. AC-No=879 No.=2876 Name=Masood Ul Hassan Cap 506 Department=Z(Platoon No.15)
+504. AC-No=880 No.=4527 Name=Ali Hassan Cap 507 Department=Z(Platoon No.15)
+505. AC-No=881 No.=3268 Name=M Mateen Shafiq Cap508 Department=Z(Platoon No.15)
+506. AC-No=882 No.=5748 Name=Hassan Abbas Cap 509 Department=Z(Platoon No.15)
+507. AC-No=883 No.=1960 Name=Arongzaib Cap 510 Department=Z(Platoon No.15)
+508. AC-No=884 No.=4009 Name=M Sohail Asghar Cap 511 Department=Z(Platoon No.15)
+509. AC-No=885 No.=7235 Name=Altaf Hussain Cap 512 Department=Z(Platoon No.15)
+510. AC-No=886 No.=3930 Name=Ehsan Ali Cap 513 Department=Z(Platoon No.15)
+511. AC-No=887 No.=3187 Name=Umar Usama Cap 514 Department=Z(Platoon No.15)
+512. AC-No=888 No.=2498 Name=Muhammad Asif Cap 515 Department=Z(Platoon No.15)
+513. AC-No=889 No.=1435 Name=Muhammad Waseem Cap516 Department=Z(Platoon No.15)
+514. AC-No=890 No.=596 Name=Tasneem Raza Cap 517 Department=Z(Platoon No.15)
+515. AC-No=891 No.=459 Name=Muhammad Anas Cap 518 Department=Z(Platoon No.15)
+516. AC-No=892 No.=1437 Name=Muhammad Fareed Cap519 Department=Z(Platoon No.15)
+517. AC-No=893 No.=488 Name=Suleman Cap 520 Department=Z(Platoon No.15)
+518. AC-No=894 No.=1604 Name=Abdullah Cap 521 Department=Z(Platoon No.15)
+519. AC-No=895 No.=29 Name=Muhammad Hammad Cap522 Department=Z(Platoon No.15)
+520. AC-No=896 No.=448 Name=M Husnain Raza Cap 523 Department=Z(Platoon No.15)
+521. AC-No=897 No.=734 Name=Irfan Khan Cap 524 Department=Z(Platoon No.15)
+522. AC-No=898 No.=494 Name=Danish Ali  Cap 525 Department=Z(Platoon No.15)
+523. AC-No=899 No.=302 Name=M Shabir Sultan Cap526 Department=Z(Platoon No.15)
+524. AC-No=900 No.=890 Name=Jawad Azhar   Cap 527 Department=Z(Platoon No.15)
+525. AC-No=901 No.=297 Name=Nabeel Hassan Cap 528 Department=Z(Platoon No.15)
+526. AC-No=902 No.=2013 Name=Azam Sharif Cap 529 Department=Z(Platoon No.15)
+527. AC-No=903 No.=908 Name=M Shahzaib Cap 530 Department=Z(Platoon No.15)
+528. AC-No=904 No.=699 Name=Shahzad Shafiq Cap 531 Department=Z(Platoon No.15)
+529. AC-No=905 No.=187 Name=Shabab Haider Cap 532 Department=Z(Platoon No.15)
+530. AC-No=906 No.=702 Name=Sami Ullah Cap 533 Department=Z(Platoon No.15)
+531. AC-No=907 No.=174 Name=Mubashir Hassan Cap 534 Department=Z(Platoon No.15)
+532. AC-No=908 No.=149 Name=Danish Mumtaz Cap 535 Department=Z(Platoon No.15)
+533. AC-No=909 No.=143 Name=Muhammad Shahraz Cap 536 Department=Z(Platoon No.15)
+534. AC-No=910 No.=342 Name=Muzmail Abbas Cap 537 Department=Z(Platoon No.15)
+535. AC-No=911 No.=180 Name=Muhammad Khurshed Cap538 Department=Z(Platoon No.15)
+536. AC-No=912 No.=414 Name=Hameed Ullah Cap 539 Department=Z(Platoon No.15)
+537. AC-No=913 No.=163 Name=M Ahsan shabir Cap 540 Department=Z(Platoon No.15)
+538. AC-No=914 No.=59 Name=Saad Khan Cap 541 Department=Z(Platoon No.16)
+539. AC-No=915 No.=248 Name=Naurang Zaib  Cap 542 Department=Z(Platoon No.16)
+540. AC-No=916 No.=1279 Name=Dil Sher Cap 375 Department=Z(Platoon No.11)
+541. AC-No=917 No.=6516 Name=Shehram Iftikhar Cap441 Department=Z(Platoon No.13)
+542. AC-No=918 No.=4698 Name=Tajmmal Cap 485 Department=Z(Platoon No.14)
+543. AC-No=919 No.=1056 Name=Shahzaib Cap 543 Department=Z(Platoon No.16)
+544. AC-No=920 No.=642 Name=Fahad Irshad Cap 544 Department=Z(Platoon No.16)
+545. AC-No=921 No.=813 Name=Irfan Ali Cap 545 Department=Z(Platoon No.16)
+546. AC-No=922 No.=1622 Name=Ali Hassan Cap 546 Department=Z(Platoon No.16)
+547. AC-No=923 No.=987 Name=Ali Hassan Cap 547 Department=Z(Platoon No.16)
+548. AC-No=924 No.=754 Name=M Zubair Abbas Cap 548 Department=Z(Platoon No.16)
+549. AC-No=925 No.=1001 Name=Sana Ullah Cap 549 Department=Z(Platoon No.16)
+550. AC-No=926 No.=792 Name=M Zubair Cap 550 Department=Z(Platoon No.16)
+551. AC-No=927 No.=544 Name=Muhammad Irfan Cap 552 Department=Z(Platoon No.16)
+552. AC-No=928 No.=99 Name=Mubashir Iqbal Cap 553 Department=Z(Platoon No.16)
+553. AC-No=929 No.=372 Name=Muhammad Bilal Cap 554 Department=Z(Platoon No.16)
+554. AC-No=930 No.=363 Name=Mhadi Hassan Cap 555 Department=Z(Platoon No.16)
+555. AC-No=931 No.=712 Name=Muhammad Kaif Cap 556 Department=Z(Platoon No.16)
+556. AC-No=932 No.=286 Name=irshad Hussain Cap 557 Department=Z(Platoon No.16)
+557. AC-No=933 No.=1641 Name=Umar Ahsan Cap 558 Department=Z(Platoon No.16)
+558. AC-No=934 No.=3045 Name=M Usama Shahid Cap 559 Department=Z(Platoon No.16)
+559. AC-No=935 No.=1384 Name=Nazakat Ali Cap 560 Department=Z(Platoon No.16)
+560. AC-No=936 No.=354 Name=Muzmail Hassan Cap 561 Department=Z(Platoon No.16)
+561. AC-No=937 No.=774 Name=Saqlain Abbas Cap 562 Department=Z(Platoon No.16)
+562. AC-No=938 No.=1050 Name=M Asad Abbas Cap 563 Department=Z(Platoon No.16)
+563. AC-No=939 No.=1367 Name=Ameer M khan Cap 564 Department=Z(Platoon No.16)
+564. AC-No=940 No.=704 Name=M Sadiq Khan Cap 565 Department=Z(Platoon No.16)
+565. AC-No=941 No.=647 Name=Sanam Ali Cap 566 Department=Z(Platoon No.16)
+566. AC-No=942 No.=735 Name=Faheem Abbas Cap 567 Department=Z(Platoon No.16)
+567. AC-No=943 No.=182 Name=Ali Hassan Cap 568 Department=Z(Platoon No.16)
+568. AC-No=944 No.=702 Name=Mudassir hayat Cap 569 Department=Z(Platoon No.16)
+569. AC-No=945 No.=5 Name=M Hammad  Cap 570 Department=Z(Platoon No.16)
+570. AC-No=946 No.=6/TA Name=Shahbaz Khan Cap 571 Department=Z(Platoon No.16)
+571. AC-No=947 No.=24/TA Name=M Arslan Siknder Cap 572 Department=Z(Platoon No.16)
+572. AC-No=948 No.=133/TA Name=M Adnan Maqsod Cap 573 Department=Z(Platoon No.16)
+573. AC-No=949 No.=266/TA Name=M Suleman Yousaf Cap 574 Department=Z(Platoon No.16)
+574. AC-No=950 No.=11/TA Name=Hafiz zameer Cap 575 Department=Z(Platoon No.16)
+575. AC-No=951 No.=5/TA Name=jamaid Iqbal Cap 576 Department=Z(Platoon No.16)
+576. AC-No=952 No.=792 Name=Syed Komal Shah Cap 551 Department=Z(Platoon No.16)
+577. AC-No=953 No.=485 Name=M bilal cap 577 Department=Z(Platoon No.17)
+578. AC-No=954 No.=596 Name=Basit Cap 578 Department=Z(Platoon No.17)
+579. AC-No=955 No.=858 Name=M Ahsan Cap 579 Department=Z(Platoon No.17)
+580. AC-No=956 No.=7142 Name=Arshad Cap 580 Department=Z(Platoon No.17)
+581. AC-No=957 No.=523 Name=Aziz ur Rahman Cap 581 Department=Z(Platoon No.17)
+582. AC-No=958 No.=1128 Name=Abdul Sattar Cap 582 Department=Z(Platoon No.17)
+583. AC-No=959 No.=1482 Name=Sufiyan Cap 583 Department=Z(Platoon No.17)
+584. AC-No=960 No.=3097 Name=Ahsan Cap 584 Department=Z(Platoon No.17)
+585. AC-No=961 No.=1010 Name=Shafique Saqib Cap 585 Department=Z(Platoon No.17)
+586. AC-No=962 No.=729 Name=Zohaib Zakir Cap 586 Department=Z(Platoon No.17)
+587. AC-No=963 No.=4846 Name=Khazir Hayyat Cap 587 Department=Z(Platoon No.17)
+588. AC-No=964 No.=561 Name=Qasim Cap 588 Department=Z(Platoon No.17)
+589. AC-No=965 No.=494 Name=Sajjad Arshad Cap 589 Department=Z(Platoon No.17)
+590. AC-No=966 No.=6722 Name=Numan Ahsan Cap 590 Department=Z(Platoon No.17)
+591. AC-No=967 No.=5369 Name=Saif ur Rheman Cap 591 Department=Z(Platoon No.17)
+592. AC-No=968 No.=2548 Name=Zulfiqar Ali Cap 592 Department=Z(Platoon No.17)
+593. AC-No=969 No.=2554 Name=Asad Hayyat Cap 593 Department=Z(Platoon No.17)
+594. AC-No=970 No.=2553 Name=Adeel Abid Cap 594 Department=Z(Platoon No.17)
+595. AC-No=971 No.=723 Name=Aurangzeb Cap 595 Department=Z(Platoon No.17)
+596. AC-No=972 No.=2559 Name=M Rashid Cap 596 Department=Z(Platoon No.17)
+597. AC-No=973 No.=1910 Name=Shahzad Hussain Cap 597 Department=Z(Platoon No.17)
+598. AC-No=974 No.=240 Name=M Rizwan Cap 598 Department=Z(Platoon No.17)
+599. AC-No=975 No.=7503 Name=Zafar Hussain Cap 599 Department=Z(Platoon No.17)
+600. AC-No=976 No.=2301 Name=Naveed Hussain Cap 600 Department=Z(Platoon No.17)
+601. AC-No=977 No.=7480 Name=C Cap 601 Department=Z(Platoon No.17)
+602. AC-No=978 No.=7493 Name=M Adeel Cap 602 Department=Z(Platoon No.17)
+603. AC-No=979 No.=3526 Name=Ijaz Hussain Cap 603 Department=Z(Platoon No.17)
+604. AC-No=980 No.=740 Name=M Rizwan Cap 604 Department=Z(Platoon No.17)
+605. AC-No=981 No.=7492 Name=Yasir Ali Cap 605 Department=Z(Platoon No.17)
+606. AC-No=982 No.=1257 Name=Rehmat Ullah Cap 606 Department=Z(Platoon No.17)
+607. AC-No=983 No.=392 Name=Adeel Ahmad Cap 607 Department=Z(Platoon No.17)
+608. AC-No=984 No.=1088 Name=Shaloom Shahzad Cap 608 Department=Z(Platoon No.17)
+609. AC-No=985 No.=2814 Name=Shamshir Ali Cap 609 Department=Z(Platoon No.17)
+610. AC-No=986 No.=143 Name=Sajjad Sharif Cap 610 Department=Z(Platoon No.17)
+611. AC-No=987 No.=2137 Name=Munawar Abbas Cap 611 Department=Z(Platoon No.17)
+612. AC-No=988 No.=1242 Name=M Sajjad Cap 612 Department=Z(Platoon No.17)
+613. AC-No=989 No.=1235 Name=Bilal zulqernain Cap 613 Department=Z(Platoon No.18)
+614. AC-No=990 No.=7196 Name=M Sufyan Cap 614 Department=Z(Platoon No.18)
+615. AC-No=991 No.=4597 Name=Abu sufyan Cap 615 Department=Z(Platoon No.18)
+616. AC-No=992 No.=1239 Name=M Naeem Cap 616 Department=Z(Platoon No.18)
+617. AC-No=993 No.=622 Name=M Rizwan Cap 617 Department=Z(Platoon No.18)
+618. AC-No=994 No.=125 Name=M bilal Cap 618 Department=Z(Platoon No.18)
+619. AC-No=995 No.=1250 Name=M Irfan Cap 619 Department=Z(Platoon No.18)
+620. AC-No=996 No.=971 Name=Hafiz Umair Cap 620 Department=Z(Platoon No.18)
+621. AC-No=997 No.=619 Name=Shafique Rehman Cap 621 Department=Z(Platoon No.18)
+622. AC-No=998 No.=168 Name=M Musadiq Cap 622 Department=Z(Platoon No.18)
+623. AC-No=999 No.=397 Name=Kashif Cap 623 Department=Z(Platoon No.18)
+624. AC-No=1000 No.=1064 Name=M Bilal Cap 624 Department=Z(Platoon No.18)
+625. AC-No=1001 No.=1194 Name=Abdullah Cap 625 Department=Z(Platoon No.18)
+626. AC-No=1002 No.=2354 Name=Saqlain Cap 626 Department=Z(Platoon No.18)
+627. AC-No=1003 No.=879 Name=Umair Hassan Cap 627 Department=Z(Platoon No.18)
+628. AC-No=1004 No.=7494 Name=Khurram Cap 628 Department=Z(Platoon No.18)
+629. AC-No=1005 No.=433 Name=Wajeeh Ahmad Cap 629 Department=Z(Platoon No.18)
+630. AC-No=1006 No.=505 Name=M Nadeem Cap 630 Department=Z(Platoon No.18)
+631. AC-No=1007 No.=3157 Name=Azhar Abbas Cap 631 Department=Z(Platoon No.18)
+632. AC-No=1008 No.=585 Name=Waqas Cap 632 Department=Z(Platoon No.18)
+633. AC-No=1011 No.=641 Name=Naeem Zafar Cap 448 Department=Z(Platoon No.13)
+634. AC-No=1012 No.=2395 Name=Shahid Khan Cap 37 Department=ZL(Platoon No.02)
+635. AC-No=1013 No.=5345 Name=M. Abdullah Cap 1 Department=ZL(Platoon No.01)
+636. AC-No=1014 No.=1189 Name=Muzamil Hussain Cap 2 Department=ZL(Platoon No.01)
+637. AC-No=1015 No.=5327 Name=Ali Abdullah Cap 3 Department=ZL(Platoon No.01)
+638. AC-No=1016 No.=3060 Name=Zain Ali Cap 4 Department=ZL(Platoon No.01)
+639. AC-No=1017 No.=4180 Name=M. Muneeb Cap 5 Department=ZL(Platoon No.01)
+640. AC-No=1018 No.=2809 Name=Shahzad Ali Cap 6 Department=ZL(Platoon No.01)
+641. AC-No=1019 No.=2442 Name=Shahbaz Haider Cap 7 Department=ZL(Platoon No.01)
+642. AC-No=1020 No.=4036 Name=M Saqlain Cap 8 Department=ZL(Platoon No.01)
+643. AC-No=1021 No.=3089 Name=M. Asgher Cap 9 Department=ZL(Platoon No.01)
+644. AC-No=1022 No.=2857 Name=M. Jasim Cap 10 Department=ZL(Platoon No.01)
+645. AC-No=1023 No.=5265 Name=Qasim Hussain Cap 11 Department=ZL(Platoon No.01)
+646. AC-No=1024 No.=3126 Name=M Arslan Cap 12 Department=ZL(Platoon No.01)
+647. AC-No=1025 No.=2806 Name=Hammad Azhar  Cap 13 Department=ZL(Platoon No.01)
+648. AC-No=1026 No.=770 Name=Sumriaz  Cap 14 Department=ZL(Platoon No.01)
+649. AC-No=1027 No.=2786 Name=Ali Raza Cap 15 Department=ZL(Platoon No.01)
+650. AC-No=1028 No.=2987 Name=Mazhar Mehboob Cap 16 Department=ZL(Platoon No.01)
+651. AC-No=1029 No.=4035 Name=Naveed Ahmed Cap 17 Department=ZL(Platoon No.01)
+652. AC-No=1030 No.=4000 Name=Bilal Riaz Cap 18 Department=ZL(Platoon No.01)
+653. AC-No=1031 No.=3242 Name=Faisal Riaz Cap 19 Department=ZL(Platoon No.01)
+654. AC-No=1032 No.=1329 Name=Arshad Latif Cap 20 Department=ZL(Platoon No.01)
+655. AC-No=1033 No.=3972 Name=M Awais Cap 21 Department=ZL(Platoon No.01)
+656. AC-No=1034 No.=2815 Name=Shabbir Hussain Cap 22 Department=ZL(Platoon No.01)
+657. AC-No=1035 No.=779 Name=M. Waseem Cap 23 Department=ZL(Platoon No.01)
+658. AC-No=1036 No.=4717 Name=M. Tayab Cap 24 Department=ZL(Platoon No.01)
+659. AC-No=1037 No.=5249 Name=Saqib Abbas Cap 25 Department=ZL(Platoon No.01)
+660. AC-No=1038 No.=4096 Name=Rizwan Ali Cap 26 Department=ZL(Platoon No.01)
+661. AC-No=1039 No.=376 Name=Syed Afrasyab  Cap 27 Department=ZL(Platoon No.01)
+662. AC-No=1040 No.=5779 Name=M. Ashiq Cap 28 Department=ZL(Platoon No.01)
+663. AC-No=1041 No.=5328 Name=Amir Shahzad Cap 29 Department=ZL(Platoon No.01)
+664. AC-No=1042 No.=3982 Name=Bilal Hanif Cap 30 Department=ZL(Platoon No.01)
+665. AC-No=1043 No.=3731 Name=Mehtab Saleem Cap 31 Department=ZL(Platoon No.01)
+666. AC-No=1044 No.=4068 Name=Arshad Hussain Cap 32 Department=ZL(Platoon No.01)
+667. AC-No=1045 No.=2385 Name=Umer Sheraz Cap 33 Department=ZL(Platoon No.01)
+668. AC-No=1046 No.=4069 Name=Wajid Ali Cap 34 Department=ZL(Platoon No.01)
+669. AC-No=1047 No.=3504 Name=Shehryar Ahmed Cap 35 Department=ZL(Platoon No.01)
+670. AC-No=1048 No.=5103 Name=Muhammad Bilal Cap 36 Department=ZL(Platoon No.01)
+671. AC-No=1049 No.=918 Name=Tanveer Abbas Cap 38 Department=ZL(Platoon No.02)
+672. AC-No=1050 No.=4780 Name=Ayube Cap 39 Department=ZL(Platoon No.02)
+673. AC-No=1051 No.=5832 Name=M. Haseeb Cap 40 Department=ZL(Platoon No.02)
+674. AC-No=1052 No.=5135 Name=M. Tayyab Cap 41 Department=ZL(Platoon No.02)
+675. AC-No=1053 No.=3350 Name=M. Akram Cap 42 Department=ZL(Platoon No.02)
+676. AC-No=1054 No.=4944 Name=Abdul Hameed Cap 43 Department=ZL(Platoon No.02)
+677. AC-No=1055 No.=2737 Name=Rizwan Muneer Cap 44 Department=ZL(Platoon No.02)
+678. AC-No=1056 No.=3156 Name=Ahmed Hassan Cap 45 Department=ZL(Platoon No.02)
+679. AC-No=1057 No.=3812 Name=M. Asad Cap 46 Department=ZL(Platoon No.02)
+680. AC-No=1058 No.=4781 Name=Raheel Murtaza Cap 47 Department=ZL(Platoon No.02)
+681. AC-No=1059 No.=1566 Name=Junaid Hassan Cap 48 Department=ZL(Platoon No.02)
+682. AC-No=1060 No.=5459 Name=M. Mozam Cap 49 Department=ZL(Platoon No.02)
+683. AC-No=1061 No.=2676 Name=M Ibrar Sabir Cap 50 Department=ZL(Platoon No.02)
+684. AC-No=1062 No.=3792 Name=Hamza Cap 51 Department=ZL(Platoon No.02)
+685. AC-No=1063 No.=5215 Name=Noman Ijaz Cap 52 Department=ZL(Platoon No.02)
+686. AC-No=1064 No.=292 Name=Zahid Cap 53 Department=ZL(Platoon No.02)
+687. AC-No=1065 No.=2594 Name=Farhan Cap 54 Department=ZL(Platoon No.02)
+688. AC-No=1066 No.=2870 Name=Ameer Hamza Cap 55 Department=ZL(Platoon No.02)
+689. AC-No=1067 No.=5554 Name=Mubashir Ahmed Cap 56 Department=ZL(Platoon No.02)
+690. AC-No=1068 No.=5968 Name=M Jawad Cap 57 Department=ZL(Platoon No.02)
+691. AC-No=1069 No.=1807 Name=Rashid Riaz Cap 58 Department=ZL(Platoon No.02)
+692. AC-No=1070 No.=4260 Name=M. Usama Cap 59 Department=ZL(Platoon No.02)
+693. AC-No=1071 No.=4368 Name=Bilal Hussain Cap 60 Department=ZL(Platoon No.02)
+694. AC-No=1072 No.=3104 Name=Talah Umair Cap 61 Department=ZL(Platoon No.02)
+695. AC-No=1073 No.=4434 Name=Sabtain Cap 62 Department=ZL(Platoon No.02)
+696. AC-No=1074 No.=2359 Name=Ahmed Sher Cap 63 Department=ZL(Platoon No.02)
+697. AC-No=1075 No.=1059 Name=M. Rizwan Cap 64 Department=ZL(Platoon No.02)
+698. AC-No=1076 No.=5560 Name=M. Aqib Shah Cap 65 Department=ZL(Platoon No.02)
+699. AC-No=1077 No.=5406 Name=M. Waqas Saqi Cap 66 Department=ZL(Platoon No.02)
+700. AC-No=1078 No.=3878 Name=M. Kamran Cap 67 Department=ZL(Platoon No.02)
+701. AC-No=1079 No.=1030 Name=M. Afzal Cap 68 Department=ZL(Platoon No.02)
+702. AC-No=1080 No.=818 Name=Riaz Ahmed Cap 69 Department=ZL(Platoon No.02)
+703. AC-No=1081 No.=1954 Name=Mohsin Ali Cap 70 Department=ZL(Platoon No.02)
+704. AC-No=1082 No.=164 Name=M. Saleem Akhtar Cap 71 Department=ZL(Platoon No.02)
+705. AC-No=1083 No.=76 Name=M Waryam Cap 72 Department=ZL(Platoon No.02)
+706. AC-No=1084 No.=4377 Name=Syed Mesam Cap 73 Department=ZL(Platoon No.03)
+707. AC-No=1085 No.=563 Name=Babar Ali Cap 74 Department=ZL(Platoon No.03)
+708. AC-No=1086 No.=5042 Name=M. Albela Cap  75 Department=ZL(Platoon No.03)
+709. AC-No=1087 No.=5435 Name=M. Faheem Cap 76 Department=ZL(Platoon No.03)
+710. AC-No=1088 No.=2086 Name=M. Saleem Cap 77 Department=ZL(Platoon No.03)
+711. AC-No=1089 No.=4239 Name=Faiz Sultan Cap 78 Department=ZL(Platoon No.03)
+712. AC-No=1090 No.=5231 Name=M. Waqar Cap 79 Department=ZL(Platoon No.03)
+713. AC-No=1091 No.=5128 Name=M. Saqlain Cap 80 Department=ZL(Platoon No.03)
+714. AC-No=1092 No.=2618 Name=Azam Ali Cap 81 Department=ZL(Platoon No.03)
+715. AC-No=1093 No.=401 Name=M. Nadeem Cap 82 Department=ZL(Platoon No.03)
+716. AC-No=1094 No.=1389 Name=Mohsin Raza Cap 83 Department=ZL(Platoon No.03)
+717. AC-No=1095 No.=4856 Name=Zeeshan Ali Cap 84 Department=ZL(Platoon No.03)
+718. AC-No=1096 No.=4914 Name=Waqar Mustafa Cap 85 Department=ZL(Platoon No.03)
+719. AC-No=1097 No.=5794 Name=M. Saleem Cap 86 Department=ZL(Platoon No.03)
+720. AC-No=1098 No.=4006 Name=M. Zeeshan Cap 87 Department=ZL(Platoon No.03)
+721. AC-No=1099 No.=3255 Name=M. Asam Cap 88 Department=ZL(Platoon No.03)
+722. AC-No=1100 No.=4200 Name=M. Aqib Cap 89 Department=ZL(Platoon No.03)
+723. AC-No=1101 No.=150 Name=M. Sibtain Cap 90 Department=ZL(Platoon No.03)
+724. AC-No=1102 No.=2541 Name=Farhan Ali Cap 91 Department=ZL(Platoon No.03)
+725. AC-No=1103 No.=4777 Name=M. Rizwan Cap 92 Department=ZL(Platoon No.03)
+726. AC-No=1104 No.=813 Name=Kamal Khan Cap 93 Department=ZL(Platoon No.03)
+727. AC-No=1105 No.=829 Name=Husnain Khan Cap 94 Department=ZL(Platoon No.03)
+728. AC-No=1106 No.=2212 Name=M. Shehrooz Cap 95 Department=ZL(Platoon No.03)
+729. AC-No=1107 No.=4216 Name=Mueen Qadir Cap 96 Department=ZL(Platoon No.03)
+730. AC-No=1108 No.=3323 Name=M. Adnan Cap 97 Department=ZL(Platoon No.03)
+731. AC-No=1109 No.=2799 Name=Muzafar Javed Cap 98 Department=ZL(Platoon No.03)
+732. AC-No=1110 No.=3733 Name=Babar Ali Cap 99 Department=ZL(Platoon No.03)
+733. AC-No=1111 No.=1397 Name=M. Junaid Cap 100 Department=ZL(Platoon No.03)
+734. AC-No=1112 No.=5206 Name=M. Akhtar Cap 101 Department=ZL(Platoon No.03)
+735. AC-No=1113 No.=405 Name=Munawar Iqbal Cap 102 Department=ZL(Platoon No.03)
+736. AC-No=1114 No.=177 Name=M. Ishfaq Cap 103 Department=ZL(Platoon No.03)
+737. AC-No=1115 No.=229 Name=M. Shahbaz Cap 104 Department=ZL(Platoon No.03)
+738. AC-No=1116 No.=543 Name=M. Ramzan Cap 105 Department=ZL(Platoon No.03)
+739. AC-No=1117 No.=1690 Name=Nazeer Ahmad Cap 106 Department=ZL(Platoon No.03)
+740. AC-No=1118 No.=2479 Name=Adil Hussain Cap 107 Department=ZL(Platoon No.03)
+741. AC-No=1119 No.=5144 Name=M. Salam  Cap108 Department=ZL(Platoon No.03)
+742. AC-No=1120 No.=897 Name=Abdul Waheed Cap 109 Department=ZL(Platoon No.04)
+743. AC-No=1121 No.=915 Name=M. Asif Cap 110 Department=ZL(Platoon No.04)
+744. AC-No=1122 No.=128 Name=Akbar Ali Cap 111 Department=ZL(Platoon No.04)
+745. AC-No=1123 No.=513 Name=M. Akmal Cap 112 Department=ZL(Platoon No.04)
+746. AC-No=1124 No.=807 Name=Akhtar Abbas Cap 113 Department=ZL(Platoon No.04)
+747. AC-No=1125 No.=201 Name=Altaf Ali Cap 114 Department=ZL(Platoon No.04)
+748. AC-No=1126 No.=260 Name=M. Shahbaz Cap 115 Department=ZL(Platoon No.04)
+749. AC-No=1127 No.=468 Name=Ghulam Hussain Cap 116 Department=ZL(Platoon No.04)
+750. AC-No=1128 No.=4153 Name=M. Ishaq Cap 117 Department=ZL(Platoon No.04)
+751. AC-No=1129 No.=5596 Name=Farukh Haneef Cap 118 Department=ZL(Platoon No.04)
+752. AC-No=1130 No.=4116 Name=M. Adnan Cap 119 Department=ZL(Platoon No.04)
+753. AC-No=1131 No.=4402 Name=Ansar Ali  Cap 120 Department=ZL(Platoon No.04)
+754. AC-No=1132 No.=5032 Name=M. Mujhaid Cap 121 Department=ZL(Platoon No.04)
+755. AC-No=1133 No.=4800 Name=Azmat Ali Cap 122 Department=ZL(Platoon No.04)
+756. AC-No=1134 No.=4811 Name=Ihtasham Cap 123 Department=ZL(Platoon No.04)
+757. AC-No=1135 No.=5532 Name=Saif Ullah Cap 124 Department=ZL(Platoon No.04)
+758. AC-No=1136 No.=5525 Name=Babar Ali Cap 125 Department=ZL(Platoon No.04)
+759. AC-No=1137 No.=2565 Name=Rehman Mushtaq Cap 126 Department=ZL(Platoon No.04)
+760. AC-No=1138 No.=2561 Name=M. Awais Cap 127 Department=ZL(Platoon No.04)
+761. AC-No=1139 No.=3114 Name=M. Usman Khalid Cap 128 Department=ZL(Platoon No.04)
+762. AC-No=1140 No.=4037 Name=M. Kamran Cap 129 Department=ZL(Platoon No.04)
+763. AC-No=1141 No.=3343 Name=Mazhar Ali Cap 130 Department=ZL(Platoon No.04)
+764. AC-No=1142 No.=5107 Name=Mudassir Hussain Cap131 Department=ZL(Platoon No.04)
+765. AC-No=1143 No.=5127 Name=M. Adnan Cap 132 Department=ZL(Platoon No.04)
+766. AC-No=1144 No.=5983 Name=Kamran Cap 133 Department=ZL(Platoon No.04)
+767. AC-No=1145 No.=282 Name=M. Kamal Ikram Cap 134 Department=ZL(Platoon No.04)
+768. AC-No=1146 No.=3174 Name=M. Awais Cap 135 Department=ZL(Platoon No.04)
+769. AC-No=1147 No.=70 Name=Nasir Abbas Cap 136 Department=ZL(Platoon No.04)
+770. AC-No=1148 No.=75 Name=Mudassir Cap 137 Department=ZL(Platoon No.04)
+771. AC-No=1149 No.=111 Name=Rashid Ali Cap 138 Department=ZL(Platoon No.04)
+772. AC-No=1150 No.=93 Name=Waqas Ashraf Cap 139 Department=ZL(Platoon No.04)
+773. AC-No=1151 No.=2642 Name=M. Umar Cap 140 Department=ZL(Platoon No.04)
+774. AC-No=1152 No.=3571 Name=M. Awais Khalil Cap 141 Department=ZL(Platoon No.04)
+775. AC-No=1153 No.=3580 Name=M. Usama Zubair Cap 142 Department=ZL(Platoon No.04)
+776. AC-No=1154 No.=3884 Name=Shahid Iqbal Cap 143 Department=ZL(Platoon No.04)
+777. AC-No=1155 No.=854 Name=Abdullah Waheed 144 Department=ZL(Platoon No.04)
+778. AC-No=1158 No.=- Name=Sher Ali Cap Department=ZL(Platoon No.04)
+779. AC-No=1159 No.=719 Name=Sher Ali Cap 145 Department=ZL(Platoon No.05)
+780. AC-No=1160 No.=4199 Name=Bilal Abbas Cap 146 Department=ZL(Platoon No.05)
+781. AC-No=1161 No.=3803 Name=Qamar Shahzad Cap 147 Department=ZL(Platoon No.05)
+782. AC-No=1162 No.=3804 Name=Shoaib Ahmad Cap 148 Department=ZL(Platoon No.05)
+783. AC-No=1163 No.=1745 Name=Qamar Shahzad   Cap 149 Department=ZL(Platoon No.05)
+784. AC-No=1164 No.=4648 Name=Muhammad Mohsin Cap 150 Department=ZL(Platoon No.05)
+785. AC-No=1165 No.=3909 Name=Sabir Riaz Cap 151 Department=ZL(Platoon No.05)
+786. AC-No=1166 No.=4651 Name=Hassan Ali Cap 152 Department=ZL(Platoon No.05)
+787. AC-No=1167 No.=4506 Name=Muhammad Zubair Cap 153 Department=ZL(Platoon No.05)
+788. AC-No=1168 No.=4741 Name=Muhammad Waseem Cap 154 Department=ZL(Platoon No.05)
+789. AC-No=1169 No.=2573 Name=Khurram Asif Cap 155 Department=ZL(Platoon No.05)
+790. AC-No=1170 No.=348 Name=Sana Ullah Cap 156 Department=ZL(Platoon No.05)
+791. AC-No=1171 No.=961 Name=Muhammad Afzal Cap 157 Department=ZL(Platoon No.05)
+792. AC-No=1172 No.=5679 Name=Tauqair  CAp 158 Department=ZL(Platoon No.05)
+793. AC-No=1173 No.=3049 Name=Muhammad MasooD Cap 159 Department=ZL(Platoon No.05)
+794. AC-No=1174 No.=1818 Name=Mumtaz Hussain Cap 160 Department=ZL(Platoon No.05)
+795. AC-No=1175 No.=834 Name=Sami Ullah Cap 161 Department=ZL(Platoon No.05)
+796. AC-No=1176 No.=820 Name=Muhammad Ramzan Cap 162 Department=ZL(Platoon No.05)
+797. AC-No=1177 No.=827 Name=Faisal Iqbal Cap 163 Department=ZL(Platoon No.05)
+798. AC-No=1178 No.=5166 Name=Asim Ali Cap 164 Department=ZL(Platoon No.05)
+799. AC-No=1179 No.=2972 Name=Muhammad Afzal Cap 165 Department=ZL(Platoon No.05)
+800. AC-No=1180 No.=3035 Name=Abdul Rauf Cap 166 Department=ZL(Platoon No.05)
+801. AC-No=1181 No.=3003 Name=Sunail Ali Cap 167 Department=ZL(Platoon No.05)
+802. AC-No=1182 No.=2993 Name=Mansab Ali Cap 168 Department=ZL(Platoon No.05)
+803. AC-No=1183 No.=5168 Name=Khalil Ullah Cap 169 Department=ZL(Platoon No.05)
+804. AC-No=1184 No.=2983 Name=Fahad Sulman Cap 170 Department=ZL(Platoon No.05)
+805. AC-No=1185 No.=2884 Name=Muhammad Shahbaz Cap 171 Department=ZL(Platoon No.05)
+806. AC-No=1186 No.=5446 Name=Muhammad Nasir Cap 172 Department=ZL(Platoon No.05)
+807. AC-No=1187 No.=3011 Name=Ghulam Mustafa Cap 173 Department=ZL(Platoon No.05)
+808. AC-No=1188 No.=4366 Name=Naveed Akhtar Cap 174 Department=ZL(Platoon No.05)
+809. AC-No=1189 No.=3209 Name=Muhammad Waqas Cap 175 Department=ZL(Platoon No.05)
+810. AC-No=1190 No.=1706 Name=Shahid Iqbal Cap 176 Department=ZL(Platoon No.05)
+811. AC-No=1191 No.=3642 Name=Arshad Abbas Cap 177 Department=ZL(Platoon No.05)
+812. AC-No=1192 No.=3707 Name=Muhammad Babar Cap 178 Department=ZL(Platoon No.05)
+813. AC-No=1193 No.=4381 Name=Ahsan Ali Cap 179 Department=ZL(Platoon No.05)
+814. AC-No=1194 No.=3654 Name=Muhammad Imran Cap 180 Department=ZL(Platoon No.05)
+815. AC-No=1195 No.=5230 Name=Naveed Ahmad Cap 181 Department=ZL(Platoon No.06)
+816. AC-No=1196 No.=2635 Name=Ali Naseer Cap 182 Department=ZL(Platoon No.06)
+817. AC-No=1197 No.=300 Name=Muhammad Kashif Cap 183 Department=ZL(Platoon No.06)
+818. AC-No=1198 No.=1362 Name=Zasheen Haider Cap 184 Department=ZL(Platoon No.06)
+819. AC-No=1199 No.=1355 Name=Arshad Abbas Cap 185 Department=ZL(Platoon No.06)
+820. AC-No=1200 No.=1333 Name=Muhammad Amir Cap 186 Department=ZL(Platoon No.06)
+821. AC-No=1201 No.=1987 Name=Akash Cap187 Department=ZL(Platoon No.06)
+822. AC-No=1202 No.=2762 Name=Sohail Arif Cap 188 Department=ZL(Platoon No.06)
+823. AC-No=1203 No.=4493 Name=Sajid Ali Cap 189 Department=ZL(Platoon No.06)
+824. AC-No=1204 No.=3679 Name=Muhammad Asif Cap 190 Department=ZL(Platoon No.06)
+825. AC-No=1205 No.=2257 Name=Muhammad Husnain Cap191 Department=ZL(Platoon No.06)
+826. AC-No=1206 No.=3408 Name=Farooq Ahmad Cap 192 Department=ZL(Platoon No.06)
+827. AC-No=1207 No.=5207 Name=Ansar Mumtaz Cap 193 Department=ZL(Platoon No.06)
+828. AC-No=1208 No.=2096 Name=Tahir Ijaz Cap 194 Department=ZL(Platoon No.06)
+829. AC-No=1209 No.=5241 Name=Raheel Ashraf Cap 195 Department=ZL(Platoon No.06)
+830. AC-No=1210 No.=3678 Name=Saleem Abbas Cap 196 Department=ZL(Platoon No.06)
+831. AC-No=1211 No.=1321 Name=Tabusm Abbas Cap 197 Department=ZL(Platoon No.06)
+832. AC-No=1212 No.=4685 Name=Shafqat Iqbal Cap 198 Department=ZL(Platoon No.06)
+833. AC-No=1213 No.=1287 Name=Mouasher Falak CaP 199 Department=ZL(Platoon No.06)
+834. AC-No=1214 No.=1715 Name=M Umar Faqoor Cap 200 Department=ZL(Platoon No.06)
+835. AC-No=1215 No.=201 Name=Habib Ullah Cap 201 Department=ZL(Platoon No.06)
+836. AC-No=1216 No.=927 Name=Farhan Hussain Cap 202 Department=ZL(Platoon No.06)
+837. AC-No=1217 No.=4999 Name=Bilal Hussain Cap 203 Department=ZL(Platoon No.06)
+838. AC-No=1218 No.=5003 Name=Muhammad Asghar Cap 204 Department=ZL(Platoon No.06)
+839. AC-No=1219 No.=865 Name=Rashid Ali Cap 205 Department=ZL(Platoon No.06)
+840. AC-No=1220 No.=5276 Name=Imdad Hussain Cap 206 Department=ZL(Platoon No.06)
+841. AC-No=1221 No.=3696 Name=Azhar Abbas Cap 207 Department=ZL(Platoon No.06)
+842. AC-No=1222 No.=5295 Name=Imtiaz Ali Cap 208 Department=ZL(Platoon No.06)
+843. AC-No=1223 No.=4004 Name=Aman Ullah Cap 209 Department=ZL(Platoon No.06)
+844. AC-No=1224 No.=3662 Name=M Farhad  Cap 210 Department=ZL(Platoon No.06)
+845. AC-No=1225 No.=3677 Name=M Asif Dilwar Cap 211 Department=ZL(Platoon No.06)
+846. AC-No=1226 No.=1342 Name=Abdul Latif Cap 212 Department=ZL(Platoon No.06)
+847. AC-No=1227 No.=3646 Name=Aamir Mukhtiar Cap 213 Department=ZL(Platoon No.06)
+848. AC-No=1228 No.=3412 Name=Sagher Ahmad Cap 214 Department=ZL(Platoon No.06)
+849. AC-No=1229 No.=2446 Name=M Adil Cap 215 Department=ZL(Platoon No.06)
+850. AC-No=1230 No.=4427 Name=Shabbair Ahmad Cap 216 Department=ZL(Platoon No.06)
+851. AC-No=1231 No.=2097 Name=Muhammad Amjid Cap 217 Department=ZL(Platoon No.07)
+852. AC-No=1232 No.=3452 Name=Abubakar Cap 218 Department=ZL(Platoon No.07)
+853. AC-No=1233 No.=2571 Name=Ali Raza Cap 219 Department=ZL(Platoon No.07)
+854. AC-No=1234 No.=365 Name=Tayyab Abbas Cap 220 Department=ZL(Platoon No.07)
+855. AC-No=1235 No.=385 Name=Usama Cap 221 Department=ZL(Platoon No.07)
+856. AC-No=1236 No.=4288 Name=Afshaan Cap 222 Department=ZL(Platoon No.07)
+857. AC-No=1237 No.=5844 Name=Mohsin Raza Cap 223 Department=ZL(Platoon No.07)
+858. AC-No=1238 No.=3602 Name=Arbaz Rasheed Cap 224 Department=ZL(Platoon No.07)
+859. AC-No=1239 No.=3501 Name=Muhammad Tayyab Cap 225 Department=ZL(Platoon No.07)
+860. AC-No=1240 No.=3593 Name=Nouman Safdar  Cap 226 Department=ZL(Platoon No.07)
+861. AC-No=1241 No.=69 Name=Muhammad Shoaib Cap 227 Department=ZL(Platoon No.07)
+862. AC-No=1242 No.=5117 Name=Muhammad ikram Cap 228 Department=ZL(Platoon No.07)
+863. AC-No=1243 No.=5121 Name=Muhammad Fizan Cap 229 Department=ZL(Platoon No.07)
+864. AC-No=1244 No.=5408 Name=M Nadir Hussain Cap 230 Department=ZL(Platoon No.07)
+865. AC-No=1245 No.=507 Name=Muhammad Hamid Cap 231 Department=ZL(Platoon No.07)
+866. AC-No=1246 No.=626 Name=Waqas Hussain Cap 232 Department=ZL(Platoon No.07)
+867. AC-No=1247 No.=2387 Name=M Sharjeel Raza Cap 233 Department=ZL(Platoon No.07)
+868. AC-No=1248 No.=4955 Name=Naeem Cap 234 Department=ZL(Platoon No.07)
+869. AC-No=1249 No.=1928 Name=Muhammad Shakeel Cap 235 Department=ZL(Platoon No.07)
+870. AC-No=1250 No.=1763 Name=M Iqbal Khan Cap 236 Department=ZL(Platoon No.07)
+871. AC-No=1251 No.=81 Name=Abdullah Khalid Cap 237 Department=ZL(Platoon No.07)
+872. AC-No=1252 No.=5962 Name=Atisham ul Haq Cap 238 Department=ZL(Platoon No.07)
+873. AC-No=1253 No.=1990 Name=Yasir Iqbal Cap 239 Department=ZL(Platoon No.07)
+874. AC-No=1254 No.=4531 Name=Umar Farooq Cap 240 Department=ZL(Platoon No.07)
+875. AC-No=1255 No.=4621 Name=Shafaqat Ali Cap 241 Department=ZL(Platoon No.07)
+876. AC-No=1256 No.=1659 Name=Yousaf Cap 242 Department=ZL(Platoon No.07)
+877. AC-No=1257 No.=5426 Name=M Naeem Akhtar Cap 243 Department=ZL(Platoon No.07)
+878. AC-No=1258 No.=814 Name=Ajab Khan Cap 244 Department=ZL(Platoon No.07)
+879. AC-No=1259 No.=828 Name=Aamir  Cap 245 Department=ZL(Platoon No.07)
+880. AC-No=1260 No.=826 Name=Saleem Ullah khan Cap246 Department=ZL(Platoon No.07)
+881. AC-No=1261 No.=1031 Name=Muhammad Sulman Cap 247 Department=ZL(Platoon No.07)
+882. AC-No=1262 No.=2779 Name=Abid Ali Cap 248 Department=ZL(Platoon No.07)
+883. AC-No=1263 No.=4267 Name=Raheel Khan Cap 249 Department=ZL(Platoon No.07)
+884. AC-No=1264 No.=3796 Name=M Usman Farooq Cap 250 Department=ZL(Platoon No.07)
+885. AC-No=1265 No.=4769 Name=M Sonhara Cap 251 Department=ZL(Platoon No.07)
+886. AC-No=1266 No.=5112 Name=Ghulam Fareed Cap 252 Department=ZL(Platoon No.07)
+887. AC-No=1267 No.=5101 Name=Mohsin Raza Cap 253 Department=ZL(Platoon No.07)
+888. AC-No=1268 No.=4077 Name=Abdul Rauf Cap 254 Department=ZL(Platoon No.07)
+889. AC-No=1269 No.=4092 Name=Kamran Noor Cap 255 Department=ZL(Platoon No.07)
+890. AC-No=1270 No.=3379 Name=Nasir Farooq Cap 256 Department=ZL(Platoon No.07)
+891. AC-No=1271 No.=3807 Name=Faiz ul Hassan Cap 257 Department=ZL(Platoon No.07)
+892. AC-No=1272 No.=4853 Name=Muhammad Usman Cap 258 Department=ZL(Platoon No.07)
+893. AC-No=1275 No.=69 Name=Muhammad Mughad Cap 261 Department=ZL(Platoon No.07)
+894. AC-No=1280 No.=Cap4 Name=Zain Ali Hassan Department=Z (Platoon No.1)
+
+UNMATCHED BIOMETRIC RECORDS (NEEDS REVIEW)
+------------------------------------------
+UNMATCHED / NEEDS REVIEW: AC-No=6 belt=R/1320 name='SI Muneer Hussain' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=20 belt=S/302 name='ASI Muhammad Feroze' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=21 belt=137 name='HC Sohail Abbas' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=22 belt=76 name='HC Naveed Ahmed' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=23 belt=131 name='HC Ghulam Dastigeer' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=24 belt=111 name='HC Amir Hanif' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=25 belt=122 name='HC Sajid Irfan' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=26 belt=117 name='HC Ghulam Asgher Khan' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=27 belt=93 name='HC Zaheer Abbas' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=28 belt=57 name='HC Muzafar Iqbal' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=29 belt=11344 name='HC Ahmed Nadeem' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=30 belt=55 name='HC Muhammad Anwer' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=35 belt=45 name='FC Usman Taki' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=36 belt=150 name='FC Sajid Ayube' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=37 belt=103 name='FC Qasir Abbas' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=39 belt=132 name='FC Tariq Mehmood' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=41 belt=35 name='FC Anwer Naseem' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=42 belt=149 name='FC Answer Nadeem' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=44 belt=86 name='BC Raja Ali Raza' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=45 belt=152 name='FC Tariq Mehmood' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=47 belt=54 name='FC Ahsan Naeem' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=48 belt=15 name='FC Muhammad Shabir' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=50 belt=120 name='FC M Safdar Abbas' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=51 belt=MD 622 name='ASI Summer Hayat' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=54 belt=S/128 name='SI Hafiz Tahir Anwer' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=56 belt=LHR/10281 name='ASI Muntizar Mehdi' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=57 belt=S/306 name='ASI Muhammad Fiaz' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=60 belt=140 name='HC Shabir Ahmed' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=64 belt=22 name='HC Muhammad Asif' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=65 belt=139 name='HC Zulqirnain Khan' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=67 belt=41 name='HC Asgher Ali' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=68 belt=50 name='HC Amir Abbas Khan' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=72 belt=71 name='FC Ehsan Ullah' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=85 belt=S/156 name='SI Ali Husnain Shah' dept=Law Staff
+UNMATCHED / NEEDS REVIEW: AC-No=96 belt=77 name='LHC Mubeena Noreen' dept=Law Staff
+UNMATCHED / NEEDS REVIEW: AC-No=102 belt=146 name='HC Zulfiqar Ahmed' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=105 belt=18 name='FC ZafarI Iqbal' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=106 belt=16 name='FC Yasir Muneer' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=107 belt=136 name='FC Ehsan Qadir' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=108 belt=540 name='ASI Imran Hameed' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=109 belt=7895 name='ASI Shahid Rasool' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=110 belt=161 name='FC Muhammad Aslam' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=111 belt=191 name='FC Raza Muhammad' dept=Weapon Staff
+UNMATCHED / NEEDS REVIEW: AC-No=113 belt=R/1038 name='ASI Muhammad Waliyat' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=116 belt=39 name='HC Haji Ahmed' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=118 belt=582 name='HC Ghulam Abbas' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=119 belt=1285 name='HC Muhammad Arif' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=120 belt=20 name='FC Muhammad Irfan' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=123 belt=33 name='FC Syed Masood ul Hassan' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=124 belt=112 name='FC Shahzad Hassan' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=125 belt=42 name='FC Tasawar Hussan' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=126 belt=143 name='FC Nasir Abbas' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=127 belt=1417 name='FC Muhammad Kashif' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=128 belt=1251 name='FC Abdul Qadeer' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=129 belt=431 name='FC Muhammad Kashif' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=130 belt=276 name='FC Muhammad Shahzad' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=131 belt=1200 name='FC Zeeshan Ashraf' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=132 belt=1039 name='FC Abdul Muqsit' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=133 belt=967 name='FC Farooq Khan' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=134 belt=863 name='FC Sharjeel Ahmed Khan' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=135 belt=532 name='FC Muhammad Ramzan' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=136 belt=618 name='FC Muhammad Noman' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=137 belt=1145 name='FC Faisal Nawaz' dept=Drill Staff
+UNMATCHED / NEEDS REVIEW: AC-No=138 belt=R/1863 name='SI M Haroon Saheed' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=140 belt=96 name='HC Muhammad Javed' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=141 belt=110 name='HC Waqas Ahmed' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=142 belt=120 name='HC Amir Hayat Khan' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=143 belt=2082 name='HC Abdul Rehman Adil' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=144 belt=08 name='FC Ameer Ahmed Khan' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=145 belt=65 name='FC Ansaar Ahmed' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=146 belt=07 name='FC Muhammad Akhtar' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=148 belt=99 name='FC Muhammad Ashraf' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=149 belt=60 name='FC Muhammad Akhtar' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=151 belt=87 name='AhtBC Muhammad Ehtisham' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=153 belt=R/383 name='IP M Sabtian Ali' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=158 belt=S/410 name='SI Safdar Ali' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=164 belt=S/206 name='SI Muhammad Ashraf' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=169 belt=S/80 name='ASI Maqbool Hussain' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=170 belt=S/345 name='ASI Tabasam Riaz' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=172 belt=1701 name='ASI Muhammad Akram' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=181 belt=L/1059 name='ASI Sarfraz Ali' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=184 belt=3029 name='ASI Muhammad Abbas' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=185 belt=3017 name='ASI Muhammad Imran' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=188 belt=82 name='HC Ehsan Ullah' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=190 belt=12 name='FC Muhammad Imran' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=192 belt=126 name='HC Saqib Zahoor' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=193 belt=121 name='FC Muhammad Waqar' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=194 belt=135 name='HC Muhammad Adil' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=196 belt=31 name='HC Summera Abbas' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=197 belt=19 name='HC Sami Ullah' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=198 belt=84 name='FC Muhammad Jahngir' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=199 belt=105 name='FC Bilal Ahmed' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=200 belt=102 name='FC Muahammd Akram' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=201 belt=145 name='FC Muneer Ahmed' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=203 belt=85 name='FC Abdul Ghafar Khan' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=204 belt=38 name='FC Muhammad Ramzan' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=206 belt=101 name='FC Muhammad Muzhair' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=207 belt=25 name='FC Imran' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=208 belt=49 name='FC Ali Muhammad' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=209 belt=142 name='FC Hafiz Mukhtar' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=210 belt=107 name='FC Haji Ahmed' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=211 belt=01 name='FC Asif Hayat' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=212 belt=123 name='FC Qasir Abbas' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=214 belt=70 name='FC Muhammad Saeed' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=215 belt=02 name='BC Akmal Hussain' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=216 belt=14 name='BC Danish Ali' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=217 belt=30 name='BC Nabeel Dawood' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=218 belt=32 name='BC Muhammad Ali' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=219 belt=34 name='BC Ahmed Nawaz' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=220 belt=52 name='BC Nabeel' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=221 belt=56 name='BC Rafi  Ullah Khan' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=222 belt=58 name='BC Amir Sohail' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=224 belt=68 name='BC Muhammad Asif Khan' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=225 belt=74 name='BC Ahsan Ameer' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=226 belt=78 name='BC Yasir Zia' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=228 belt=91 name='BC M Nadeem Shah' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=229 belt=100 name='BC Rizwan Haider' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=230 belt=- name='Assitant Arshad Mehmood' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=231 belt=- name='Assistant Naveed Akhtar' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=232 belt=- name='Assistant Mian Khalid' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=233 belt=- name='S/Clerk Muhammad Ishfaq' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=234 belt=- name='S/Clerk M Akram' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=235 belt=- name='S/Clerk Syed Usama Ali' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=236 belt=- name='S/Clerk Rao Tariq Saeed' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=237 belt=- name='J/Clerk Muhammad Sajjad' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=238 belt=- name='J/Clerk Ahmed Zia' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=239 belt=- name='J/Clerk Hafiz Tahir' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=240 belt=- name='J/Clerk Imtiaz Ahmed' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=241 belt=- name='J/Clerk Zanib Bibi' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=242 belt=- name='Daftri Ahmed Nawaz' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=243 belt=- name='Naib Qasid Waseem Abbas' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=244 belt=- name='N/Qasid Farrukh Imtiaz' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=245 belt=- name='Maskhi Sahadat Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=246 belt=- name='Mashki Hafiz Allah Ditta' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=247 belt=- name='Mashki Attique ur Rehman' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=248 belt=- name='Mashki M Imran' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=249 belt=- name='Mashki M Naveed' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=250 belt=- name='Mali Muhammad Ameer' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=251 belt=- name='Mali Ijaz Ahmed' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=252 belt=- name='Mali Ghulam Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=253 belt=- name='Mali Ali Raza' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=254 belt=- name='Mali Jamsheed Riaz' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=255 belt=- name='Mali Ansar Mehmood' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=256 belt=- name='Dhobi Aziz ur Rehman' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=257 belt=- name='Dhobi Sana Ullah' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=258 belt=- name='Dhobi Bao Zaheer Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=259 belt=- name='Dhobi M Shahbaz' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=260 belt=- name='Dhobi Waseem Khalid' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=261 belt=- name='Dhobi Khalid Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=262 belt=- name='Dhobi Mushtaq Ahmed' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=263 belt=- name='Barbar Fazal Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=264 belt=- name='Barbar Hassan Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=265 belt=- name='Barbar Abdul Rauf' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=266 belt=- name='Barbar Azhar Iqbal' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=267 belt=- name='Mochi Abdul Khaliq' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=268 belt=- name='Mochi Tariq Iqbal' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=269 belt=- name='Langri Naeem Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=270 belt=- name='Langri Ansar Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=271 belt=- name='Langri Muhammad Irfan' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=272 belt=- name='Langri Jahngir Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=273 belt=- name='Langri Muhammad Asghar' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=274 belt=- name='Langri Muhammad Mukhtar' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=275 belt=- name='Langri Shahzaib' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=276 belt=- name='Langri Sarfraz Khan' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=277 belt=- name='Langri Arshad Iqbal' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=278 belt=- name='Langri Munawar Hussain' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=279 belt=- name='Langri Ashiq Hussain' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=280 belt=- name='Langri Muhammad Akhtar' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=281 belt=- name='Langri Mohsin Ali' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=282 belt=- name='Langri Ghulam Shabir' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=283 belt=- name='Sweeper M Ehsan' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=284 belt=- name='Sweeper Ghulam Hurr' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=285 belt=- name='Sweeper  Shazia Mahsih' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=286 belt=- name='Sweeper  Raees Mahsih' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=287 belt=- name='Sweeper Arif Mah' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=288 belt=- name='Sweeper Nazar Hayat' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=289 belt=- name='Sweeper M Rashid' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=290 belt=- name='Sweeper M Ilyas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=291 belt=- name='Sweeper Sabir Mahsih' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=292 belt=- name='Sweeper Haydiat Ali' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=293 belt=- name='Sweeper Robin Gosh' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=294 belt=- name='Sweeper M Yaseen' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=295 belt=- name='Sweeper Yousaf Mahsih' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=296 belt=- name='Mistri M Sharif' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=297 belt=- name='Painter Sohail Abbas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=298 belt=- name='Car Painter Munawar Abas' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=299 belt=24 name='BC Ashir Raza' dept=Misllenous Staff
+UNMATCHED / NEEDS REVIEW: AC-No=303 belt=104 name='BC M Hunain' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=304 belt=152 name='Hafiz Tariq Mehmood' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=305 belt=9 name='BC Asfar ali' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=307 belt=- name='Langri M Irfan' dept=Class-IV
+UNMATCHED / NEEDS REVIEW: AC-No=308 belt=51 name='HC Reehana Kousar' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=604 belt=- name='S/Clerk Muhammad Ashfaq' dept=Ministeral Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1157 belt=01 name='Muhammad Asif' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1281 belt=F 261 name='IP Mazhar Abbas' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1282 belt=86 name='BC Rana Ali Raza' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1286 belt=S/503 name='SI Zafar Hussain' dept=Law Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1290 belt=142 name='Const. Hafiz Mukhtar' dept=Law Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1291 belt=61 name='FC Asif Mehmood' dept=MT Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1292 belt=67 name='FC M Ijaz' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1293 belt=276 name='FC  Shahzad Khan' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1296 belt=14598 name='ASI Muhammad Asif' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1298 belt=58 name='BC Aamir Sohail' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1299 belt=123 name='FC Qasir Abbas' dept=LIne Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1302 belt=04 name='HC M Asif' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1304 belt=75 name='BC Ahmad Faraz' dept=Security Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1308 belt=64 name='HC Sultan Ahmad' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1309 belt=62 name='FC Amir Sohail' dept=Admin Staff
+UNMATCHED / NEEDS REVIEW: AC-No=1310 belt=459 name='Nadia Gull Cap 260' dept=Lower Ladies
+UNMATCHED / NEEDS REVIEW: AC-No=1311 belt=453 name='Mehwish  Cap 260' dept=Lower Ladies
+UNMATCHED / NEEDS REVIEW: AC-No=1313 belt=134 name='HC Muhammad Imran' dept=LIne Staff
+
+UNMATCHED MASTER EMPLOYEES (NO BIOMETRIC)
+-----------------------------------------
+UNMATCHED / NEEDS REVIEW: name='AMJAD IQBAL' belt=GL/402 rank=Inspector cnic=34401-9469915-9
+UNMATCHED / NEEDS REVIEW: name='MAZHAR ABBAS (GHAZI)' belt=F/261 rank=Inspector cnic=33201-2907068-3
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD SALEEM' belt=P/418 rank=INSPECTOR LEGAL cnic=38405-2252946-9
+UNMATCHED / NEEDS REVIEW: name='NASIR ULLAH' belt=C/769 rank=Inspector cnic=38403-0476577-3
+UNMATCHED / NEEDS REVIEW: name='UMER DRAZ' belt=- rank=INSPECTOR LEGAL cnic=33201-6026237-7
+UNMATCHED / NEEDS REVIEW: name='ALI HASNAIN SHAH' belt=S/345 rank=SUB INSPECTOR cnic=38402-5468722-5
+UNMATCHED / NEEDS REVIEW: name='ALLAH DITTAH' belt=S/396 rank=SUB INSPECTOR cnic=38403-5750313-7
+UNMATCHED / NEEDS REVIEW: name='HAFIZ TAHIR ANWAR' belt=S/443 rank=SUB INSPECTOR cnic=38403-2199559-3
+UNMATCHED / NEEDS REVIEW: name='IKHLAK HUSSAIN' belt=S/195 rank=SUB INSPECTOR cnic=38401-5201799-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASHRAF' belt=S/522 rank=SUB INSPECTOR cnic=38302-8557617-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD HAROON SAEED' belt=1863-R rank=SUB INSPECTOR cnic=38403-0611196-1
+UNMATCHED / NEEDS REVIEW: name='MUNIR HUSSAIN' belt=1320-R rank=SUB INSPECTOR cnic=38404-3152240-3
+UNMATCHED / NEEDS REVIEW: name='ZAFAR HUSSAIN SHAH' belt=S/408 rank=SUB INSPECTOR cnic=38403-4255237-1
+UNMATCHED / NEEDS REVIEW: name='Abdullah' belt=PJO 1081545 rank=ASI cnic=45105-3231047-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD AKRAM' belt=1040/B rank=ASI cnic=42301-2219141-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASIF' belt=12713/LHR rank=ASI cnic=35202-0914448-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD HAMID' belt=179/LHR rank=ASI cnic=35102-0635940-3
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD MOHSIN IQBAL' belt=8263 rank=ASI cnic=35404-9900914-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD NASIR' belt=14598/LHR rank=ASI cnic=38302-6443101-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD WALAYAIT' belt=103/ATK rank=ASI cnic=38401-0340893-9
+UNMATCHED / NEEDS REVIEW: name='Muhammad Zubair' belt=PJO-2402399 rank=ASI cnic=38201-1188646-7
+UNMATCHED / NEEDS REVIEW: name='MUNTAZIR MEHDI' belt=1523/L rank=ASI cnic=38403-4410670-3
+UNMATCHED / NEEDS REVIEW: name='Qadir Yar' belt=PJO3100088 rank=ASI cnic=38404-0342003-9
+UNMATCHED / NEEDS REVIEW: name='TABASSUM RIAZ (Ghazi)' belt=345/S rank=ASI cnic=38405-2264893-3
+UNMATCHED / NEEDS REVIEW: name='ZAHID IQBAL' belt=566/SA rank=ASI cnic=35404-1534798-1
+UNMATCHED / NEEDS REVIEW: name='Aamir Abbas' belt=32/HC rank=HEAD CONSTABLE cnic=38202-9797228-3
+UNMATCHED / NEEDS REVIEW: name='AAMIR ABBAS KHAN' belt=236, 50/PTS rank=HEAD CONSTABLE cnic=37405-2283734-5
+UNMATCHED / NEEDS REVIEW: name='AAMIR HANIF' belt=249/HC, 111/PTS rank=HEAD CONSTABLE cnic=38403-2237344-3
+UNMATCHED / NEEDS REVIEW: name='AAMIR HAYAT KHAN' belt=1549 rank=HEAD CONSTABLE cnic=38302-2458723-9
+UNMATCHED / NEEDS REVIEW: name='ABDUR REHMAN ADIL' belt=2082/HC, 128/PT rank=HEAD CONSTABLE cnic=38403-2243448-1
+UNMATCHED / NEEDS REVIEW: name='AHMAD NADEEM' belt=113/HC, 44/PTS rank=HEAD CONSTABLE cnic=38403-9264460-9
+UNMATCHED / NEEDS REVIEW: name='AMAN ULLAH' belt=1923/HC rank=HEAD CONSTABLE cnic=38405-8407880-5
+UNMATCHED / NEEDS REVIEW: name='ASGHAR ALI' belt=21185, 41/PTS rank=HEAD CONSTABLE cnic=38303-0591233-5
+UNMATCHED / NEEDS REVIEW: name='GHULAM DASTGIR' belt=1868/HC,131/PTS rank=HEAD CONSTABLE cnic=38403-9034251-5
+UNMATCHED / NEEDS REVIEW: name='HAJI AHMAD' belt=3421/HC 39/PTS rank=HEAD CONSTABLE cnic=38104-5318326-5
+UNMATCHED / NEEDS REVIEW: name='MUBEENA NOREEN' belt=680, 77/PTS rank=LADY HC cnic=38403-7191204-6
+UNMATCHED / NEEDS REVIEW: name='Muhammad Akbar' belt=86/HC rank=HEAD CONSTABLE cnic=38401-4560880-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ANWAR' belt=1933/DHC rank=HEAD CONSTABLE DRIVER cnic=38403-2188302-5
+UNMATCHED / NEEDS REVIEW: name='Muhammad Anwar Malik' belt=79/HC rank=HEAD CONSTABLE cnic=38302-1207148-1
+UNMATCHED / NEEDS REVIEW: name='Muhammad Ashfaq' belt=17/HC rank=HEAD CONSTABLE cnic=38201-1076259-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASIF' belt=163 rank=HEAD CONSTABLE cnic=37302-5228011-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD IMRAN KHAN' belt=866/HC rank=HEAD CONSTABLE cnic=38104-2845745-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD JAVAID' belt=507, 96/PTS rank=HEAD CONSTABLE cnic=37302-7460885-9
+UNMATCHED / NEEDS REVIEW: name='Muhammad Naseer' belt=3752207, 51/PTS rank=HEAD CONSTABLE cnic=38404-0963389-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD RAUF KHAN' belt=377 rank=HEAD CONSTABLE cnic=38201-3150090-9
+UNMATCHED / NEEDS REVIEW: name='Muzaffar Iqbal' belt=57/PTS rank=HEAD CONSTABLE cnic=38403-4543265-7
+UNMATCHED / NEEDS REVIEW: name='NAVEED AHMAD' belt=746/HC, 76/PTS rank=HEAD CONSTABLE cnic=38101-1333587-5
+UNMATCHED / NEEDS REVIEW: name='REHANA KAUSAR' belt=578/LHC rank=LADY HC cnic=38403-3693103-8
+UNMATCHED / NEEDS REVIEW: name='SAJID IRFAN KHAN' belt=493/HC rank=HEAD CONSTABLE cnic=38101-4372075-1
+UNMATCHED / NEEDS REVIEW: name='SHABBIR AHMED' belt=746 rank=HEAD CONSTABLE cnic=38202-4942428-9
+UNMATCHED / NEEDS REVIEW: name='SOHAIL ABBAS' belt=1693/HC, 137/PT rank=HEAD CONSTABLE cnic=38403-2126662-7
+UNMATCHED / NEEDS REVIEW: name='Tariq Mahmood' belt=98/HC rank=HEAD CONSTABLE cnic=38403-4053972-3
+UNMATCHED / NEEDS REVIEW: name='UBAID ULLAH KHAN' belt=1656 rank=HEAD CONSTABLE cnic=38301-3748905-3
+UNMATCHED / NEEDS REVIEW: name='WAQAS AHMAD' belt=999/HC rank=HEAD CONSTABLE cnic=38101-5442984-1
+UNMATCHED / NEEDS REVIEW: name='Zulfiqar-ul-Hassan' belt=140/HC rank=HEAD CONSTABLE cnic=38201-5002151-3
+UNMATCHED / NEEDS REVIEW: name='AAMIR SOHAIL' belt=58/BC rank=BAND CONSTABLE cnic=38302-9114227-1
+UNMATCHED / NEEDS REVIEW: name='AAMIR SOHAIL' belt=62/BC rank=Constable cnic=38104-2649806-3
+UNMATCHED / NEEDS REVIEW: name='AHMAD FARAZ' belt=75/BC rank=BAND CONSTABLE cnic=38406-0452320-1
+UNMATCHED / NEEDS REVIEW: name='AHMAD NAWAZ' belt=34/BC rank=BAND CONSTABLE cnic=38302-6602460-5
+UNMATCHED / NEEDS REVIEW: name='AHSAN AMEER' belt=74/BC rank=BAND CONSTABLE cnic=38402-5621056-3
+UNMATCHED / NEEDS REVIEW: name='AHSAN QADAR' belt=1333/C, 136/PTS rank=Constable cnic=38401-6756513-1
+UNMATCHED / NEEDS REVIEW: name='Akmal Hussain' belt=2/BC rank=BAND CONSTABLE cnic=38403-6645246-1
+UNMATCHED / NEEDS REVIEW: name='ALI MUHAMMAD' belt=387, 49/PTS rank=CONSTABLE (EX-ARMY) cnic=45504-1123880-1
+UNMATCHED / NEEDS REVIEW: name='AMIR AHMED KHAN' belt=180/CH, 08/PTS, rank=Constable cnic=38101-6718576-5
+UNMATCHED / NEEDS REVIEW: name='ANSAR AHMAD' belt=714, 65/PTS rank=Constable cnic=37302-4470532-7
+UNMATCHED / NEEDS REVIEW: name='ANSAR NADEEM' belt=1477/C rank=Constable cnic=38403-2133973-9
+UNMATCHED / NEEDS REVIEW: name='ANWAR NASEEM ULLAH' belt=1555/C, 35/PTS rank=Constable cnic=38403-3202718-3
+UNMATCHED / NEEDS REVIEW: name='Asfar Ali' belt=9/BC rank=BAND CONSTABLE cnic=38201-4564573-9
+UNMATCHED / NEEDS REVIEW: name='Ashir Raza' belt=24/BC rank=BAND CONSTABLE cnic=38302-6831101-3
+UNMATCHED / NEEDS REVIEW: name='Danish Ali' belt=14/BC rank=BAND CONSTABLE cnic=38406-0501949-7
+UNMATCHED / NEEDS REVIEW: name='HAFIZ MUHAMMAD SAEED' belt=1200/C, 70/PTS rank=Constable cnic=38403-2074528-5
+UNMATCHED / NEEDS REVIEW: name='HAFIZ MUKHTAR AHMAD' belt=341/PTC-, 142/P rank=Constable cnic=38401-0239170-5
+UNMATCHED / NEEDS REVIEW: name='MOHAMMAD NASEER' belt=130/PTS rank=Constable cnic=38401-6783985-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD AKHTAR' belt=202/DC, 07/PTS rank=CONSTABLE DRIVER cnic=38403-2152634-3
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD AKHTAR' belt=1838/C, 60/PTS rank=Constable cnic=38403-2105339-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD AKRAM' belt=2005/C-2, 102/P rank=Constable cnic=38405-2268627-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ALI' belt=32/BC rank=BAND CONSTABLE cnic=38401-1393154-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASHRAF' belt=1504/C-2, 99/Pt rank=Constable cnic=38403-2258967-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASIF HAYAT' belt=1061/C, 01/PTS rank=Constable cnic=38404-0961744-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASIF KHAN' belt=68/BC rank=BAND CONSTABLE cnic=38402-7158988-3
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD DANIYAL RAFIQUE' belt=98/BC rank=BAND CONSTABLE cnic=38404-5008540-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD EHTESHAM SARFRAZ' belt=87/BC rank=BAND CONSTABLE cnic=38404-4450927-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD FAISAL' belt=790 rank=Constable cnic=37302-9544414-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD HASNAIN' belt=104/BC rank=BAND CONSTABLE cnic=38302-4837142-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD IKRAM' belt=822 rank=Constable cnic=37302-9328751-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD IMRAN' belt=1117/C, 25/PTS rank=Constable cnic=38403-3687368-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD IRFAN GHAIBA' belt=495/JM, 20/PTS, rank=Constable cnic=37302-1124558-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD MUZAHIR' belt=19029 rank=Constable cnic=38405-6347924-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD NADEEM SHAH' belt=91/BC rank=BAND CONSTABLE cnic=38404-7310181-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD SHABBIR' belt=9472/PC, 648/LY rank=Constable cnic=32202-4337520-3
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD TARIQ' belt=918 rank=Constable cnic=37302-1503240-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD USMAN' belt=54/C, 45/PTS rank=Constable cnic=38405-2304100-7
+UNMATCHED / NEEDS REVIEW: name='NABEEL' belt=52/BC rank=BAND CONSTABLE cnic=38201-4738347-1
+UNMATCHED / NEEDS REVIEW: name='Nabeel Daud' belt=30/BC rank=BAND CONSTABLE cnic=38403-0102098-7
+UNMATCHED / NEEDS REVIEW: name='QAISAR ABBAS' belt=848/C, 223/PC rank=Constable cnic=38101-5506312-7
+UNMATCHED / NEEDS REVIEW: name='QAISER ABBAS (GHAZI)' belt=103/PTS rank=Constable cnic=38401-0196290-9
+UNMATCHED / NEEDS REVIEW: name='RAFI ULLAH KHAN' belt=56/BC rank=BAND CONSTABLE cnic=38302-1486423-9
+UNMATCHED / NEEDS REVIEW: name='RAJA ALI RAZA' belt=86/BC rank=BAND CONSTABLE cnic=38403-8192052-3
+UNMATCHED / NEEDS REVIEW: name='RIZWAN HAIDER' belt=100/BC rank=BAND CONSTABLE cnic=38403-3790816-1
+UNMATCHED / NEEDS REVIEW: name='SADDAM HUSSAIN' belt=874 rank=Constable cnic=37302-6493500-7
+UNMATCHED / NEEDS REVIEW: name='SAJID AYUB' belt=1681/C, 150/PTS rank=Constable cnic=38403-8224931-5
+UNMATCHED / NEEDS REVIEW: name='SHEHZAD HASSAN' belt=1405/C, 112/PTS rank=Constable cnic=38402-9252528-3
+UNMATCHED / NEEDS REVIEW: name='SYED MASOOD UL HASSAN SHAH (GHAZI)' belt=283, 33/PTS rank=Constable cnic=38202-1288136-3
+UNMATCHED / NEEDS REVIEW: name='TASSAWAR HUSSAIN' belt=5879, 42/PTS rank=Constable cnic=33201-4399093-1
+UNMATCHED / NEEDS REVIEW: name='YASIR MUNIR' belt=17946, 16/PTS rank=Constable cnic=35202-5900768-7
+UNMATCHED / NEEDS REVIEW: name='YASIR ZIA' belt=78/BC rank=BAND CONSTABLE cnic=38403-3753123-7
+UNMATCHED / NEEDS REVIEW: name='ZAFAR IQBAL' belt=233, 18/PTS rank=Constable cnic=38101-0686038-1
+UNMATCHED / NEEDS REVIEW: name='AMBRIN AKHTAR' belt=- rank=OFFICE SUPERINTENDENT cnic=38402-4086930-8
+UNMATCHED / NEEDS REVIEW: name='Dr Ibtisam Farooq' belt=786 rank=MEDICAL OFFICER (DOCTOR) BPS cnic=38403-3084677-5
+UNMATCHED / NEEDS REVIEW: name='Malik Muhammad Asim' belt=- rank=MEDICAL OFFICER (DOCTOR) BPS cnic=38403-0113456-7
+UNMATCHED / NEEDS REVIEW: name='SAMRA KIRAN' belt=- rank=PSYCHOLOGIST cnic=36302-0354104-0
+UNMATCHED / NEEDS REVIEW: name='ARSHAD MEHMOOD' belt=- rank=ASSISTANT cnic=33202-4298505-7
+UNMATCHED / NEEDS REVIEW: name='MIAN KHALID ZUBAIR' belt=- rank=ASSISTANT cnic=38403-9193463-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASHFAQ' belt=- rank=SENIOR CLERK cnic=38403-8040046-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD NAVEED AKHTAR' belt=- rank=ASSISTANT cnic=37201-1679201-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD SAJJAD UL HASSAN' belt=- rank=SENIOR CLERK cnic=38201-5258427-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD TARIQ SAEED' belt=- rank=SENIOR CLERK cnic=38401-6351102-5
+UNMATCHED / NEEDS REVIEW: name='SAYYED USAMA ALI' belt=- rank=SENIOR CLERK cnic=38403-1708175-9
+UNMATCHED / NEEDS REVIEW: name='Ahmed Zia ur Rehman' belt=- rank=JUNIOR CLERK cnic=38404-5754117-1
+UNMATCHED / NEEDS REVIEW: name='HAFIZ TAHIR SAEED' belt=- rank=JUNIOR CLERK cnic=38403-6363678-3
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD IMTIAZ' belt=- rank=JUNIOR CLERK cnic=38405-3659461-9
+UNMATCHED / NEEDS REVIEW: name='AHMAD NAWAZ' belt=- rank=DAFTRI cnic=38404-0953645-1
+UNMATCHED / NEEDS REVIEW: name='Abdul  Rauf' belt=- rank=BARBER cnic=38403-6927939-9
+UNMATCHED / NEEDS REVIEW: name='ABDUL KHALIQ' belt=- rank=COBBLER cnic=38403-0892210-7
+UNMATCHED / NEEDS REVIEW: name='ANSAR ABBAS' belt=- rank=LANGRI cnic=38403-2450409-5
+UNMATCHED / NEEDS REVIEW: name='ANSAR MEHMOOD' belt=- rank=MALI cnic=38401-0301260-5
+UNMATCHED / NEEDS REVIEW: name='ARIF MASIH' belt=- rank=SWEEPER cnic=38403-4490150-1
+UNMATCHED / NEEDS REVIEW: name='ARSHAD IQBAL' belt=- rank=LANGRI cnic=38403-9144604-7
+UNMATCHED / NEEDS REVIEW: name='ASHIQ HUSSAIN' belt=- rank=LANGRI cnic=38403-7445588-3
+UNMATCHED / NEEDS REVIEW: name='ATIQ UR RAHMAN' belt=- rank=WATER CARRIER cnic=33100-4024519-7
+UNMATCHED / NEEDS REVIEW: name='AZHAR IQBAL' belt=- rank=BARBER cnic=38403-5425997-3
+UNMATCHED / NEEDS REVIEW: name='AZIZ UR RAHMAN' belt=- rank=WASHER MAN cnic=38201-9731572-7
+UNMATCHED / NEEDS REVIEW: name='Baou Zaheer Abbas' belt=- rank=WASHER MAN cnic=38403-2847547-3
+UNMATCHED / NEEDS REVIEW: name='FAZAL ABBAS' belt=- rank=BARBER cnic=38402-2468598-3
+UNMATCHED / NEEDS REVIEW: name='GHULAM ABBAS SHAH' belt=- rank=MALI cnic=38403-4948536-3
+UNMATCHED / NEEDS REVIEW: name='GHULAM HUR' belt=- rank=SWEEPER cnic=33402-0405433-9
+UNMATCHED / NEEDS REVIEW: name='GHULAM SHABBIR' belt=- rank=LANGRI cnic=38403-1788736-3
+UNMATCHED / NEEDS REVIEW: name='HADAYAT ALI' belt=- rank=SWEEPER cnic=35402-1975167-1
+UNMATCHED / NEEDS REVIEW: name='HAFIZ ALLAH DITTA' belt=- rank=WATER CARRIER cnic=38404-7924169-7
+UNMATCHED / NEEDS REVIEW: name='HASSAN ABBAS' belt=- rank=BARBER cnic=38402-1376547-9
+UNMATCHED / NEEDS REVIEW: name='Ijaz Ahmad' belt=- rank=MALI cnic=38401-0384239-3
+UNMATCHED / NEEDS REVIEW: name='Jahangir Abbas' belt=- rank=LANGRI cnic=38403-2250006-3
+UNMATCHED / NEEDS REVIEW: name='Jamshed Riaz' belt=- rank=MALI cnic=38101-7439236-9
+UNMATCHED / NEEDS REVIEW: name='KHALID ABBAS' belt=- rank=WASHER MAN cnic=38402-3006298-1
+UNMATCHED / NEEDS REVIEW: name='Mohsin Ali' belt=- rank=LANGRI cnic=38403-2617211-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD AKHTAR' belt=- rank=LANGRI cnic=38401-0356839-3
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ASGHAR' belt=- rank=LANGRI cnic=38403-6519122-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD EHSAN' belt=- rank=SWEEPER cnic=38403-8311365-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD ILYAS' belt=- rank=SWEEPER cnic=38403-6700058-5
+UNMATCHED / NEEDS REVIEW: name='Muhammad Imran' belt=- rank=WATER CARRIER cnic=38403-6967814-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD IRFAN Khata No.113' belt=- rank=LANGRI cnic=33100-3946975-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD MUKHTAR' belt=- rank=LANGRI cnic=38404-8538719-7
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD RASHID' belt=- rank=SWEEPER cnic=33105-3069309-1
+UNMATCHED / NEEDS REVIEW: name='Muhammad Shahadat Abbas' belt=- rank=WATER CARRIER cnic=38404-7612855-9
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD SHAHBAZ' belt=- rank=WASHER MAN cnic=35202-2827073-1
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD SHARIF' belt=- rank=MASON cnic=38402-4083166-5
+UNMATCHED / NEEDS REVIEW: name='MUHAMMAD YASIN' belt=- rank=SANITARY WORKER cnic=38403-3364606-3
+UNMATCHED / NEEDS REVIEW: name='MULAZIM HUSSAIN' belt=- rank=ELECTRICIAN cnic=33202-3510648-3
+UNMATCHED / NEEDS REVIEW: name='MUNAWAR ABBAS' belt=- rank=CARPENTER cnic=38402-2814682-9
+UNMATCHED / NEEDS REVIEW: name='MUNAWAR HUSSAIN' belt=- rank=LANGRI cnic=33104-4121087-1
+UNMATCHED / NEEDS REVIEW: name='MUSHTAQ AHMAD' belt=- rank=WASHER MAN cnic=38403-2809288-3
+UNMATCHED / NEEDS REVIEW: name='NAEEM ABBAS' belt=- rank=LANGRI cnic=38403-3459691-7
+UNMATCHED / NEEDS REVIEW: name='NAVEED AHMAD' belt=- rank=WATER CARRIER cnic=38403-8184494-9
+UNMATCHED / NEEDS REVIEW: name='NAZAR HAYAT' belt=- rank=SWEEPER cnic=38403-2149796-7
+UNMATCHED / NEEDS REVIEW: name='RAEES MASIH' belt=- rank=SWEEPER cnic=38403-3571889-6
+UNMATCHED / NEEDS REVIEW: name='ROBAN GOSH' belt=- rank=SWEEPER cnic=38403-2238602-1
+UNMATCHED / NEEDS REVIEW: name='SABIR MEHMOOD MASIH' belt=- rank=SWEEPER cnic=38403-2659933-5
+UNMATCHED / NEEDS REVIEW: name='SANA ULLAH' belt=- rank=WASHER MAN cnic=38401-2450072-9
+UNMATCHED / NEEDS REVIEW: name='SARFARAZ KHAN' belt=- rank=LANGRI cnic=38401-1492575-7
+UNMATCHED / NEEDS REVIEW: name='Shahzeb Ali' belt=- rank=LANGRI cnic=38403-0166730-5
+UNMATCHED / NEEDS REVIEW: name='Shazia' belt=- rank=SANITARY WORKER cnic=38405-6717804-0
+UNMATCHED / NEEDS REVIEW: name='SOHAIL ABBAS' belt=- rank=PAINTER cnic=38401-9108939-7
+UNMATCHED / NEEDS REVIEW: name='SYED ALI RAZA' belt=- rank=MALI cnic=38403-2622914-5
+UNMATCHED / NEEDS REVIEW: name='TARIQ IQBAL' belt=- rank=COBBLER cnic=38403-7341443-1
+UNMATCHED / NEEDS REVIEW: name='WASEEM KHALID' belt=- rank=WASHER MAN cnic=33101-0907321-5
+UNMATCHED / NEEDS REVIEW: name='YOUSAF MASIH' belt=- rank=SWEEPER cnic=38403-3352659-3
+UNMATCHED / NEEDS REVIEW: name='FARUKH IMTIAZ' belt=- rank=NAIB QASID cnic=34401-4006746-7
+UNMATCHED / NEEDS REVIEW: name='WASIM ABBAS' belt=- rank=NAIB QASID cnic=38404-0599223-5
+
+AMBIGUOUS BELT MATCHES
+----------------------
+AC-No=170 belt=S/345 name='ASI Tabasam Riaz' candidates=[ALI HASNAIN SHAH (S/345/38402-5468722-5); TABASSUM RIAZ (Ghazi) (345/S/38405-2264893-3)]
+
+AMBIGUOUS NAME MATCHES
+----------------------
+AC-No=21 belt=137 name='HC Sohail Abbas' candidates=[SOHAIL ABBAS (1693/HC, 137/PT/38403-2126662-7); SOHAIL ABBAS (None/38401-9108939-7)]
+AC-No=146 belt=07 name='FC Muhammad Akhtar' candidates=[MUHAMMAD AKHTAR (202/DC, 07/PTS/38403-2152634-3); MUHAMMAD AKHTAR (1838/C, 60/PTS/38403-2105339-9); MUHAMMAD AKHTAR (None/38401-0356839-3)]
+AC-No=149 belt=60 name='FC Muhammad Akhtar' candidates=[MUHAMMAD AKHTAR (202/DC, 07/PTS/38403-2152634-3); MUHAMMAD AKHTAR (1838/C, 60/PTS/38403-2105339-9); MUHAMMAD AKHTAR (None/38401-0356839-3)]
+AC-No=172 belt=1701 name='ASI Muhammad Akram' candidates=[MUHAMMAD AKRAM (1040/B/42301-2219141-5); MUHAMMAD AKRAM (2005/C-2, 102/P/38405-2268627-5)]
+AC-No=208 belt=49 name='FC Ali Muhammad' candidates=[ALI MUHAMMAD (387, 49/PTS/45504-1123880-1); MUHAMMAD ALI (32/BC/38401-1393154-7)]
+AC-No=148 belt=99 name='FC Muhammad Ashraf' candidates=[MUHAMMAD ASHRAF (S/522/38302-8557617-9); MUHAMMAD ASHRAF (1504/C-2, 99/Pt/38403-2258967-7)]
+AC-No=164 belt=S/206 name='SI Muhammad Ashraf' candidates=[MUHAMMAD ASHRAF (S/522/38302-8557617-9); MUHAMMAD ASHRAF (1504/C-2, 99/Pt/38403-2258967-7)]
+AC-No=64 belt=22 name='HC Muhammad Asif' candidates=[MUHAMMAD ASIF (12713/LHR/35202-0914448-7); MUHAMMAD ASIF (163/37302-5228011-9)]
+AC-No=1157 belt=01 name='Muhammad Asif' candidates=[MUHAMMAD ASIF (12713/LHR/35202-0914448-7); MUHAMMAD ASIF (163/37302-5228011-9)]
+AC-No=1296 belt=14598 name='ASI Muhammad Asif' candidates=[MUHAMMAD ASIF (12713/LHR/35202-0914448-7); MUHAMMAD ASIF (163/37302-5228011-9)]
+AC-No=1302 belt=04 name='HC M Asif' candidates=[MUHAMMAD ASIF (12713/LHR/35202-0914448-7); MUHAMMAD ASIF (163/37302-5228011-9)]
+AC-No=185 belt=3017 name='ASI Muhammad Imran' candidates=[MUHAMMAD IMRAN (1117/C, 25/PTS/38403-3687368-9); Muhammad Imran (None/38403-6967814-1)]
+AC-No=190 belt=12 name='FC Muhammad Imran' candidates=[MUHAMMAD IMRAN (1117/C, 25/PTS/38403-3687368-9); Muhammad Imran (None/38403-6967814-1)]
+AC-No=1313 belt=134 name='HC Muhammad Imran' candidates=[MUHAMMAD IMRAN (1117/C, 25/PTS/38403-3687368-9); Muhammad Imran (None/38403-6967814-1)]
+
+FUZZY REVIEW CANDIDATES (NOT AUTO-MATCHED)
+------------------------------------------
+score=1.000 AC-No=21 emp='HC Sohail Abbas' nafri='SOHAIL ABBAS' belt=1693/HC, 137/PT — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=21 emp='HC Sohail Abbas' nafri='SOHAIL ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=64 emp='HC Muhammad Asif' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=64 emp='HC Muhammad Asif' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=146 emp='FC Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=202/DC, 07/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=146 emp='FC Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=1838/C, 60/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=146 emp='FC Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=148 emp='FC Muhammad Ashraf' nafri='MUHAMMAD ASHRAF' belt=S/522 — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=148 emp='FC Muhammad Ashraf' nafri='MUHAMMAD ASHRAF' belt=1504/C-2, 99/Pt — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=149 emp='FC Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=202/DC, 07/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=149 emp='FC Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=1838/C, 60/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=149 emp='FC Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=164 emp='SI Muhammad Ashraf' nafri='MUHAMMAD ASHRAF' belt=S/522 — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=164 emp='SI Muhammad Ashraf' nafri='MUHAMMAD ASHRAF' belt=1504/C-2, 99/Pt — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=172 emp='ASI Muhammad Akram' nafri='MUHAMMAD AKRAM' belt=1040/B — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=172 emp='ASI Muhammad Akram' nafri='MUHAMMAD AKRAM' belt=2005/C-2, 102/P — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=185 emp='ASI Muhammad Imran' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=185 emp='ASI Muhammad Imran' nafri='Muhammad Imran' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=190 emp='FC Muhammad Imran' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=190 emp='FC Muhammad Imran' nafri='Muhammad Imran' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=208 emp='FC Ali Muhammad' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=208 emp='FC Ali Muhammad' nafri='MUHAMMAD ALI' belt=32/BC — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1157 emp='Muhammad Asif' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1157 emp='Muhammad Asif' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1296 emp='ASI Muhammad Asif' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1296 emp='ASI Muhammad Asif' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1302 emp='HC M Asif' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1302 emp='HC M Asif' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1313 emp='HC Muhammad Imran' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=1.000 AC-No=1313 emp='HC Muhammad Imran' nafri='Muhammad Imran' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.977 AC-No=138 emp='SI M Haroon Saheed' nafri='MUHAMMAD HAROON SAEED' belt=1863-R — Fuzzy name similarity for review only (not auto-matched)
+score=0.968 AC-No=48 emp='FC Muhammad Shabir' nafri='MUHAMMAD SHABBIR' belt=9472/PC, 648/LY — Fuzzy name similarity for review only (not auto-matched)
+score=0.968 AC-No=142 emp='HC Amir Hayat Khan' nafri='AAMIR HAYAT KHAN' belt=1549 — Fuzzy name similarity for review only (not auto-matched)
+score=0.963 AC-No=28 emp='HC Muzafar Iqbal' nafri='Muzaffar Iqbal' belt=57/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.960 AC-No=60 emp='HC Shabir Ahmed' nafri='SHABBIR AHMED' belt=746 — Fuzzy name similarity for review only (not auto-matched)
+score=0.957 AC-No=105 emp='FC ZafarI Iqbal' nafri='ZAFAR IQBAL' belt=233, 18/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.957 AC-No=1309 emp='FC Amir Sohail' nafri='AAMIR SOHAIL' belt=58/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.957 AC-No=1309 emp='FC Amir Sohail' nafri='AAMIR SOHAIL' belt=62/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.952 AC-No=24 emp='HC Amir Hanif' nafri='AAMIR HANIF' belt=249/HC, 111/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.952 AC-No=36 emp='FC Sajid Ayube' nafri='SAJID AYUB' belt=1681/C, 150/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.941 AC-No=54 emp='SI Hafiz Tahir Anwer' nafri='HAFIZ TAHIR ANWAR' belt=S/443 — Fuzzy name similarity for review only (not auto-matched)
+score=0.941 AC-No=143 emp='HC Abdul Rehman Adil' nafri='ABDUR REHMAN ADIL' belt=2082/HC, 128/PT — Fuzzy name similarity for review only (not auto-matched)
+score=0.938 AC-No=85 emp='SI Ali Husnain Shah' nafri='ALI HASNAIN SHAH' belt=S/345 — Fuzzy name similarity for review only (not auto-matched)
+score=0.938 AC-No=206 emp='FC Muhammad Muzhair' nafri='MUHAMMAD MUZAHIR' belt=19029 — Fuzzy name similarity for review only (not auto-matched)
+score=0.930 AC-No=228 emp='BC M Nadeem Shah' nafri='MUHAMMAD NADEEM SHAH' belt=91/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=30 emp='HC Muhammad Anwer' nafri='MUHAMMAD ANWAR' belt=1933/DHC — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=120 emp='FC Muhammad Irfan' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=120 emp='FC Muhammad Irfan' nafri='Muhammad Imran' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=124 emp='FC Shahzad Hassan' nafri='SHEHZAD HASSAN' belt=1405/C, 112/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=127 emp='FC Muhammad Kashif' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=127 emp='FC Muhammad Kashif' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=129 emp='FC Muhammad Kashif' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=129 emp='FC Muhammad Kashif' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=172 emp='ASI Muhammad Akram' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=200 emp='FC Muahammd Akram' nafri='MUHAMMAD AKRAM' belt=1040/B — Fuzzy name similarity for review only (not auto-matched)
+score=0.929 AC-No=200 emp='FC Muahammd Akram' nafri='MUHAMMAD AKRAM' belt=2005/C-2, 102/P — Fuzzy name similarity for review only (not auto-matched)
+score=0.923 AC-No=39 emp='FC Tariq Mehmood' nafri='Tariq Mahmood' belt=98/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.923 AC-No=45 emp='FC Tariq Mehmood' nafri='Tariq Mahmood' belt=98/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.923 AC-No=119 emp='HC Muhammad Arif' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.923 AC-No=119 emp='HC Muhammad Arif' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=0.923 AC-No=224 emp='BC Muhammad Asif Khan' nafri='MUHAMMAD ASIF KHAN' belt=68/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.917 AC-No=22 emp='HC Naveed Ahmed' nafri='NAVEED AHMAD' belt=746/HC, 76/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.917 AC-No=22 emp='HC Naveed Ahmed' nafri='NAVEED AHMAD' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.917 AC-No=28 emp='HC Muzafar Iqbal' nafri='ZAFAR IQBAL' belt=233, 18/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.917 AC-No=29 emp='HC Ahmed Nadeem' nafri='AHMAD NADEEM' belt=113/HC, 44/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.909 AC-No=113 emp='ASI Muhammad Waliyat' nafri='MUHAMMAD WALAYAIT' belt=103/ATK — Fuzzy name similarity for review only (not auto-matched)
+score=0.909 AC-No=141 emp='HC Waqas Ahmed' nafri='WAQAS AHMAD' belt=999/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.909 AC-No=221 emp='BC Rafi  Ullah Khan' nafri='RAFI ULLAH KHAN' belt=56/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.903 AC-No=144 emp='FC Ameer Ahmed Khan' nafri='AMIR AHMED KHAN' belt=180/CH, 08/PTS, — Fuzzy name similarity for review only (not auto-matched)
+score=0.900 AC-No=67 emp='HC Asgher Ali' nafri='ASGHAR ALI' belt=21185, 41/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.900 AC-No=116 emp='HC Haji Ahmed' nafri='HAJI AHMAD' belt=3421/HC 39/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.900 AC-No=210 emp='FC Haji Ahmed' nafri='HAJI AHMAD' belt=3421/HC 39/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.897 AC-No=44 emp='BC Raja Ali Raza' nafri='RAJA ALI RAZA' belt=86/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.897 AC-No=140 emp='HC Muhammad Javed' nafri='MUHAMMAD JAVAID' belt=507, 96/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.897 AC-No=214 emp='FC Muhammad Saeed' nafri='MUHAMMAD SALEEM' belt=P/418 — Fuzzy name similarity for review only (not auto-matched)
+score=0.897 AC-No=215 emp='BC Akmal Hussain' nafri='Akmal Hussain' belt=2/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.897 AC-No=229 emp='BC Rizwan Haider' nafri='RIZWAN HAIDER' belt=100/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.889 AC-No=6 emp='SI Muneer Hussain' nafri='MUNIR HUSSAIN' belt=1320-R — Fuzzy name similarity for review only (not auto-matched)
+score=0.889 AC-No=218 emp='BC Muhammad Ali' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.889 AC-No=218 emp='BC Muhammad Ali' nafri='MUHAMMAD ALI' belt=32/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.889 AC-No=1298 emp='BC Aamir Sohail' nafri='AAMIR SOHAIL' belt=58/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.889 AC-No=1298 emp='BC Aamir Sohail' nafri='AAMIR SOHAIL' belt=62/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=42 emp='FC Answer Nadeem' nafri='ANSAR NADEEM' belt=1477/C — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=64 emp='HC Muhammad Asif' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=119 emp='HC Muhammad Arif' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=194 emp='HC Muhammad Adil' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=194 emp='HC Muhammad Adil' nafri='MUHAMMAD ALI' belt=32/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=208 emp='FC Ali Muhammad' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=225 emp='BC Ahsan Ameer' nafri='AHSAN AMEER' belt=74/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=1157 emp='Muhammad Asif' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=1296 emp='ASI Muhammad Asif' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=1302 emp='HC M Asif' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.880 AC-No=1304 emp='BC Ahmad Faraz' nafri='AHMAD FARAZ' belt=75/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.875 AC-No=96 emp='LHC Mubeena Noreen' nafri='MUBEENA NOREEN' belt=680, 77/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.875 AC-No=130 emp='FC Muhammad Shahzad' nafri='MUHAMMAD SHAHBAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.875 AC-No=206 emp='FC Muhammad Muzhair' nafri='MUHAMMAD MUKHTAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.870 AC-No=37 emp='FC Qasir Abbas' nafri='QAISAR ABBAS' belt=848/C, 223/PC — Fuzzy name similarity for review only (not auto-matched)
+score=0.870 AC-No=106 emp='FC Yasir Muneer' nafri='YASIR MUNIR' belt=17946, 16/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.870 AC-No=212 emp='FC Qasir Abbas' nafri='QAISAR ABBAS' belt=848/C, 223/PC — Fuzzy name similarity for review only (not auto-matched)
+score=0.870 AC-No=216 emp='BC Danish Ali' nafri='Danish Ali' belt=14/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.870 AC-No=299 emp='BC Ashir Raza' nafri='Ashir Raza' belt=24/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.870 AC-No=1299 emp='FC Qasir Abbas' nafri='QAISAR ABBAS' belt=848/C, 223/PC — Fuzzy name similarity for review only (not auto-matched)
+score=0.867 AC-No=23 emp='HC Ghulam Dastigeer' nafri='GHULAM DASTGIR' belt=1868/HC,131/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.867 AC-No=48 emp='FC Muhammad Shabir' nafri='MUHAMMAD SHARIF' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.867 AC-No=127 emp='FC Muhammad Kashif' nafri='MUHAMMAD ASHRAF' belt=S/522 — Fuzzy name similarity for review only (not auto-matched)
+score=0.867 AC-No=129 emp='FC Muhammad Kashif' nafri='MUHAMMAD ASHRAF' belt=S/522 — Fuzzy name similarity for review only (not auto-matched)
+score=0.867 AC-No=148 emp='FC Muhammad Ashraf' nafri='Muhammad Ashfaq' belt=17/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.867 AC-No=164 emp='SI Muhammad Ashraf' nafri='Muhammad Ashfaq' belt=17/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.864 AC-No=50 emp='FC M Safdar Abbas' nafri='Muhammad Shahadat Abbas' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=56 emp='ASI Muntizar Mehdi' nafri='MUNTAZIR MEHDI' belt=1523/L — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=57 emp='ASI Muhammad Fiaz' nafri='MUHAMMAD FAISAL' belt=790 — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=57 emp='ASI Muhammad Fiaz' nafri='MUHAMMAD IMTIAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=72 emp='FC Ehsan Ullah' nafri='SANA ULLAH' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=110 emp='FC Muhammad Aslam' nafri='MUHAMMAD AKRAM' belt=1040/B — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=110 emp='FC Muhammad Aslam' nafri='MUHAMMAD AKRAM' belt=2005/C-2, 102/P — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=120 emp='FC Muhammad Irfan' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=136 emp='FC Muhammad Noman' nafri='MUHAMMAD USMAN' belt=54/C, 45/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=184 emp='ASI Muhammad Abbas' nafri='Muhammad Akbar' belt=86/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=185 emp='ASI Muhammad Imran' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=188 emp='HC Ehsan Ullah' nafri='SANA ULLAH' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=190 emp='FC Muhammad Imran' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=194 emp='HC Muhammad Adil' nafri='MUHAMMAD FAISAL' belt=790 — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=226 emp='BC Yasir Zia' nafri='YASIR ZIA' belt=78/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=305 emp='BC Asfar ali' nafri='Asfar Ali' belt=9/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=1292 emp='FC M Ijaz' nafri='MUHAMMAD IMTIAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.857 AC-No=1313 emp='HC Muhammad Imran' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.846 AC-No=105 emp='FC ZafarI Iqbal' nafri='Muzaffar Iqbal' belt=57/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.846 AC-No=110 emp='FC Muhammad Aslam' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.846 AC-No=222 emp='BC Amir Sohail' nafri='AAMIR SOHAIL' belt=58/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.846 AC-No=222 emp='BC Amir Sohail' nafri='AAMIR SOHAIL' belt=62/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.842 AC-No=158 emp='SI Safdar Ali' nafri='Asfar Ali' belt=9/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.842 AC-No=250 emp='Mali Muhammad Ameer' nafri='Malik Muhammad Asim' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.842 AC-No=259 emp='Dhobi M Shahbaz' nafri='MUHAMMAD SHAHBAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.839 AC-No=48 emp='FC Muhammad Shabir' nafri='MUHAMMAD SHAHBAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.839 AC-No=206 emp='FC Muhammad Muzhair' nafri='Muhammad Zubair' belt=PJO-2402399 — Fuzzy name similarity for review only (not auto-matched)
+score=0.839 AC-No=255 emp='Mali Ansar Mehmood' nafri='ANSAR MEHMOOD' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.839 AC-No=1286 emp='SI Zafar Hussain' nafri='ZAFAR HUSSAIN SHAH' belt=S/408 — Fuzzy name similarity for review only (not auto-matched)
+score=0.833 AC-No=604 emp='S/Clerk Muhammad Ashfaq' nafri='Muhammad Ashfaq' belt=17/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.833 AC-No=604 emp='S/Clerk Muhammad Ashfaq' nafri='MUHAMMAD ASHFAQ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.829 AC-No=246 emp='Mashki Hafiz Allah Ditta' nafri='HAFIZ ALLAH DITTA' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=6 emp='SI Muneer Hussain' nafri='MUNAWAR HUSSAIN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=27 emp='HC Zaheer Abbas' nafri='Baou Zaheer Abbas' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=118 emp='HC Ghulam Abbas' nafri='GHULAM ABBAS SHAH' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=135 emp='FC Muhammad Ramzan' nafri='MUHAMMAD USMAN' belt=54/C, 45/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=204 emp='FC Muhammad Ramzan' nafri='MUHAMMAD USMAN' belt=54/C, 45/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=214 emp='FC Muhammad Saeed' nafri='Muhammad Naseer' belt=3752207, 51/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=214 emp='FC Muhammad Saeed' nafri='MOHAMMAD NASEER' belt=130/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.828 AC-No=1282 emp='BC Rana Ali Raza' nafri='RAJA ALI RAZA' belt=86/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.824 AC-No=234 emp='S/Clerk M Akram' nafri='MUHAMMAD AKRAM' belt=1040/B — Fuzzy name similarity for review only (not auto-matched)
+score=0.824 AC-No=234 emp='S/Clerk M Akram' nafri='MUHAMMAD AKRAM' belt=2005/C-2, 102/P — Fuzzy name similarity for review only (not auto-matched)
+score=0.824 AC-No=252 emp='Mali Ghulam Abbas' nafri='GHULAM ABBAS SHAH' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.824 AC-No=303 emp='BC M Hunain' nafri='MUHAMMAD HASNAIN' belt=104/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.821 AC-No=250 emp='Mali Muhammad Ameer' nafri='Muhammad Anwar Malik' belt=79/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.821 AC-No=258 emp='Dhobi Bao Zaheer Abbas' nafri='Baou Zaheer Abbas' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.821 AC-No=274 emp='Langri Muhammad Mukhtar' nafri='MUHAMMAD MUKHTAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=37 emp='FC Qasir Abbas' nafri='ANSAR ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=37 emp='FC Qasir Abbas' nafri='WASIM ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=47 emp='FC Ahsan Naeem' nafri='AHSAN AMEER' belt=74/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=126 emp='FC Nasir Abbas' nafri='ANSAR ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=126 emp='FC Nasir Abbas' nafri='WASIM ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=212 emp='FC Qasir Abbas' nafri='ANSAR ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=212 emp='FC Qasir Abbas' nafri='WASIM ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=249 emp='Mashki M Naveed' nafri='MUHAMMAD NAVEED AKHTAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=1299 emp='FC Qasir Abbas' nafri='ANSAR ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.818 AC-No=1299 emp='FC Qasir Abbas' nafri='WASIM ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.815 AC-No=25 emp='HC Sajid Irfan' nafri='SAJID IRFAN KHAN' belt=493/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.815 AC-No=57 emp='ASI Muhammad Fiaz' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.815 AC-No=184 emp='ASI Muhammad Abbas' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.815 AC-No=184 emp='ASI Muhammad Abbas' nafri='MUHAMMAD ASIF' belt=163 — Fuzzy name similarity for review only (not auto-matched)
+score=0.815 AC-No=1292 emp='FC M Ijaz' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.815 AC-No=1292 emp='FC M Ijaz' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.812 AC-No=209 emp='FC Hafiz Mukhtar' nafri='HAFIZ MUKHTAR AHMAD' belt=341/PTC-, 142/P — Fuzzy name similarity for review only (not auto-matched)
+score=0.812 AC-No=260 emp='Dhobi Waseem Khalid' nafri='WASEEM KHALID' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.812 AC-No=1290 emp='Const. Hafiz Mukhtar' nafri='HAFIZ MUKHTAR AHMAD' belt=341/PTC-, 142/P — Fuzzy name similarity for review only (not auto-matched)
+score=0.811 AC-No=273 emp='Langri Muhammad Asghar' nafri='MUHAMMAD ASGHAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.811 AC-No=278 emp='Langri Munawar Hussain' nafri='MUNAWAR HUSSAIN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.811 AC-No=280 emp='Langri Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=202/DC, 07/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.811 AC-No=280 emp='Langri Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=1838/C, 60/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.811 AC-No=280 emp='Langri Muhammad Akhtar' nafri='MUHAMMAD AKHTAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.811 AC-No=296 emp='Mistri M Sharif' nafri='MUHAMMAD SHARIF' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.810 AC-No=138 emp='SI M Haroon Saheed' nafri='HAFIZ MUHAMMAD SAEED' belt=1200/C, 70/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=197 emp='HC Sami Ullah' nafri='AMAN ULLAH' belt=1923/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=197 emp='HC Sami Ullah' nafri='SANA ULLAH' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=198 emp='FC Muhammad Jahngir' nafri='MUHAMMAD ANWAR' belt=1933/DHC — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=219 emp='BC Ahmed Nawaz' nafri='AHMAD NAWAZ' belt=34/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=219 emp='BC Ahmed Nawaz' nafri='AHMAD NAWAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=220 emp='BC Nabeel' nafri='NABEEL' belt=52/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=224 emp='BC Muhammad Asif Khan' nafri='MUHAMMAD ASIF HAYAT' belt=1061/C, 01/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=248 emp='Mashki M Imran' nafri='MUHAMMAD IMRAN KHAN' belt=866/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=248 emp='Mashki M Imran' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=248 emp='Mashki M Imran' nafri='Muhammad Imran' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=254 emp='Mali Jamsheed Riaz' nafri='Jamshed Riaz' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=261 emp='Dhobi Khalid Abbas' nafri='KHALID ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=267 emp='Mochi Abdul Khaliq' nafri='ABDUL KHALIQ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=271 emp='Langri Muhammad Irfan' nafri='MUHAMMAD IMRAN KHAN' belt=866/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=307 emp='Langri M Irfan' nafri='MUHAMMAD IMRAN KHAN' belt=866/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=1281 emp='IP Mazhar Abbas' nafri='MAZHAR ABBAS (GHAZI)' belt=F/261 — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=1281 emp='IP Mazhar Abbas' nafri='MUNAWAR ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.800 AC-No=1291 emp='FC Asif Mehmood' nafri='ANSAR MEHMOOD' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.789 AC-No=289 emp='Sweeper M Rashid' nafri='MUHAMMAD RASHID' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.788 AC-No=244 emp='N/Qasid Farrukh Imtiaz' nafri='FARUKH IMTIAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.788 AC-No=279 emp='Langri Ashiq Hussain' nafri='ASHIQ HUSSAIN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=30 emp='HC Muhammad Anwer' nafri='MUHAMMAD AKRAM' belt=1040/B — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=30 emp='HC Muhammad Anwer' nafri='Muhammad Akbar' belt=86/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=111 emp='FC Raza Muhammad' nafri='MUHAMMAD RASHID' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=136 emp='FC Muhammad Noman' nafri='MUHAMMAD NASIR' belt=14598/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=140 emp='HC Muhammad Javed' nafri='MUHAMMAD HAMID' belt=179/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=193 emp='FC Muhammad Waqar' nafri='MUHAMMAD NASIR' belt=14598/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=193 emp='FC Muhammad Waqar' nafri='MUHAMMAD TARIQ' belt=918 — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=198 emp='FC Muhammad Jahngir' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=198 emp='FC Muhammad Jahngir' nafri='MUHAMMAD ALI' belt=32/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=218 emp='BC Muhammad Ali' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=268 emp='Mochi Tariq Iqbal' nafri='TARIQ IQBAL' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.786 AC-No=1286 emp='SI Zafar Hussain' nafri='MUNAWAR HUSSAIN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.783 AC-No=27 emp='HC Zaheer Abbas' nafri='NAEEM ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.783 AC-No=105 emp='FC ZafarI Iqbal' nafri='ZAHID IQBAL' belt=566/SA — Fuzzy name similarity for review only (not auto-matched)
+score=0.783 AC-No=116 emp='HC Haji Ahmed' nafri='SHABBIR AHMED' belt=746 — Fuzzy name similarity for review only (not auto-matched)
+score=0.783 AC-No=126 emp='FC Nasir Abbas' nafri='QAISAR ABBAS' belt=848/C, 223/PC — Fuzzy name similarity for review only (not auto-matched)
+score=0.783 AC-No=210 emp='FC Haji Ahmed' nafri='SHABBIR AHMED' belt=746 — Fuzzy name similarity for review only (not auto-matched)
+score=0.783 AC-No=1281 emp='IP Mazhar Abbas' nafri='ANSAR ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.778 AC-No=233 emp='S/Clerk Muhammad Ishfaq' nafri='Muhammad Ashfaq' belt=17/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.778 AC-No=233 emp='S/Clerk Muhammad Ishfaq' nafri='MUHAMMAD ASHFAQ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.778 AC-No=235 emp='S/Clerk Syed Usama Ali' nafri='SAYYED USAMA ALI' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.778 AC-No=283 emp='Sweeper M Ehsan' nafri='MUHAMMAD EHSAN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.778 AC-No=290 emp='Sweeper M Ilyas' nafri='MUHAMMAD ILYAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.778 AC-No=604 emp='S/Clerk Muhammad Ashfaq' nafri='MUHAMMAD ASGHAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=130 emp='FC Muhammad Shahzad' nafri='MUHAMMAD RASHID' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=130 emp='FC Muhammad Shahzad' nafri='MUHAMMAD SHARIF' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=135 emp='FC Muhammad Ramzan' nafri='MUHAMMAD MUZAHIR' belt=19029 — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=142 emp='HC Amir Hayat Khan' nafri='AAMIR ABBAS KHAN' belt=236, 50/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=193 emp='FC Muhammad Waqar' nafri='MUHAMMAD WALAYAIT' belt=103/ATK — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=204 emp='FC Muhammad Ramzan' nafri='MUHAMMAD MUZAHIR' belt=19029 — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=250 emp='Mali Muhammad Ameer' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=264 emp='Barbar Hassan Abbas' nafri='HASSAN ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.774 AC-No=277 emp='Langri Arshad Iqbal' nafri='ARSHAD IQBAL' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.773 AC-No=138 emp='SI M Haroon Saheed' nafri='MUHAMMAD NAVEED AKHTAR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.769 AC-No=140 emp='HC Muhammad Javed' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.769 AC-No=257 emp='Dhobi Sana Ullah' nafri='SANA ULLAH' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.769 AC-No=1291 emp='FC Asif Mehmood' nafri='ARSHAD MEHMOOD' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.766 AC-No=123 emp='FC Syed Masood ul Hassan' nafri='SYED MASOOD UL HASSAN SHAH (GHAZI)' belt=283, 33/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.765 AC-No=221 emp='BC Rafi  Ullah Khan' nafri='UBAID ULLAH KHAN' belt=1656 — Fuzzy name similarity for review only (not auto-matched)
+score=0.765 AC-No=224 emp='BC Muhammad Asif Khan' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.765 AC-No=234 emp='S/Clerk M Akram' nafri='MUHAMMAD IKRAM' belt=822 — Fuzzy name similarity for review only (not auto-matched)
+score=0.765 AC-No=239 emp='J/Clerk Hafiz Tahir' nafri='HAFIZ TAHIR ANWAR' belt=S/443 — Fuzzy name similarity for review only (not auto-matched)
+score=0.765 AC-No=256 emp='Dhobi Aziz ur Rehman' nafri='AZIZ UR RAHMAN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.765 AC-No=272 emp='Langri Jahngir Abbas' nafri='Jahangir Abbas' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.765 AC-No=282 emp='Langri Ghulam Shabir' nafri='GHULAM SHABBIR' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.762 AC-No=72 emp='FC Ehsan Ullah' nafri='AMAN ULLAH' belt=1923/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.762 AC-No=188 emp='HC Ehsan Ullah' nafri='AMAN ULLAH' belt=1923/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.762 AC-No=197 emp='HC Sami Ullah' nafri='NASIR ULLAH' belt=C/769 — Fuzzy name similarity for review only (not auto-matched)
+score=0.762 AC-No=249 emp='Mashki M Naveed' nafri='HAFIZ MUHAMMAD SAEED' belt=1200/C, 70/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=111 emp='FC Raza Muhammad' nafri='MUHAMMAD MUZAHIR' belt=19029 — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=111 emp='FC Raza Muhammad' nafri='MUHAMMAD SHAHBAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=135 emp='FC Muhammad Ramzan' nafri='MUHAMMAD YASIN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=136 emp='FC Muhammad Noman' nafri='Muhammad Naseer' belt=3752207, 51/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=204 emp='FC Muhammad Ramzan' nafri='MUHAMMAD YASIN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=263 emp='Barbar Fazal Abbas' nafri='FAZAL ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=266 emp='Barbar Azhar Iqbal' nafri='AZHAR IQBAL' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=269 emp='Langri Naeem Abbas' nafri='NAEEM ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=270 emp='Langri Ansar Abbas' nafri='ANSAR ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.759 AC-No=1286 emp='SI Zafar Hussain' nafri='TASSAWAR HUSSAIN' belt=5879, 42/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.757 AC-No=230 emp='Assitant Arshad Mehmood' nafri='ARSHAD MEHMOOD' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=21 emp='HC Sohail Abbas' nafri='AAMIR SOHAIL' belt=58/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=153 emp='IP M Sabtian Ali' nafri='ALI MUHAMMAD' belt=387, 49/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=153 emp='IP M Sabtian Ali' nafri='MUHAMMAD ALI' belt=32/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=262 emp='Dhobi Mushtaq Ahmed' nafri='MUSHTAQ AHMAD' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=276 emp='Langri Sarfraz Khan' nafri='SARFARAZ KHAN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=297 emp='Painter Sohail Abbas' nafri='SOHAIL ABBAS' belt=1693/HC, 137/PT — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=297 emp='Painter Sohail Abbas' nafri='SOHAIL ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=303 emp='BC M Hunain' nafri='MUHAMMAD HAMID' belt=179/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=303 emp='BC M Hunain' nafri='MUHAMMAD EHSAN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.750 AC-No=304 emp='Hafiz Tariq Mehmood' nafri='Tariq Mahmood' belt=98/HC — Fuzzy name similarity for review only (not auto-matched)
+score=0.744 AC-No=237 emp='J/Clerk Muhammad Sajjad' nafri='MUHAMMAD SAJJAD UL HASSAN' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.744 AC-No=245 emp='Maskhi Sahadat Abbas' nafri='Muhammad Shahadat Abbas' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.744 AC-No=283 emp='Sweeper M Ehsan' nafri='MUHAMMAD HAROON SAEED' belt=1863-R — Fuzzy name similarity for review only (not auto-matched)
+score=0.743 AC-No=271 emp='Langri Muhammad Irfan' nafri='MUHAMMAD ANWAR' belt=1933/DHC — Fuzzy name similarity for review only (not auto-matched)
+score=0.743 AC-No=271 emp='Langri Muhammad Irfan' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.743 AC-No=307 emp='Langri M Irfan' nafri='MUHAMMAD ANWAR' belt=1933/DHC — Fuzzy name similarity for review only (not auto-matched)
+score=0.743 AC-No=307 emp='Langri M Irfan' nafri='MUHAMMAD IMRAN' belt=1117/C, 25/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.741 AC-No=39 emp='FC Tariq Mehmood' nafri='MUHAMMAD TARIQ' belt=918 — Fuzzy name similarity for review only (not auto-matched)
+score=0.741 AC-No=45 emp='FC Tariq Mehmood' nafri='MUHAMMAD TARIQ' belt=918 — Fuzzy name similarity for review only (not auto-matched)
+score=0.741 AC-No=217 emp='BC Nabeel Dawood' nafri='Nabeel Daud' belt=30/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.741 AC-No=265 emp='Barbar Abdul Rauf' nafri='Abdul  Rauf' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.741 AC-No=281 emp='Langri Mohsin Ali' nafri='Mohsin Ali' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.737 AC-No=67 emp='HC Asgher Ali' nafri='Asfar Ali' belt=9/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.737 AC-No=289 emp='Sweeper M Rashid' nafri='Muhammad Naseer' belt=3752207, 51/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.737 AC-No=289 emp='Sweeper M Rashid' nafri='MOHAMMAD NASEER' belt=130/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.733 AC-No=41 emp='FC Anwer Naseem' nafri='ANWAR NASEEM ULLAH' belt=1555/C, 35/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.733 AC-No=68 emp='HC Amir Abbas Khan' nafri='AMIR AHMED KHAN' belt=180/CH, 08/PTS, — Fuzzy name similarity for review only (not auto-matched)
+score=0.733 AC-No=113 emp='ASI Muhammad Waliyat' nafri='MUHAMMAD NASIR' belt=14598/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.733 AC-No=113 emp='ASI Muhammad Waliyat' nafri='MUHAMMAD TARIQ' belt=918 — Fuzzy name similarity for review only (not auto-matched)
+score=0.733 AC-No=288 emp='Sweeper Nazar Hayat' nafri='NAZAR HAYAT' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.727 AC-No=47 emp='FC Ahsan Naeem' nafri='NAEEM ABBAS' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.727 AC-No=295 emp='Sweeper Yousaf Mahsih' nafri='YOUSAF MASIH' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.727 AC-No=305 emp='BC Asfar ali' nafri='ASGHAR ALI' belt=21185, 41/PTS — Fuzzy name similarity for review only (not auto-matched)
+score=0.722 AC-No=153 emp='IP M Sabtian Ali' nafri='MUHAMMAD SHABBIR' belt=9472/PC, 648/LY — Fuzzy name similarity for review only (not auto-matched)
+score=0.720 AC-No=251 emp='Mali Ijaz Ahmed' nafri='Ijaz Ahmad' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.720 AC-No=1291 emp='FC Asif Mehmood' nafri='MUHAMMAD ASIF' belt=12713/LHR — Fuzzy name similarity for review only (not auto-matched)
+score=0.720 AC-No=1304 emp='BC Ahmad Faraz' nafri='AHMAD NAWAZ' belt=34/BC — Fuzzy name similarity for review only (not auto-matched)
+score=0.720 AC-No=1304 emp='BC Ahmad Faraz' nafri='AHMAD NAWAZ' belt=None — Fuzzy name similarity for review only (not auto-matched)
+score=0.720 AC-No=1308 emp='HC Sultan Ahmad' nafri='MUSHTAQ AHMAD' belt=None — Fuzzy name similarity for review only (not auto-matched)
+
+CONFLICT DETAILS
+----------------
+CONFLICT (name): Belt No: 221/R biometric_id=1
+  emp_data.xls: ASI Ghulam Rasool
+  Punjab Police: GHULAM RASOOL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 221/R biometric_id=3
+  emp_data.xls: ASI Ghulam Rasool
+  Punjab Police: GHULAM RASOOL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: R/499 biometric_id=4
+  emp_data.xls: IP Aftab Ahmed
+  Punjab Police: AFTAB AHMAD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/264 biometric_id=5
+  emp_data.xls: IP Saadat Ali Shah
+  Punjab Police: SAADAT ALI SHAH
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 961/S biometric_id=8
+  emp_data.xls: ASI Shakeel Ehsan
+  Punjab Police: RANA SHAKEEL EHSAN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 1991/R biometric_id=9
+  emp_data.xls: ASI Mujhaid Iqbal
+  Punjab Police: MUJAHID IQBAL
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 524/S biometric_id=10
+  emp_data.xls: ASI M Shafqat Khan
+  Punjab Police: MUHAMMAD SHAFQAT KHAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 996/S biometric_id=11
+  emp_data.xls: ASI Muhammad Irfan
+  Punjab Police: MUHAMMAD IRFAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 523/S biometric_id=13
+  emp_data.xls: ASI Muhammad Yousaf
+  Punjab Police: MUHAMMAD YOUSAF
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 643/S biometric_id=14
+  emp_data.xls: ASI Shah Muhammad
+  Punjab Police: SHAH MUHAMMAD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 28/R biometric_id=16
+  emp_data.xls: ASI Muhammad Safdar
+  Punjab Police: MUHAMMAD SAFDAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 998/S biometric_id=17
+  emp_data.xls: ASI Zaki ul Hassan
+  Punjab Police: ZAKI UL HUSSNAIN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 727/S biometric_id=18
+  emp_data.xls: ASI M Yousaf Shakir
+  Punjab Police: MUHAMMAD  YOUSAF SHAKIR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 512/S biometric_id=19
+  emp_data.xls: ASI Muhammad Riaz
+  Punjab Police: RIAZ AHMAD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/466 biometric_id=52
+  emp_data.xls: IP Toqueer Hussain
+  Punjab Police: TOUQEER HUSSAIN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/132 biometric_id=53
+  emp_data.xls: SI Shahid Mehmood
+  Punjab Police: SHAHID MEHMOOD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 770/R biometric_id=55
+  emp_data.xls: SI Khizar Hayat
+  Punjab Police: KHIZAR HAYAT
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 355/S biometric_id=58
+  emp_data.xls: ASI Sarfraz Ahmed
+  Punjab Police: Sarfraz Ahmad
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 98 biometric_id=74
+  emp_data.xls: FC M Danyal Rafique
+  Punjab Police: MUHAMMAD IJAZ
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: P/413 biometric_id=76
+  emp_data.xls: IP/Legal  Asif Ali
+  Punjab Police: ASIF ALI
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: GL/914 biometric_id=77
+  emp_data.xls: IP Saqib Shahzad
+  Punjab Police: SAQIB SHEHZAD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/483 biometric_id=78
+  emp_data.xls: IP Tariq Ahmed Majooka
+  Punjab Police: TARIQ AHMED MAJOKA
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/73 biometric_id=79
+  emp_data.xls: IP Muzafar Khan
+  Punjab Police: MUZAFFAR KHAN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: R/543 biometric_id=80
+  emp_data.xls: IP Shahbaz Muhammad
+  Punjab Police: SHAHBAZ MUHAMMAD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: S/122 biometric_id=81
+  emp_data.xls: IP M Musaddiq kahloon
+  Punjab Police: MUHAMMAD MUSADDIQ KAHLOON
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: S/124 biometric_id=84
+  emp_data.xls: SI Ahmed Shah
+  Punjab Police: AHMAD SHAH
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/03 biometric_id=90
+  emp_data.xls: SI Ikram Ullah Khan
+  Punjab Police: IKRAM ULLAH KHAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 786/S biometric_id=91
+  emp_data.xls: SI Yasir Iqbal
+  Punjab Police: YASIR IQBAL QURESHI
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/324 biometric_id=92
+  emp_data.xls: SI Safdar Iqbal
+  Punjab Police: SAFDAR IQBAL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 182/S biometric_id=93
+  emp_data.xls: ASI Muhammad Zafar
+  Punjab Police: MUHAMMAD ZAFAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 1862/R biometric_id=98
+  emp_data.xls: SI Shahid Iqbal
+  Punjab Police: SHAHID IQBAL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 1869/R biometric_id=99
+  emp_data.xls: SI Muhammad Shahbaz
+  Punjab Police: MUHAMMAD SHABAZ
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 999/S biometric_id=100
+  emp_data.xls: ASI Kashif Hayat
+  Punjab Police: KASHIF HAYAT
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 1039/R biometric_id=112
+  emp_data.xls: ASI Azhar Mehmoob
+  Punjab Police: AZHAR MEHMOOD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 360/S biometric_id=114
+  emp_data.xls: ASI Haroon Ahmed
+  Punjab Police: Haroon Ahmad
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 864/S biometric_id=115
+  emp_data.xls: ASI Muhammad Asif
+  Punjab Police: MUHAMMAD ASIF
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 130 biometric_id=122
+  emp_data.xls: FC M Naseer Ahmed
+  Punjab Police: ASIF MEHMOOD KHAN
+  Resolution: Belt matched with weak name overlap; Punjab Police master name retained — review recommended
+CONFLICT (name): Belt No: S/164 biometric_id=155
+  emp_data.xls: IP Imran Khan
+  Punjab Police: IMRAN KHAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 789/M biometric_id=156
+  emp_data.xls: SI Allah Bukhsh
+  Punjab Police: ALLAH BUKHSH
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 42/S biometric_id=159
+  emp_data.xls: SI Ilam Din
+  Punjab Police: ILAM DEEN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 70/S biometric_id=165
+  emp_data.xls: SI Mahir Nazeer Ahmed
+  Punjab Police: MAHER NAZIR AHMED
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 163/L biometric_id=166
+  emp_data.xls: ASI Muhammad Saqlain
+  Punjab Police: MUHAMMAD SAQLAIN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 327/S biometric_id=167
+  emp_data.xls: ASI Iftiqar ul Hassan
+  Punjab Police: IFTIKHAR UL HASSAN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 296/S biometric_id=168
+  emp_data.xls: ASI Faryad Ali
+  Punjab Police: FARYAD ALI
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 684/S biometric_id=171
+  emp_data.xls: ASI M Rafique
+  Punjab Police: MUHAMMAD RAFIQUE
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 941/S biometric_id=173
+  emp_data.xls: ASI Allah Yar
+  Punjab Police: ALLAH YAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 316/S biometric_id=174
+  emp_data.xls: ASI Khizar Hayat
+  Punjab Police: KHIZAR HAYAT
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 778/s biometric_id=175
+  emp_data.xls: ASI Farzand Hussain
+  Punjab Police: FARZAND HUSSAIN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 468/S biometric_id=177
+  emp_data.xls: ASI M Nasrullah
+  Punjab Police: MUHAMMAD NASRULLAH
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 404/S biometric_id=178
+  emp_data.xls: ASI Hameed Ali
+  Punjab Police: HAMEED ALI
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 206/, 52/PTS biometric_id=180
+  emp_data.xls: ASI M Asghar
+  Punjab Police: MUHAMMAD ASGHAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 692/S biometric_id=183
+  emp_data.xls: ASI Ali Muhammad
+  Punjab Police: ALI MUHAMMAD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 521/S biometric_id=186
+  emp_data.xls: ASI Muhammad Nawaz
+  Punjab Police: MUHAMMAD NAWAZ
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: S/220 biometric_id=1283
+  emp_data.xls: SI Akhlaq Hussain
+  Punjab Police: SAFDAR ALI
+  Resolution: Belt matched with weak name overlap; Punjab Police master name retained — review recommended
+CONFLICT (name): Belt No: 369/R biometric_id=1284
+  emp_data.xls: SI Zameer Ul Hassan
+  Punjab Police: ZAMEER UL HASSAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: R/841 biometric_id=1285
+  emp_data.xls: SI Shafique
+  Punjab Police: MUHAMMAD SHAFIQUE (GHAZI)
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 413/S biometric_id=1287
+  emp_data.xls: ASI Ansar Abbas
+  Punjab Police: ANSAR ABBAS
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 794/S biometric_id=1288
+  emp_data.xls: ASI Ghulam Fareed
+  Punjab Police: GHULAM FARID
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/481 biometric_id=1289
+  emp_data.xls: IP Arshad Mehmood
+  Punjab Police: MALIK ARSHAD MEHMOOD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 451/S biometric_id=1294
+  emp_data.xls: ASI Parviz Elahi
+  Punjab Police: PERVAIZ ELAHI
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 3689/LHR biometric_id=1297
+  emp_data.xls: ASI Shahid Hussain
+  Punjab Police: SHAHID HUSSAIN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 6615/LHR biometric_id=1300
+  emp_data.xls: ASI Naeem Akhtar
+  Punjab Police: NAEEM AKHTAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 221/R biometric_id=1314
+  emp_data.xls: ASI Rana Ghulam Rasool
+  Punjab Police: GHULAM RASOOL
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 575 biometric_id=1307
+  emp_data.xls: Hc Azhar Abbas
+  Punjab Police: AZHAR ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 575 biometric_id=1307
+  emp_data.xls: 10
+  Punjab Police: 575
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 14841.41/PC biometric_id=187
+  emp_data.xls: HC M Azhar Abbas
+  Punjab Police: MUHAMMAD AZHAR ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 14841.41/PC biometric_id=187
+  emp_data.xls: 66
+  Punjab Police: 14841.41/PC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1819/C, 40/PTS biometric_id=43
+  emp_data.xls: FC Mohsin Abbas
+  Punjab Police: MOHSIN ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1819/C, 40/PTS biometric_id=43
+  emp_data.xls: 40
+  Punjab Police: 1819/C, 40/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (belt): Belt No: 59/PTS biometric_id=1009
+  emp_data.xls: 59/BC
+  Punjab Police: 59/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 332/HC, 11/PTS biometric_id=103
+  emp_data.xls: HC Qamar Abbas
+  Punjab Police: QAMAR ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 332/HC, 11/PTS biometric_id=103
+  emp_data.xls: 11
+  Punjab Police: 332/HC, 11/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 53/PTS biometric_id=34
+  emp_data.xls: FC Abid Mehmood
+  Punjab Police: ABID MEHMOOD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 53/PTS biometric_id=34
+  emp_data.xls: 53
+  Punjab Police: 53/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1159, 92/PTS biometric_id=66
+  emp_data.xls: HC Adil Shahzad
+  Punjab Police: ADIL SHAHZAD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1159, 92/PTS biometric_id=66
+  emp_data.xls: 92
+  Punjab Police: 1159, 92/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 29/PTS 3150104 biometric_id=69
+  emp_data.xls: HC Nadeem Aftab
+  Punjab Police: Nadeem Aftab
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 29/PTS 3150104 biometric_id=69
+  emp_data.xls: 29
+  Punjab Police: 29/PTS 3150104
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 63/BC biometric_id=1312
+  emp_data.xls: FC Waseem Ahmad
+  Punjab Police: WASEEM AHMAD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 63/BC biometric_id=1312
+  emp_data.xls: 63
+  Punjab Police: 63/BC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1811/GL biometric_id=86
+  emp_data.xls: SI Ijaz Ahmed
+  Punjab Police: IJAZ AHMED
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1811/GL biometric_id=86
+  emp_data.xls: GL/1118
+  Punjab Police: 1811/GL
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 896/HC biometric_id=195
+  emp_data.xls: HC Sultan Ahmed
+  Punjab Police: SULTAN AHMED
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 896/HC biometric_id=195
+  emp_data.xls: 64
+  Punjab Police: 896/HC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 488/S biometric_id=162
+  emp_data.xls: SI Saeed Akhtar
+  Punjab Police: SAEED AKHTAR
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 488/S biometric_id=162
+  emp_data.xls: S/448
+  Punjab Police: 488/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 21456, 81/PTS biometric_id=121
+  emp_data.xls: FC Sardar Ali Saqlain
+  Punjab Police: SARDAR ALI SAQLAIN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 21456, 81/PTS biometric_id=121
+  emp_data.xls: 81
+  Punjab Police: 21456, 81/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 148/HC biometric_id=87
+  emp_data.xls: SI Allah Ditta
+  Punjab Police: Allah Ditta
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 148/HC biometric_id=87
+  emp_data.xls: S/474
+  Punjab Police: 148/HC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1538 biometric_id=191
+  emp_data.xls: HC Ameer Asif
+  Punjab Police: AMEER ASIF
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1538 biometric_id=191
+  emp_data.xls: 13
+  Punjab Police: 1538
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 83 biometric_id=202
+  emp_data.xls: FC Muhammad Ameer
+  Punjab Police: MUHAMMAD AMEER
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (name): Belt No: S/432 biometric_id=157
+  emp_data.xls: SI Arshad Hussain
+  Punjab Police: ARSHAD HUSSAIN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: S/432 biometric_id=157
+  emp_data.xls: S/873
+  Punjab Police: S/432
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: S/29 biometric_id=154
+  emp_data.xls: IP Asad Hassan
+  Punjab Police: ASAD HASSAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: S/29 biometric_id=154
+  emp_data.xls: S/29 C/791
+  Punjab Police: S/29
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1868/HC, 129/PT biometric_id=117
+  emp_data.xls: HC Azhar Saleem
+  Punjab Police: AZHAR SALEEM
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1868/HC, 129/PT biometric_id=117
+  emp_data.xls: 129
+  Punjab Police: 1868/HC, 129/PT
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 709/HC, 21/PTS biometric_id=189
+  emp_data.xls: HC Babar Latif
+  Punjab Police: BABAR LATIF
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 709/HC, 21/PTS biometric_id=189
+  emp_data.xls: 21
+  Punjab Police: 709/HC, 21/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 393/S biometric_id=179
+  emp_data.xls: ASI Ehsan Baig
+  Punjab Police: EHSAN BAIG
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 393/S biometric_id=179
+  emp_data.xls: S/453
+  Punjab Police: 393/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1029/S biometric_id=95
+  emp_data.xls: ASI M Ehtisham Zaib
+  Punjab Police: MUHAMMAD EHTISHAM ZAIB
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1029/S biometric_id=95
+  emp_data.xls: S/89
+  Punjab Police: 1029/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1621/C, 72/PTS biometric_id=49
+  emp_data.xls: FC Faisal Sajjad
+  Punjab Police: FAISAL SAJJAD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1621/C, 72/PTS biometric_id=49
+  emp_data.xls: 72
+  Punjab Police: 1621/C, 72/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 80/BC biometric_id=1305
+  emp_data.xls: Faisal  Zia
+  Punjab Police: FAISAL ZIA
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 80/BC biometric_id=1305
+  emp_data.xls: 80
+  Punjab Police: 80/BC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 2151/C biometric_id=38
+  emp_data.xls: FC Farman Ullah
+  Punjab Police: FARMAN ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 2151/C biometric_id=38
+  emp_data.xls: 73
+  Punjab Police: 2151/C
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: S/198 biometric_id=89
+  emp_data.xls: SI Hamid Farooq
+  Punjab Police: HAMID FAROOQ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: S/198 biometric_id=89
+  emp_data.xls: S/226
+  Punjab Police: S/198
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 257, 108/PTS biometric_id=31
+  emp_data.xls: HC Hafeez Ullah
+  Punjab Police: HAFEEZ ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 257, 108/PTS biometric_id=31
+  emp_data.xls: 108
+  Punjab Police: 257, 108/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 546/HC, 48/PTS biometric_id=62
+  emp_data.xls: HC Imran Haider
+  Punjab Police: IMRAN HAIDER
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 546/HC, 48/PTS biometric_id=62
+  emp_data.xls: 48
+  Punjab Police: 546/HC, 48/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 686 biometric_id=213
+  emp_data.xls: FC Zeeshan Haider
+  Punjab Police: ZEESHAN HAIDER
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 686 biometric_id=213
+  emp_data.xls: 97
+  Punjab Police: 686
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 27/PTS biometric_id=302
+  emp_data.xls: HC Naveed ul Hassan
+  Punjab Police: NAVEED UL HASSAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 46/PTS biometric_id=518
+  emp_data.xls: 46/HC
+  Punjab Police: 46/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 220 biometric_id=1303
+  emp_data.xls: HC Intizar Hussain
+  Punjab Police: INTIZAR HUSSAIN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 220 biometric_id=1303
+  emp_data.xls: 03
+  Punjab Police: 220
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 408 biometric_id=1301
+  emp_data.xls: Hc M Ikramullah
+  Punjab Police: MUHAMMAD IKRAMULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 408 biometric_id=1301
+  emp_data.xls: 17
+  Punjab Police: 408
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1514 biometric_id=139
+  emp_data.xls: HC Imtiaz Ullah Khan
+  Punjab Police: IMTIAZ-ULLAH KHAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1514 biometric_id=139
+  emp_data.xls: 125
+  Punjab Police: 1514
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 756, 133/PTS biometric_id=94
+  emp_data.xls: ASI Tanveer Imtiaz
+  Punjab Police: TANVEER IMTIAZ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 756, 133/PTS biometric_id=94
+  emp_data.xls: S/756
+  Punjab Police: 756, 133/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 174/C biometric_id=150
+  emp_data.xls: FC Inam Ullah
+  Punjab Police: INAM ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 174/C biometric_id=150
+  emp_data.xls: 47
+  Punjab Police: 174/C
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 144/HC, 144/PTS biometric_id=101
+  emp_data.xls: HC Muhammad Iqbal
+  Punjab Police: MUHAMMAD IQBAL
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 144/HC, 144/PTS biometric_id=101
+  emp_data.xls: 144
+  Punjab Police: 144/HC, 144/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 829/C, 88/PTS biometric_id=33
+  emp_data.xls: FC Muhammad Ishtiaq
+  Punjab Police: MUHAMMAD ISHTIAQ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 829/C, 88/PTS biometric_id=33
+  emp_data.xls: 88
+  Punjab Police: 829/C, 88/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 2340, 153/PTS biometric_id=71
+  emp_data.xls: FC Safdar Javed
+  Punjab Police: SAFDAR JAVED
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 2340, 153/PTS biometric_id=71
+  emp_data.xls: 153
+  Punjab Police: 2340, 153/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 4 biometric_id=1306
+  emp_data.xls: HC Muhammad Kamran
+  Punjab Police: MUHAMMAD KAMRAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 4 biometric_id=1306
+  emp_data.xls: 95/
+  Punjab Police: 4
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 329/HC, 26/PTS biometric_id=63
+  emp_data.xls: HC Nasrullah Khan
+  Punjab Police: NASRULLAH KHAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 329/HC, 26/PTS biometric_id=63
+  emp_data.xls: 26
+  Punjab Police: 329/HC, 26/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (belt): Belt No: 1767 biometric_id=1010
+  emp_data.xls: 139/HC
+  Punjab Police: 1767
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 636, 151/PTS biometric_id=147
+  emp_data.xls: FC Maskeen Ullah
+  Punjab Police: MASKEEN ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 636, 151/PTS biometric_id=147
+  emp_data.xls: 151
+  Punjab Police: 636, 151/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 552, 36/PTS biometric_id=306
+  emp_data.xls: Hc Muhammad Mumtaz
+  Punjab Police: MUHAMMAD MUMTAZ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 552, 36/PTS biometric_id=306
+  emp_data.xls: 36
+  Punjab Police: 552, 36/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1351/C-2, 127/P biometric_id=70
+  emp_data.xls: FC M Naeem
+  Punjab Police: MUHAMMAD NAEEM
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1351/C-2, 127/P biometric_id=70
+  emp_data.xls: 127
+  Punjab Police: 1351/C-2, 127/P
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 44/HC, 90/HC biometric_id=32
+  emp_data.xls: HC M Tahir Pervaiz
+  Punjab Police: MUHAMMAD TAHIR PERVAIZ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 44/HC, 90/HC biometric_id=32
+  emp_data.xls: 90
+  Punjab Police: 44/HC, 90/HC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 13750 biometric_id=205
+  emp_data.xls: FC Muhammad Sultan
+  Punjab Police: MUHAMMAD SULTAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 13750 biometric_id=205
+  emp_data.xls: 147
+  Punjab Police: 13750
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 507/S biometric_id=15
+  emp_data.xls: ASI Muhammad Yaqoob
+  Punjab Police: MUHAMMAD YAQOOB
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 507/S biometric_id=15
+  emp_data.xls: S/560
+  Punjab Police: 507/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 115/PTS biometric_id=104
+  emp_data.xls: FC Noor Zaman
+  Punjab Police: NOOR ZAMAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 115/PTS biometric_id=104
+  emp_data.xls: 115
+  Punjab Police: 115/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes

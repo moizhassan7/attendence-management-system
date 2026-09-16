@@ -1,0 +1,626 @@
+CONFLICT DETAILS
+----------------
+CONFLICT (name): Belt No: 221/R biometric_id=1
+  emp_data.xls: ASI Ghulam Rasool
+  Punjab Police: GHULAM RASOOL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 221/R biometric_id=3
+  emp_data.xls: ASI Ghulam Rasool
+  Punjab Police: GHULAM RASOOL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: R/499 biometric_id=4
+  emp_data.xls: IP Aftab Ahmed
+  Punjab Police: AFTAB AHMAD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/264 biometric_id=5
+  emp_data.xls: IP Saadat Ali Shah
+  Punjab Police: SAADAT ALI SHAH
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 961/S biometric_id=8
+  emp_data.xls: ASI Shakeel Ehsan
+  Punjab Police: RANA SHAKEEL EHSAN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 1991/R biometric_id=9
+  emp_data.xls: ASI Mujhaid Iqbal
+  Punjab Police: MUJAHID IQBAL
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 524/S biometric_id=10
+  emp_data.xls: ASI M Shafqat Khan
+  Punjab Police: MUHAMMAD SHAFQAT KHAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 996/S biometric_id=11
+  emp_data.xls: ASI Muhammad Irfan
+  Punjab Police: MUHAMMAD IRFAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 523/S biometric_id=13
+  emp_data.xls: ASI Muhammad Yousaf
+  Punjab Police: MUHAMMAD YOUSAF
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 643/S biometric_id=14
+  emp_data.xls: ASI Shah Muhammad
+  Punjab Police: SHAH MUHAMMAD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 28/R biometric_id=16
+  emp_data.xls: ASI Muhammad Safdar
+  Punjab Police: MUHAMMAD SAFDAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 998/S biometric_id=17
+  emp_data.xls: ASI Zaki ul Hassan
+  Punjab Police: ZAKI UL HUSSNAIN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 727/S biometric_id=18
+  emp_data.xls: ASI M Yousaf Shakir
+  Punjab Police: MUHAMMAD  YOUSAF SHAKIR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 512/S biometric_id=19
+  emp_data.xls: ASI Muhammad Riaz
+  Punjab Police: RIAZ AHMAD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/466 biometric_id=52
+  emp_data.xls: IP Toqueer Hussain
+  Punjab Police: TOUQEER HUSSAIN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/132 biometric_id=53
+  emp_data.xls: SI Shahid Mehmood
+  Punjab Police: SHAHID MEHMOOD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 770/R biometric_id=55
+  emp_data.xls: SI Khizar Hayat
+  Punjab Police: KHIZAR HAYAT
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 355/S biometric_id=58
+  emp_data.xls: ASI Sarfraz Ahmed
+  Punjab Police: Sarfraz Ahmad
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 98 biometric_id=74
+  emp_data.xls: FC M Danyal Rafique
+  Punjab Police: MUHAMMAD IJAZ
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: P/413 biometric_id=76
+  emp_data.xls: IP/Legal  Asif Ali
+  Punjab Police: ASIF ALI
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: GL/914 biometric_id=77
+  emp_data.xls: IP Saqib Shahzad
+  Punjab Police: SAQIB SHEHZAD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/483 biometric_id=78
+  emp_data.xls: IP Tariq Ahmed Majooka
+  Punjab Police: TARIQ AHMED MAJOKA
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/73 biometric_id=79
+  emp_data.xls: IP Muzafar Khan
+  Punjab Police: MUZAFFAR KHAN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: R/543 biometric_id=80
+  emp_data.xls: IP Shahbaz Muhammad
+  Punjab Police: SHAHBAZ MUHAMMAD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: S/122 biometric_id=81
+  emp_data.xls: IP M Musaddiq kahloon
+  Punjab Police: MUHAMMAD MUSADDIQ KAHLOON
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: S/124 biometric_id=84
+  emp_data.xls: SI Ahmed Shah
+  Punjab Police: AHMAD SHAH
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/03 biometric_id=90
+  emp_data.xls: SI Ikram Ullah Khan
+  Punjab Police: IKRAM ULLAH KHAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 786/S biometric_id=91
+  emp_data.xls: SI Yasir Iqbal
+  Punjab Police: YASIR IQBAL QURESHI
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/324 biometric_id=92
+  emp_data.xls: SI Safdar Iqbal
+  Punjab Police: SAFDAR IQBAL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 182/S biometric_id=93
+  emp_data.xls: ASI Muhammad Zafar
+  Punjab Police: MUHAMMAD ZAFAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 1862/R biometric_id=98
+  emp_data.xls: SI Shahid Iqbal
+  Punjab Police: SHAHID IQBAL
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 1869/R biometric_id=99
+  emp_data.xls: SI Muhammad Shahbaz
+  Punjab Police: MUHAMMAD SHABAZ
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 999/S biometric_id=100
+  emp_data.xls: ASI Kashif Hayat
+  Punjab Police: KASHIF HAYAT
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 1039/R biometric_id=112
+  emp_data.xls: ASI Azhar Mehmoob
+  Punjab Police: AZHAR MEHMOOD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 360/S biometric_id=114
+  emp_data.xls: ASI Haroon Ahmed
+  Punjab Police: Haroon Ahmad
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 864/S biometric_id=115
+  emp_data.xls: ASI Muhammad Asif
+  Punjab Police: MUHAMMAD ASIF
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 130 biometric_id=122
+  emp_data.xls: FC M Naseer Ahmed
+  Punjab Police: ASIF MEHMOOD KHAN
+  Resolution: Belt matched with weak name overlap; Punjab Police master name retained — review recommended
+CONFLICT (name): Belt No: S/164 biometric_id=155
+  emp_data.xls: IP Imran Khan
+  Punjab Police: IMRAN KHAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 789/M biometric_id=156
+  emp_data.xls: SI Allah Bukhsh
+  Punjab Police: ALLAH BUKHSH
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 42/S biometric_id=159
+  emp_data.xls: SI Ilam Din
+  Punjab Police: ILAM DEEN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 70/S biometric_id=165
+  emp_data.xls: SI Mahir Nazeer Ahmed
+  Punjab Police: MAHER NAZIR AHMED
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 163/L biometric_id=166
+  emp_data.xls: ASI Muhammad Saqlain
+  Punjab Police: MUHAMMAD SAQLAIN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 327/S biometric_id=167
+  emp_data.xls: ASI Iftiqar ul Hassan
+  Punjab Police: IFTIKHAR UL HASSAN
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 296/S biometric_id=168
+  emp_data.xls: ASI Faryad Ali
+  Punjab Police: FARYAD ALI
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 684/S biometric_id=171
+  emp_data.xls: ASI M Rafique
+  Punjab Police: MUHAMMAD RAFIQUE
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 941/S biometric_id=173
+  emp_data.xls: ASI Allah Yar
+  Punjab Police: ALLAH YAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 316/S biometric_id=174
+  emp_data.xls: ASI Khizar Hayat
+  Punjab Police: KHIZAR HAYAT
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 778/s biometric_id=175
+  emp_data.xls: ASI Farzand Hussain
+  Punjab Police: FARZAND HUSSAIN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 468/S biometric_id=177
+  emp_data.xls: ASI M Nasrullah
+  Punjab Police: MUHAMMAD NASRULLAH
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 404/S biometric_id=178
+  emp_data.xls: ASI Hameed Ali
+  Punjab Police: HAMEED ALI
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 206/, 52/PTS biometric_id=180
+  emp_data.xls: ASI M Asghar
+  Punjab Police: MUHAMMAD ASGHAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 692/S biometric_id=183
+  emp_data.xls: ASI Ali Muhammad
+  Punjab Police: ALI MUHAMMAD
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 521/S biometric_id=186
+  emp_data.xls: ASI Muhammad Nawaz
+  Punjab Police: MUHAMMAD NAWAZ
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: S/220 biometric_id=1283
+  emp_data.xls: SI Akhlaq Hussain
+  Punjab Police: SAFDAR ALI
+  Resolution: Belt matched with weak name overlap; Punjab Police master name retained — review recommended
+CONFLICT (name): Belt No: 369/R biometric_id=1284
+  emp_data.xls: SI Zameer Ul Hassan
+  Punjab Police: ZAMEER UL HASSAN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: R/841 biometric_id=1285
+  emp_data.xls: SI Shafique
+  Punjab Police: MUHAMMAD SHAFIQUE (GHAZI)
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 413/S biometric_id=1287
+  emp_data.xls: ASI Ansar Abbas
+  Punjab Police: ANSAR ABBAS
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 794/S biometric_id=1288
+  emp_data.xls: ASI Ghulam Fareed
+  Punjab Police: GHULAM FARID
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: S/481 biometric_id=1289
+  emp_data.xls: IP Arshad Mehmood
+  Punjab Police: MALIK ARSHAD MEHMOOD
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 451/S biometric_id=1294
+  emp_data.xls: ASI Parviz Elahi
+  Punjab Police: PERVAIZ ELAHI
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 3689/LHR biometric_id=1297
+  emp_data.xls: ASI Shahid Hussain
+  Punjab Police: SHAHID HUSSAIN
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 6615/LHR biometric_id=1300
+  emp_data.xls: ASI Naeem Akhtar
+  Punjab Police: NAEEM AKHTAR
+  Resolution: Names normalized/matched; Punjab Police master name retained
+CONFLICT (name): Belt No: 221/R biometric_id=1314
+  emp_data.xls: ASI Rana Ghulam Rasool
+  Punjab Police: GHULAM RASOOL
+  Resolution: Belt/employee number is authoritative; Punjab Police master name retained
+CONFLICT (name): Belt No: 575 biometric_id=1307
+  emp_data.xls: Hc Azhar Abbas
+  Punjab Police: AZHAR ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 575 biometric_id=1307
+  emp_data.xls: 10
+  Punjab Police: 575
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 14841.41/PC biometric_id=187
+  emp_data.xls: HC M Azhar Abbas
+  Punjab Police: MUHAMMAD AZHAR ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 14841.41/PC biometric_id=187
+  emp_data.xls: 66
+  Punjab Police: 14841.41/PC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1819/C, 40/PTS biometric_id=43
+  emp_data.xls: FC Mohsin Abbas
+  Punjab Police: MOHSIN ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1819/C, 40/PTS biometric_id=43
+  emp_data.xls: 40
+  Punjab Police: 1819/C, 40/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (belt): Belt No: 59/PTS biometric_id=1009
+  emp_data.xls: 59/BC
+  Punjab Police: 59/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 332/HC, 11/PTS biometric_id=103
+  emp_data.xls: HC Qamar Abbas
+  Punjab Police: QAMAR ABBAS
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 332/HC, 11/PTS biometric_id=103
+  emp_data.xls: 11
+  Punjab Police: 332/HC, 11/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 53/PTS biometric_id=34
+  emp_data.xls: FC Abid Mehmood
+  Punjab Police: ABID MEHMOOD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 53/PTS biometric_id=34
+  emp_data.xls: 53
+  Punjab Police: 53/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1159, 92/PTS biometric_id=66
+  emp_data.xls: HC Adil Shahzad
+  Punjab Police: ADIL SHAHZAD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1159, 92/PTS biometric_id=66
+  emp_data.xls: 92
+  Punjab Police: 1159, 92/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 29/PTS 3150104 biometric_id=69
+  emp_data.xls: HC Nadeem Aftab
+  Punjab Police: Nadeem Aftab
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 29/PTS 3150104 biometric_id=69
+  emp_data.xls: 29
+  Punjab Police: 29/PTS 3150104
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 63/BC biometric_id=1312
+  emp_data.xls: FC Waseem Ahmad
+  Punjab Police: WASEEM AHMAD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 63/BC biometric_id=1312
+  emp_data.xls: 63
+  Punjab Police: 63/BC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1811/GL biometric_id=86
+  emp_data.xls: SI Ijaz Ahmed
+  Punjab Police: IJAZ AHMED
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1811/GL biometric_id=86
+  emp_data.xls: GL/1118
+  Punjab Police: 1811/GL
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 896/HC biometric_id=195
+  emp_data.xls: HC Sultan Ahmed
+  Punjab Police: SULTAN AHMED
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 896/HC biometric_id=195
+  emp_data.xls: 64
+  Punjab Police: 896/HC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 488/S biometric_id=162
+  emp_data.xls: SI Saeed Akhtar
+  Punjab Police: SAEED AKHTAR
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 488/S biometric_id=162
+  emp_data.xls: S/448
+  Punjab Police: 488/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 21456, 81/PTS biometric_id=121
+  emp_data.xls: FC Sardar Ali Saqlain
+  Punjab Police: SARDAR ALI SAQLAIN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 21456, 81/PTS biometric_id=121
+  emp_data.xls: 81
+  Punjab Police: 21456, 81/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 148/HC biometric_id=87
+  emp_data.xls: SI Allah Ditta
+  Punjab Police: Allah Ditta
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 148/HC biometric_id=87
+  emp_data.xls: S/474
+  Punjab Police: 148/HC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1538 biometric_id=191
+  emp_data.xls: HC Ameer Asif
+  Punjab Police: AMEER ASIF
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1538 biometric_id=191
+  emp_data.xls: 13
+  Punjab Police: 1538
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 83 biometric_id=202
+  emp_data.xls: FC Muhammad Ameer
+  Punjab Police: MUHAMMAD AMEER
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (name): Belt No: S/432 biometric_id=157
+  emp_data.xls: SI Arshad Hussain
+  Punjab Police: ARSHAD HUSSAIN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: S/432 biometric_id=157
+  emp_data.xls: S/873
+  Punjab Police: S/432
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: S/29 biometric_id=154
+  emp_data.xls: IP Asad Hassan
+  Punjab Police: ASAD HASSAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: S/29 biometric_id=154
+  emp_data.xls: S/29 C/791
+  Punjab Police: S/29
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1868/HC, 129/PT biometric_id=117
+  emp_data.xls: HC Azhar Saleem
+  Punjab Police: AZHAR SALEEM
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1868/HC, 129/PT biometric_id=117
+  emp_data.xls: 129
+  Punjab Police: 1868/HC, 129/PT
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 709/HC, 21/PTS biometric_id=189
+  emp_data.xls: HC Babar Latif
+  Punjab Police: BABAR LATIF
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 709/HC, 21/PTS biometric_id=189
+  emp_data.xls: 21
+  Punjab Police: 709/HC, 21/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 393/S biometric_id=179
+  emp_data.xls: ASI Ehsan Baig
+  Punjab Police: EHSAN BAIG
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 393/S biometric_id=179
+  emp_data.xls: S/453
+  Punjab Police: 393/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1029/S biometric_id=95
+  emp_data.xls: ASI M Ehtisham Zaib
+  Punjab Police: MUHAMMAD EHTISHAM ZAIB
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1029/S biometric_id=95
+  emp_data.xls: S/89
+  Punjab Police: 1029/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1621/C, 72/PTS biometric_id=49
+  emp_data.xls: FC Faisal Sajjad
+  Punjab Police: FAISAL SAJJAD
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1621/C, 72/PTS biometric_id=49
+  emp_data.xls: 72
+  Punjab Police: 1621/C, 72/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 80/BC biometric_id=1305
+  emp_data.xls: Faisal  Zia
+  Punjab Police: FAISAL ZIA
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 80/BC biometric_id=1305
+  emp_data.xls: 80
+  Punjab Police: 80/BC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 2151/C biometric_id=38
+  emp_data.xls: FC Farman Ullah
+  Punjab Police: FARMAN ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 2151/C biometric_id=38
+  emp_data.xls: 73
+  Punjab Police: 2151/C
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: S/198 biometric_id=89
+  emp_data.xls: SI Hamid Farooq
+  Punjab Police: HAMID FAROOQ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: S/198 biometric_id=89
+  emp_data.xls: S/226
+  Punjab Police: S/198
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 257, 108/PTS biometric_id=31
+  emp_data.xls: HC Hafeez Ullah
+  Punjab Police: HAFEEZ ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 257, 108/PTS biometric_id=31
+  emp_data.xls: 108
+  Punjab Police: 257, 108/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 546/HC, 48/PTS biometric_id=62
+  emp_data.xls: HC Imran Haider
+  Punjab Police: IMRAN HAIDER
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 546/HC, 48/PTS biometric_id=62
+  emp_data.xls: 48
+  Punjab Police: 546/HC, 48/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 686 biometric_id=213
+  emp_data.xls: FC Zeeshan Haider
+  Punjab Police: ZEESHAN HAIDER
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 686 biometric_id=213
+  emp_data.xls: 97
+  Punjab Police: 686
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 27/PTS biometric_id=302
+  emp_data.xls: HC Naveed ul Hassan
+  Punjab Police: NAVEED UL HASSAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 46/PTS biometric_id=518
+  emp_data.xls: 46/HC
+  Punjab Police: 46/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 220 biometric_id=1303
+  emp_data.xls: HC Intizar Hussain
+  Punjab Police: INTIZAR HUSSAIN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 220 biometric_id=1303
+  emp_data.xls: 03
+  Punjab Police: 220
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 408 biometric_id=1301
+  emp_data.xls: Hc M Ikramullah
+  Punjab Police: MUHAMMAD IKRAMULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 408 biometric_id=1301
+  emp_data.xls: 17
+  Punjab Police: 408
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1514 biometric_id=139
+  emp_data.xls: HC Imtiaz Ullah Khan
+  Punjab Police: IMTIAZ-ULLAH KHAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1514 biometric_id=139
+  emp_data.xls: 125
+  Punjab Police: 1514
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 756, 133/PTS biometric_id=94
+  emp_data.xls: ASI Tanveer Imtiaz
+  Punjab Police: TANVEER IMTIAZ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 756, 133/PTS biometric_id=94
+  emp_data.xls: S/756
+  Punjab Police: 756, 133/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 174/C biometric_id=150
+  emp_data.xls: FC Inam Ullah
+  Punjab Police: INAM ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 174/C biometric_id=150
+  emp_data.xls: 47
+  Punjab Police: 174/C
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 144/HC, 144/PTS biometric_id=101
+  emp_data.xls: HC Muhammad Iqbal
+  Punjab Police: MUHAMMAD IQBAL
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 144/HC, 144/PTS biometric_id=101
+  emp_data.xls: 144
+  Punjab Police: 144/HC, 144/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 829/C, 88/PTS biometric_id=33
+  emp_data.xls: FC Muhammad Ishtiaq
+  Punjab Police: MUHAMMAD ISHTIAQ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 829/C, 88/PTS biometric_id=33
+  emp_data.xls: 88
+  Punjab Police: 829/C, 88/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 2340, 153/PTS biometric_id=71
+  emp_data.xls: FC Safdar Javed
+  Punjab Police: SAFDAR JAVED
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 2340, 153/PTS biometric_id=71
+  emp_data.xls: 153
+  Punjab Police: 2340, 153/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 4 biometric_id=1306
+  emp_data.xls: HC Muhammad Kamran
+  Punjab Police: MUHAMMAD KAMRAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 4 biometric_id=1306
+  emp_data.xls: 95/
+  Punjab Police: 4
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 329/HC, 26/PTS biometric_id=63
+  emp_data.xls: HC Nasrullah Khan
+  Punjab Police: NASRULLAH KHAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 329/HC, 26/PTS biometric_id=63
+  emp_data.xls: 26
+  Punjab Police: 329/HC, 26/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (belt): Belt No: 1767 biometric_id=1010
+  emp_data.xls: 139/HC
+  Punjab Police: 1767
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 636, 151/PTS biometric_id=147
+  emp_data.xls: FC Maskeen Ullah
+  Punjab Police: MASKEEN ULLAH
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 636, 151/PTS biometric_id=147
+  emp_data.xls: 151
+  Punjab Police: 636, 151/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 552, 36/PTS biometric_id=306
+  emp_data.xls: Hc Muhammad Mumtaz
+  Punjab Police: MUHAMMAD MUMTAZ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 552, 36/PTS biometric_id=306
+  emp_data.xls: 36
+  Punjab Police: 552, 36/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 1351/C-2, 127/P biometric_id=70
+  emp_data.xls: FC M Naeem
+  Punjab Police: MUHAMMAD NAEEM
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 1351/C-2, 127/P biometric_id=70
+  emp_data.xls: 127
+  Punjab Police: 1351/C-2, 127/P
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 44/HC, 90/HC biometric_id=32
+  emp_data.xls: HC M Tahir Pervaiz
+  Punjab Police: MUHAMMAD TAHIR PERVAIZ
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 44/HC, 90/HC biometric_id=32
+  emp_data.xls: 90
+  Punjab Police: 44/HC, 90/HC
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 13750 biometric_id=205
+  emp_data.xls: FC Muhammad Sultan
+  Punjab Police: MUHAMMAD SULTAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 13750 biometric_id=205
+  emp_data.xls: 147
+  Punjab Police: 13750
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 507/S biometric_id=15
+  emp_data.xls: ASI Muhammad Yaqoob
+  Punjab Police: MUHAMMAD YAQOOB
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 507/S biometric_id=15
+  emp_data.xls: S/560
+  Punjab Police: 507/S
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes
+CONFLICT (name): Belt No: 115/PTS biometric_id=104
+  emp_data.xls: FC Noor Zaman
+  Punjab Police: NOOR ZAMAN
+  Resolution: Unique normalized name match; Punjab Police master name retained
+CONFLICT (belt): Belt No: 115/PTS biometric_id=104
+  emp_data.xls: 115
+  Punjab Police: 115/PTS
+  Resolution: Name matched; belts differ — Nafri belt retained, emp belt kept on mapping notes

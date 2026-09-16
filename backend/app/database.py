@@ -63,3 +63,11 @@ async def init_db() -> None:
     import app.models  # noqa: F401 - ensure all models are registered
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+
+async def reset_db() -> None:
+    """Drop and recreate every table."""
+    import app.models  # noqa: F401 - ensure all models are registered
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)

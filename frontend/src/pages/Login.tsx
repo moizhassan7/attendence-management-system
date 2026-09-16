@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Fingerprint, Lock, User, Loader2 } from 'lucide-react';
+import { Fingerprint, Lock, User, Loader2, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBranding } from '../context/BrandingContext';
+import { useTheme } from '../context/ThemeContext';
 import api from '../api/client';
 
 const Login: React.FC = () => {
@@ -11,6 +12,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { branding } = useBranding();
+  const { isDark, toggleTheme } = useTheme();
   const [logoFailed, setLogoFailed] = useState(false);
 
   useEffect(() => {
@@ -58,15 +60,25 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background bg-mesh p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-background bg-mesh p-4 relative overflow-hidden transition-colors duration-200">
+      {/* Floating Theme Toggle */}
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className="absolute top-5 right-5 p-2.5 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-sm hover:scale-105 transition-all z-20 cursor-pointer"
+        title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      >
+        {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
+      </button>
+
       {/* Decorative Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full mix-blend-screen filter blur-[100px] animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full mix-blend-screen filter blur-[100px] animate-pulse pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full mix-blend-screen filter blur-[100px] animate-pulse pointer-events-none" style={{ animationDelay: '2s' }}></div>
 
       <div className="w-full max-w-md z-10">
-        <div className="glass-panel p-8">
+        <div className="glass-panel p-8 shadow-xl">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/10 border border-primary/30 overflow-hidden p-1.5">
+            <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-primary/10 border border-primary/20 dark:border-primary/30 overflow-hidden p-1.5">
               {branding.logo_url && !logoFailed ? (
                 <img 
                   src={branding.logo_url} 
@@ -75,19 +87,19 @@ const Login: React.FC = () => {
                   onError={() => setLogoFailed(true)} 
                 />
               ) : branding.acronym ? (
-                <span className="text-xl font-black text-primary">{branding.acronym}</span>
+                <span className="text-xl font-black text-primary dark:text-indigo-400">{branding.acronym}</span>
               ) : (
-                <Fingerprint className="w-8 h-8 text-primary" />
+                <Fingerprint className="w-8 h-8 text-primary dark:text-indigo-400" />
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight text-center">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight text-center">
               {branding.display_name || 'AttendSys'}
             </h1>
-            <p className="text-slate-400 text-sm mt-1 text-center">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 text-center">
               {branding.system_name || 'Biometric Attendance & Executive Dashboard'}
             </p>
             {branding.tagline && (
-              <p className="text-slate-500 text-xs italic mt-1">{branding.tagline}</p>
+              <p className="text-slate-400 dark:text-slate-500 text-xs italic mt-1">{branding.tagline}</p>
             )}
           </div>
 
@@ -100,10 +112,10 @@ const Login: React.FC = () => {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Username</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-slate-500" />
+                  <User className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   type="text"
@@ -117,10 +129,10 @@ const Login: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-slate-500" />
+                  <Lock className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   type="password"

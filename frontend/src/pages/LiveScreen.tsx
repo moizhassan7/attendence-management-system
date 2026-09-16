@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface PunchFeedItem {
   id: number;
@@ -72,7 +73,7 @@ const LiveScreen: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDark: isDarkMode, toggleTheme } = useTheme();
   const [filterType, setFilterType] = useState<'ALL' | 'IN' | 'OUT'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [wsConnected, setWsConnected] = useState(false);
@@ -208,7 +209,7 @@ const LiveScreen: React.FC = () => {
         setSoundEnabled((prev) => !prev);
       } else if (e.key === 't' || e.key === 'T') {
         e.preventDefault();
-        setIsDarkMode((prev) => !prev);
+        toggleTheme();
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault();
         fetchLiveData(true);
@@ -451,7 +452,7 @@ const LiveScreen: React.FC = () => {
             
             {/* Theme Toggle (Light / Dark) */}
             <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={toggleTheme}
               title={isDarkMode ? 'Switch to Light Mode (Press T)' : 'Switch to Dark Mode (Press T)'}
               className={`p-2 rounded-xl border transition-all cursor-pointer ${theme.btnDefault}`}
             >

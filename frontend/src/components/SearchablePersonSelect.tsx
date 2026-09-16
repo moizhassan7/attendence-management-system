@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search, X, Check, ChevronDown, User, Hash, Shield } from 'lucide-react';
+import { Search, X, Check, ChevronDown, User } from 'lucide-react';
 
 export interface PersonnelOption {
   id: number;
@@ -10,6 +10,7 @@ export interface PersonnelOption {
   department_name?: string | null;
   designation?: string | null;
   is_trainee?: boolean;
+  course_name?: string | null;
 }
 
 interface SearchablePersonSelectProps {
@@ -164,7 +165,7 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
               <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5 truncate">
                 <span className="truncate">{selectedPerson.full_name}</span>
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-700 shrink-0">
-                  {selectedPerson.rank_name || (selectedPerson.is_trainee ? 'Trainee' : 'Staff')}
+                  {selectedPerson.course_name || selectedPerson.rank_name || (selectedPerson.is_trainee ? 'Trainee' : 'Staff')}
                 </span>
               </div>
               <div className="text-[11px] text-slate-500 truncate mt-0.5 flex items-center gap-1.5">
@@ -285,9 +286,9 @@ export const SearchablePersonSelect: React.FC<SearchablePersonSelectProps> = ({
                       <div className="min-w-0 truncate">
                         <div className="font-bold truncate text-slate-900 flex items-center gap-1.5">
                           <span>{person.full_name}</span>
-                          {(person.rank_name || person.is_trainee) && (
+                          {(person.course_name || person.rank_name || person.is_trainee) && (
                             <span className="text-[10px] font-normal text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
-                              {person.rank_name || (person.is_trainee ? 'Trainee' : 'Staff')}
+                              {person.course_name || person.rank_name || (person.is_trainee ? 'Trainee' : 'Staff')}
                             </span>
                           )}
                         </div>

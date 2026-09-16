@@ -10,6 +10,7 @@ export const EditPersonnelModal = ({ person, onClose, onSuccess }: { person: any
     gender: person.gender || 'Male',
     rank_id: person.rank_id || '',
     department_id: person.department_id || '',
+    course_id: person.course_id || '',
     designation: person.designation || '',
     duty_type: person.duty_type || '',
     shift_id: person.shift_id || '',
@@ -21,19 +22,22 @@ export const EditPersonnelModal = ({ person, onClose, onSuccess }: { person: any
   const [ranksList, setRanksList] = useState<any[]>([]);
   const [deptsList, setDeptsList] = useState<any[]>([]);
   const [shiftsList, setShiftsList] = useState<any[]>([]);
+  const [coursesList, setCoursesList] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
-        const [ranksRes, deptsRes, shiftsRes] = await Promise.all([
+        const [ranksRes, deptsRes, shiftsRes, coursesRes] = await Promise.all([
           api.get('/ranks?page_size=100'),
           api.get('/departments?page_size=100'),
-          api.get('/shifts?page_size=100')
+          api.get('/shifts?page_size=100'),
+          api.get('/courses?page_size=50'),
         ]);
         setRanksList(ranksRes.data?.data || []);
         setDeptsList(deptsRes.data?.data || []);
         setShiftsList(shiftsRes.data?.data || []);
+        setCoursesList(coursesRes.data?.data || []);
       } catch (err) {
         console.error("Failed to load metadata for edit modal", err);
       }
@@ -54,6 +58,17 @@ export const EditPersonnelModal = ({ person, onClose, onSuccess }: { person: any
 
       if (payload.shift_id) payload.shift_id = parseInt(payload.shift_id as string, 10);
       else payload.shift_id = null;
+
+      if (person.is_trainee) {
+        payload.rank_id = null;
+        payload.department_id = null;
+        payload.designation = null;
+        payload.duty_type = null;
+        payload.category = 'Trainee';
+        payload.course_id = payload.course_id ? parseInt(payload.course_id as string, 10) : null;
+      } else {
+        payload.course_id = null;
+      }
 
       if (!payload.duty_type) payload.duty_type = null;
       if (!payload.designation) payload.designation = null;
@@ -106,6 +121,7 @@ export const EditPersonnelModal = ({ person, onClose, onSuccess }: { person: any
                 className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
               />
             </div>
+            {!person.is_trainee && (
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Category</label>
               <select
@@ -115,11 +131,26 @@ export const EditPersonnelModal = ({ person, onClose, onSuccess }: { person: any
               >
                 <option value="Uniform">Uniform</option>
                 <option value="Non-Uniform">Non-Uniform</option>
-                <option value="Class-IV">Class-IV</option>
               </select>
             </div>
+            )}
           </div>
 
+          {person.is_trainee ? (
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Course</label>
+            <select
+              value={formData.course_id}
+              onChange={(e) => setFormData({...formData, course_id: e.target.value})}
+              className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+            >
+              <option value="">Select Course...</option>
+              {coursesList.map((c: any) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          ) : (
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Rank / Grade</label>
@@ -148,8 +179,10 @@ export const EditPersonnelModal = ({ person, onClose, onSuccess }: { person: any
               </select>
             </div>
           </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
+            {!person.is_trainee && (
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Duty Type</label>
               <select
@@ -163,6 +196,7 @@ export const EditPersonnelModal = ({ person, onClose, onSuccess }: { person: any
                 <option value="Maintenance">Maintenance</option>
               </select>
             </div>
+            )}
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Assigned Shift</label>
               <select

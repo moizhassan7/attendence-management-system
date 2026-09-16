@@ -49,7 +49,16 @@ def _to_out(p: Personnel) -> PersonnelOut:
         pass
 
     if not rank_name:
-        rank_name = p.designation or ("Trainee" if p.is_trainee else None)
+        if p.is_trainee:
+            rank_name = None
+        else:
+            rank_name = p.designation
+
+    course_name = None
+    try:
+        course_name = p.course.name if p.course else None
+    except Exception:
+        course_name = None
 
     return PersonnelOut(
         id=p.id,
@@ -74,9 +83,10 @@ def _to_out(p: Personnel) -> PersonnelOut:
         has_face=p.has_face,
         created_at=p.created_at,
         updated_at=p.updated_at,
-        department_name=dept_name,
-        rank_name=rank_name,
+        department_name=dept_name if not p.is_trainee else None,
+        rank_name=rank_name if not p.is_trainee else None,
         shift_name=shift_name,
+        course_name=course_name,
     )
 
 

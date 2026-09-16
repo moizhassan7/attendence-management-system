@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
+import PaginationBar from '../components/PaginationBar';
 
 const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28`}>
@@ -52,6 +53,10 @@ const Personnel: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'Uniform' | 'Non-Uniform'>('Uniform');
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pickerList, setPickerList] = useState<any[]>([]);
+  const pageSize = 25;
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -87,15 +92,13 @@ const Personnel: React.FC = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const [dashRes, staffRes, ranksRes, deptsRes, shiftsRes] = await Promise.all([
+      const [dashRes, ranksRes, deptsRes, shiftsRes] = await Promise.all([
         api.get('/dashboard/staff'),
-        api.get('/personnel?is_trainee=false&page_size=100'),
         api.get('/ranks?page_size=50'),
         api.get('/departments?page_size=50'),
         api.get('/shifts?page_size=50'),
       ]);
       setData(dashRes.data?.data);
-      setStaffList(staffRes.data?.data || []);
       setRanksList(ranksRes.data?.data || []);
       setDeptsList(deptsRes.data?.data || []);
       setShiftsList(shiftsRes.data?.data || []);
@@ -109,6 +112,37 @@ const Personnel: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const fetchStaffList = useCallback(async () => {
+    try {
+      const params = new URLSearchParams({
+        is_trainee: 'false',
+        page: String(page),
+        page_size: String(pageSize),
+      });
+      if (searchQuery.trim()) params.set('search', searchQuery.trim());
+      const staffRes = await api.get(`/personnel?${params.toString()}`);
+      setStaffList(staffRes.data?.data || []);
+      setTotalRecords(staffRes.data?.pagination?.total || 0);
+    } catch (error) {
+      console.error('Failed to fetch staff list', error);
+    }
+  }, [page, searchQuery]);
+
+  useEffect(() => {
+    fetchStaffList();
+  }, [fetchStaffList]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (!showMarkModal) return;
+    api.get('/personnel?is_trainee=false&page_size=1000')
+      .then((res) => setPickerList(res.data?.data || []))
+      .catch(() => setPickerList([]));
+  }, [showMarkModal]);
 
   const handleAddStaff = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,6 +181,7 @@ const Personnel: React.FC = () => {
       setActionNotice('Staff personnel created and registered successfully.');
       setTimeout(() => setActionNotice(null), 4000);
       fetchData();
+      fetchStaffList();
     } catch (err: any) {
       console.error('Error adding staff:', err);
       alert(err.response?.data?.detail || 'Failed to add staff personnel.');
@@ -167,6 +202,7 @@ const Personnel: React.FC = () => {
       setActionNotice(`Staff attendance status updated to ${markAttendance.exception_type}.`);
       setTimeout(() => setActionNotice(null), 4000);
       fetchData();
+      fetchStaffList();
     } catch (err: any) {
       console.error('Error marking exception:', err);
       alert(err.response?.data?.detail || 'Failed to update attendance.');
@@ -184,6 +220,7 @@ const Personnel: React.FC = () => {
       setTimeout(() => setActionNotice(null), 4000);
       setSelectedStaff(null);
       fetchData();
+      fetchStaffList();
     } catch (err: any) {
       console.error('Failed to update status:', err);
       alert(err.response?.data?.detail || 'Failed to update status.');
@@ -199,6 +236,7 @@ const Personnel: React.FC = () => {
       setTimeout(() => setActionNotice(null), 4000);
       setSelectedStaff(null);
       fetchData();
+      fetchStaffList();
     } catch (err: any) {
       console.error('Failed to delete staff:', err);
       alert(err.response?.data?.detail || 'Failed to delete staff.');
@@ -263,16 +301,8 @@ const Personnel: React.FC = () => {
     return 'bg-slate-400';
   };
 
-  const filteredStaff = staffList.filter(s => {
-    const matchesSearch = !searchQuery ||
-      s.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      String(s.biometric_user_id).includes(searchQuery) ||
-      s.employee_code?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
-
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
+    <div className="space-y-6 animate-in fade-in duration-500">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -480,7 +510,7 @@ const Personnel: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-50 pb-4">
           <div>
             <h3 className="text-sm font-bold text-slate-800">Staff Members</h3>
-            <p className="text-[11px] text-slate-400 font-medium">{filteredStaff.length} records shown</p>
+            <p className="text-[11px] text-slate-400 font-medium">{totalRecords} records</p>
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-64">
@@ -502,9 +532,9 @@ const Personnel: React.FC = () => {
           </div>
         </div>
         
-        <div className="space-y-1 max-h-[500px] overflow-y-auto no-scrollbar">
-          {filteredStaff.length === 0 && <div className="p-8 text-center text-sm text-slate-400">No staff found matching search.</div>}
-          {filteredStaff.map((staff) => (
+        <div className="space-y-1">
+          {staffList.length === 0 && <div className="p-8 text-center text-sm text-slate-400">No staff found matching search.</div>}
+          {staffList.map((staff) => (
             <div 
               key={staff.id} 
               onClick={() => setSelectedStaff(staff)}
@@ -530,9 +560,8 @@ const Personnel: React.FC = () => {
             </div>
           ))}
         </div>
+        <PaginationBar page={page} pageSize={pageSize} total={totalRecords} onPageChange={setPage} />
       </div>
-
-      {/* Add Staff Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100">
@@ -730,7 +759,7 @@ const Personnel: React.FC = () => {
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
                 >
                   <option value="">Choose Staff...</option>
-                  {staffList.map(s => (
+                  {pickerList.map(s => (
                     <option key={s.id} value={s.id}>
                       PIN {s.biometric_user_id} - {s.full_name} ({s.rank_name || 'Staff'})
                     </option>
@@ -891,6 +920,7 @@ const Personnel: React.FC = () => {
             setShowEditModal(false);
             setSelectedStaff(null);
             fetchData();
+            fetchStaffList();
           }}
         />
       )}

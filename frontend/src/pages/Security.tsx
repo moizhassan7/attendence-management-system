@@ -8,6 +8,7 @@ import {
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
+import PaginationBar from '../components/PaginationBar';
 
 const KPICard = ({ title, value, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden`}>
@@ -31,6 +32,8 @@ const Security: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeShift, setActiveShift] = useState<string>('');
+  const [page, setPage] = useState(1);
+  const pageSize = 25;
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [showMarkModal, setShowMarkModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -217,11 +220,12 @@ const Security: React.FC = () => {
     s.shift?.toLowerCase() === activeShift.toLowerCase() || 
     (activeShift === 'Off / Marked' && s.shift === 'Off / Marked')
   );
+  const pagedStaff = filteredStaff.slice((page - 1) * pageSize, page * pageSize);
 
   const allSelected = filteredStaff.length > 0 && filteredStaff.every((s: any) => selectedIds.includes(s.id));
 
   return (
-    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
+    <div className="space-y-8 animate-in fade-in duration-500">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -290,7 +294,7 @@ const Security: React.FC = () => {
         {shiftTabs.map(tab => (
           <button
             key={tab.name}
-            onClick={() => setActiveShift(tab.name)}
+            onClick={() => { setActiveShift(tab.name); setPage(1); }}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${
               activeShift === tab.name 
                 ? 'bg-indigo-600 text-white shadow-md' 
@@ -376,7 +380,7 @@ const Security: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredStaff.map((staffMember: any) => (
+                pagedStaff.map((staffMember: any) => (
                   <tr key={staffMember.id} className="hover:bg-slate-50 transition-colors font-semibold text-slate-700">
                     <td className="px-4 py-4">
                       <input 
@@ -441,9 +445,8 @@ const Security: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <PaginationBar page={page} pageSize={pageSize} total={filteredStaff.length} onPageChange={setPage} />
       </div>
-
-      {/* Bulk Exception Modal */}
       {showMarkModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100">

@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
+import PaginationBar from '../components/PaginationBar';
 
 interface DashboardKPI {
   total_strength: number;
@@ -92,6 +93,10 @@ const Trainees: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('ALL');
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pickerList, setPickerList] = useState<any[]>([]);
+  const pageSize = 25;
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -122,13 +127,11 @@ const Trainees: React.FC = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const [dashRes, traineesRes, coursesRes] = await Promise.all([
+      const [dashRes, coursesRes] = await Promise.all([
         api.get('/dashboard/trainees'),
-        api.get('/personnel?is_trainee=true&page_size=100'),
         api.get('/courses?page_size=50')
       ]);
       setData(dashRes.data?.data);
-      setTraineeList(traineesRes.data?.data || []);
       setCoursesList(coursesRes.data?.data || []);
     } catch (error) {
       console.error('Failed to fetch trainee data', error);
@@ -140,6 +143,38 @@ const Trainees: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const fetchTraineeList = useCallback(async () => {
+    try {
+      const params = new URLSearchParams({
+        is_trainee: 'true',
+        page: String(page),
+        page_size: String(pageSize),
+      });
+      if (searchQuery.trim()) params.set('search', searchQuery.trim());
+      if (selectedCourseFilter !== 'ALL') params.set('course_id', selectedCourseFilter);
+      const traineesRes = await api.get(`/personnel?${params.toString()}`);
+      setTraineeList(traineesRes.data?.data || []);
+      setTotalRecords(traineesRes.data?.pagination?.total || 0);
+    } catch (error) {
+      console.error('Failed to fetch trainee list', error);
+    }
+  }, [page, searchQuery, selectedCourseFilter]);
+
+  useEffect(() => {
+    fetchTraineeList();
+  }, [fetchTraineeList]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, selectedCourseFilter]);
+
+  useEffect(() => {
+    if (!showMarkModal) return;
+    api.get('/personnel?is_trainee=true&page_size=1000')
+      .then((res) => setPickerList(res.data?.data || []))
+      .catch(() => setPickerList([]));
+  }, [showMarkModal]);
 
   const handleAddTrainee = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,6 +204,7 @@ const Trainees: React.FC = () => {
       setActionNotice('Trainee created and enrolled successfully in database.');
       setTimeout(() => setActionNotice(null), 4000);
       fetchData();
+      fetchTraineeList();
     } catch (err: any) {
       console.error('Error adding trainee:', err);
       alert(err.response?.data?.detail || 'Failed to create trainee.');
@@ -189,6 +225,7 @@ const Trainees: React.FC = () => {
       setActionNotice(`Attendance status updated to ${markAttendance.exception_type} in database.`);
       setTimeout(() => setActionNotice(null), 4000);
       fetchData();
+      fetchTraineeList();
     } catch (err: any) {
       console.error('Error marking attendance exception:', err);
       alert(err.response?.data?.detail || 'Failed to update attendance.');
@@ -205,6 +242,7 @@ const Trainees: React.FC = () => {
       setTimeout(() => setActionNotice(null), 4000);
       setSelectedTrainee(null);
       fetchData();
+      fetchTraineeList();
     } catch (err: any) {
       console.error('Failed to transfer course:', err);
       alert(err.response?.data?.detail || 'Failed to transfer course.');
@@ -222,6 +260,7 @@ const Trainees: React.FC = () => {
       setTimeout(() => setActionNotice(null), 4000);
       setSelectedTrainee(null);
       fetchData();
+      fetchTraineeList();
     } catch (err: any) {
       console.error('Failed to toggle status:', err);
       alert(err.response?.data?.detail || 'Failed to update status.');
@@ -237,6 +276,7 @@ const Trainees: React.FC = () => {
       setTimeout(() => setActionNotice(null), 4000);
       setSelectedTrainee(null);
       fetchData();
+      fetchTraineeList();
     } catch (err: any) {
       console.error('Failed to delete trainee:', err);
       alert(err.response?.data?.detail || 'Failed to delete trainee.');
@@ -281,19 +321,8 @@ const Trainees: React.FC = () => {
   const totalMale = courses.reduce((acc, c) => acc + (c.male || 0), 0);
   const totalFemale = courses.reduce((acc, c) => acc + (c.female || 0), 0);
 
-  // Filtered trainee list
-  const filteredTrainees = traineeList.filter(t => {
-    const matchesSearch = !searchQuery || 
-      t.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      String(t.biometric_user_id).includes(searchQuery) ||
-      t.employee_code?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCourse = selectedCourseFilter === 'ALL' || 
-      String(t.course_id) === selectedCourseFilter;
-    return matchesSearch && matchesCourse;
-  });
-
   return (
-    <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
+    <div className="space-y-6 animate-in fade-in duration-500">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -358,7 +387,7 @@ const Trainees: React.FC = () => {
           {courses.map((course, idx) => (
             <div 
               key={idx} 
-              onClick={() => setSelectedCourseFilter(String(course.course_id))}
+              onClick={() => { setSelectedCourseFilter(String(course.course_id)); setPage(1); }}
               className="flex flex-col gap-1 cursor-pointer group p-3 rounded-2xl hover:bg-slate-50 transition-colors"
             >
               <div className="flex justify-between items-center text-xs font-bold text-slate-600">
@@ -507,7 +536,7 @@ const Trainees: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-slate-50 pb-4">
           <div>
             <h3 className="text-sm font-bold text-slate-800">Trainees</h3>
-            <p className="text-[11px] text-slate-400 font-medium">{filteredTrainees.length} individual records shown</p>
+            <p className="text-[11px] text-slate-400 font-medium">{totalRecords} individual records</p>
           </div>
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-56">
@@ -540,9 +569,9 @@ const Trainees: React.FC = () => {
           </div>
         </div>
         
-        <div className="space-y-1 max-h-[500px] overflow-y-auto no-scrollbar">
-          {filteredTrainees.length === 0 && <div className="p-8 text-center text-sm text-slate-400">No trainees match search criteria.</div>}
-          {filteredTrainees.map((trainee) => (
+        <div className="space-y-1">
+          {traineeList.length === 0 && <div className="p-8 text-center text-sm text-slate-400">No trainees match search criteria.</div>}
+          {traineeList.map((trainee) => (
             <div 
               key={trainee.id} 
               onClick={() => setSelectedTrainee(trainee)}
@@ -556,7 +585,7 @@ const Trainees: React.FC = () => {
                   <h4 className="text-sm font-bold text-slate-700">{trainee.full_name}</h4>
                   <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
                     <span>PIN: {trainee.biometric_user_id}</span>
-                    {trainee.course && <span>· {trainee.course.name}</span>}
+                    {trainee.course_name && <span>· {trainee.course_name}</span>}
                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${trainee.employment_status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                       {trainee.employment_status}
                     </span>
@@ -569,6 +598,7 @@ const Trainees: React.FC = () => {
             </div>
           ))}
         </div>
+        <PaginationBar page={page} pageSize={pageSize} total={totalRecords} onPageChange={setPage} />
       </div>
 
       {/* Add Trainee Modal */}
@@ -712,9 +742,9 @@ const Trainees: React.FC = () => {
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
                 >
                   <option value="">Choose Trainee...</option>
-                  {traineeList.map(t => (
+                  {pickerList.map(t => (
                     <option key={t.id} value={t.id}>
-                      PIN {t.biometric_user_id} - {t.full_name} ({t.course?.name || 'Trainee'})
+                      PIN {t.biometric_user_id} - {t.full_name} ({t.course_name || 'Unassigned'})
                     </option>
                   ))}
                 </select>
@@ -812,7 +842,7 @@ const Trainees: React.FC = () => {
               </div>
               <div className="flex justify-between py-1.5 border-b border-slate-50">
                 <span className="text-slate-400 font-medium">Course:</span>
-                <span className="font-bold text-indigo-600">{selectedTrainee.course?.name || 'Unassigned'}</span>
+                <span className="font-bold text-indigo-600">{selectedTrainee.course_name || 'Unassigned'}</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-slate-50">
                 <span className="text-slate-400 font-medium">Status:</span>
@@ -886,6 +916,7 @@ const Trainees: React.FC = () => {
             setShowEditModal(false);
             setSelectedTrainee(null);
             fetchData();
+            fetchTraineeList();
           }}
         />
       )}

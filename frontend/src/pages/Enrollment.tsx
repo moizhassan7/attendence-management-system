@@ -6,6 +6,7 @@ import {
   UserCheck, Shield, Briefcase, GraduationCap, RefreshCw, UploadCloud
 } from 'lucide-react';
 import api from '../api/client';
+import PaginationBar from '../components/PaginationBar';
 
 interface MasterRank {
   id: number;
@@ -39,6 +40,8 @@ interface PersonnelItem {
   full_name: string;
   rank_name: string | null;
   department_name: string | null;
+  course_name?: string | null;
+  course_id?: number | null;
   has_fingerprint: boolean;
   has_face: boolean;
   is_trainee: boolean;
@@ -71,6 +74,9 @@ const Enrollment: React.FC = () => {
     devices: DeviceOption[];
   } | null>(null);
   const [personnelList, setPersonnelList] = useState<PersonnelItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const pageSize = 25;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDevice, setSelectedDevice] = useState<string>('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -201,6 +207,8 @@ const Enrollment: React.FC = () => {
       custom_designation: '',
       department_id: defaultDept,
       gender: 'Male',
+      duty_type: 'General',
+      shift_id: '',
     });
     setIsAddModalOpen(true);
   };
@@ -210,12 +218,15 @@ const Enrollment: React.FC = () => {
     setLoading(true);
     try {
       const isTrainee = activeTab === 'Trainees';
-      let url = `/personnel?is_trainee=${isTrainee}&page_size=100`;
-      if (searchTerm) {
-        url += `&search=${encodeURIComponent(searchTerm)}`;
-      }
-      const res = await api.get(url);
+      const params = new URLSearchParams({
+        is_trainee: String(isTrainee),
+        page: String(page),
+        page_size: String(pageSize),
+      });
+      if (searchTerm) params.set('search', searchTerm);
+      const res = await api.get(`/personnel?${params.toString()}`);
       setPersonnelList(res.data.data || []);
+      setTotalRecords(res.data?.pagination?.total || 0);
     } catch (err) {
       console.error('Failed to load personnel list', err);
     } finally {
@@ -230,6 +241,10 @@ const Enrollment: React.FC = () => {
 
   useEffect(() => {
     fetchPersonnel();
+  }, [activeTab, searchTerm, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [activeTab, searchTerm]);
 
   // Handle enrollment button click (Finger or Face)
@@ -316,10 +331,10 @@ const Enrollment: React.FC = () => {
         employee_code: formData.employee_code.trim() || null,
         is_trainee: isTrainee,
         course_id: isTrainee && formData.course_id ? Number(formData.course_id) : null,
-        category: isTrainee ? 'Trainee' : (isCivilian ? 'Civilian' : 'Uniform'),
-        rank_id: (isUniform || isTrainee) && formData.rank_id ? Number(formData.rank_id) : null,
-        designation: finalDesignation || null,
-        department_id: formData.department_id ? Number(formData.department_id) : null,
+        category: isTrainee ? 'Trainee' : (isCivilian ? 'Non-Uniform' : 'Uniform'),
+        rank_id: isUniform && formData.rank_id ? Number(formData.rank_id) : null,
+        designation: isTrainee ? null : (finalDesignation || null),
+        department_id: isTrainee ? null : (formData.department_id ? Number(formData.department_id) : null),
         duty_type: formData.duty_type || null,
         shift_id: formData.shift_id ? Number(formData.shift_id) : null,
         gender: formData.gender,
@@ -371,7 +386,7 @@ const Enrollment: React.FC = () => {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
+    <div className="space-y-6 animate-in fade-in duration-500">
       
       {/* Toast Notification */}
       {toastMessage && (
@@ -630,7 +645,7 @@ const Enrollment: React.FC = () => {
             <thead>
               <tr className="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 <th className="pb-3 px-3">NAME</th>
-                <th className="pb-3 px-3">RANK</th>
+                <th className="pb-3 px-3">{activeTab === 'Trainees' ? 'COURSE' : 'RANK'}</th>
                 <th className="pb-3 px-3">DEVICE PIN</th>
                 <th className="pb-3 px-3">ENROLLED</th>
                 <th className="pb-3 px-3">BIOMETRICS</th>
@@ -671,7 +686,9 @@ const Enrollment: React.FC = () => {
 
                       {/* Rank */}
                       <td className="py-3.5 px-3 text-slate-500 font-medium text-xs">
-                        {person.rank_name || (person.is_trainee ? 'Trainee' : 'Staff')}
+                        {person.is_trainee
+                          ? (person.course_name || 'Unassigned course')
+                          : (person.rank_name || 'Staff')}
                       </td>
 
                       {/* Device PIN */}
@@ -781,9 +798,10 @@ const Enrollment: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <div className="px-4 pb-4">
+          <PaginationBar page={page} pageSize={pageSize} total={totalRecords} onPageChange={setPage} />
+        </div>
       </div>
-
-      {/* Add Person Modal */}
       {isAddModalOpen && (() => {
         const pinNum = parseInt(formData.biometric_user_id, 10);
         const isPinExceedsTrainee = formData.person_type === 'Trainee' && !isNaN(pinNum) && pinNum > configRanges.trainee_pin_max;
@@ -801,7 +819,7 @@ const Enrollment: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-slate-900">Add Person</h3>
-                    <p className="text-xs text-slate-400">Register profile, assign rank/category, and link device PIN</p>
+                    <p className="text-xs text-slate-400">Register profile and link device PIN</p>
                   </div>
                 </div>
                 <button 
@@ -996,7 +1014,7 @@ const Enrollment: React.FC = () => {
                   <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100 space-y-3">
                     <div>
                       <label className="block font-bold text-slate-700 mb-1">
-                        Assigned Training Course Batch *
+                        Assigned Training Course *
                       </label>
                       <div className="relative">
                         <select
@@ -1005,7 +1023,7 @@ const Enrollment: React.FC = () => {
                           onChange={(e) => setFormData(prev => ({ ...prev, course_id: e.target.value }))}
                           className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-slate-800 bg-white cursor-pointer appearance-none pr-8"
                         >
-                          <option value="" disabled>-- Select Training Course Batch --</option>
+                          <option value="" disabled>-- Select Training Course --</option>
                           {masterCourses.map((c) => (
                             <option key={c.id} value={c.id}>
                               {c.name} {c.code ? `(${c.code})` : ''}
@@ -1015,37 +1033,10 @@ const Enrollment: React.FC = () => {
                         <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       </div>
                     </div>
-
-                    <div>
-                      <label className="block font-bold text-slate-600 mb-1">
-                        Trainee Cadre / Rank
-                      </label>
-                      <div className="relative">
-                        <select
-                          value={formData.rank_id}
-                          onChange={(e) => setFormData(prev => ({ ...prev, rank_id: e.target.value }))}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-slate-800 bg-white cursor-pointer appearance-none pr-8"
-                        >
-                          {masterRanks
-                            .filter(rk => ['RT', 'CONST', 'HC', 'STF'].includes(rk.code) || rk.name.toLowerCase().includes('trainee') || rk.name.toLowerCase().includes('recruit') || rk.name.toLowerCase().includes('constable'))
-                            .map((rk) => (
-                              <option key={rk.id} value={rk.id}>
-                                {rk.name} ({rk.code})
-                              </option>
-                            ))}
-                          {masterRanks.map(rk => (
-                            <option key={`all-${rk.id}`} value={rk.id}>
-                              {rk.name} ({rk.code})
-                            </option>
-                          ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                      </div>
-                    </div>
                   </div>
                 )}
 
-                {/* 4. Branch / Wing / Department */}
+                {formData.person_type === 'Staff' && (
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">
                     Branch / Wing / Department *
@@ -1067,6 +1058,7 @@ const Enrollment: React.FC = () => {
                     <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
+                )}
 
                 {/* Duty Type & Shift Assignment */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1238,7 +1230,11 @@ const Enrollment: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 uppercase">{viewPerson.full_name}</h3>
-                  <p className="text-xs text-slate-400">{viewPerson.rank_name || 'Staff'}</p>
+                  <p className="text-xs text-slate-400">
+                    {viewPerson.is_trainee
+                      ? (viewPerson.course_name || 'Unassigned course')
+                      : (viewPerson.rank_name || 'Staff')}
+                  </p>
                 </div>
               </div>
               <button 
@@ -1259,8 +1255,12 @@ const Enrollment: React.FC = () => {
                 <span className="font-bold text-slate-700">{viewPerson.employee_code || 'N/A'}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-slate-50">
-                <span className="text-slate-400 font-medium">Department / Branch</span>
-                <span className="font-bold text-slate-700">{viewPerson.department_name || 'Administration'}</span>
+                <span className="text-slate-400 font-medium">{viewPerson.is_trainee ? 'Course' : 'Department / Branch'}</span>
+                <span className="font-bold text-slate-700">
+                  {viewPerson.is_trainee
+                    ? (viewPerson.course_name || 'Unassigned')
+                    : (viewPerson.department_name || '—')}
+                </span>
               </div>
               <div className="flex justify-between py-2 border-b border-slate-50">
                 <span className="text-slate-400 font-medium">Fingerprint Enrolled</span>

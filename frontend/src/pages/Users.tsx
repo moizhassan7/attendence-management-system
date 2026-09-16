@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import PaginationBar from '../components/PaginationBar';
 
 interface UserItem {
   id: number;
@@ -25,6 +26,8 @@ const Users: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   // Toast
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -74,6 +77,10 @@ const Users: React.FC = () => {
 
   useEffect(() => {
     fetchUsers();
+  }, [searchTerm, statusFilter, roleFilter]);
+
+  useEffect(() => {
+    setPage(1);
   }, [searchTerm, statusFilter, roleFilter]);
 
   // Format date helper: 2026-08-31 08:30
@@ -166,8 +173,10 @@ const Users: React.FC = () => {
     }
   };
 
+  const pagedUsers = users.slice((page - 1) * pageSize, page * pageSize);
+
   return (
-    <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6 animate-in fade-in duration-500 bg-[#f8fafc] min-h-screen">
+    <div className="space-y-6 animate-in fade-in duration-500">
       
       {/* Toast Notification */}
       {toast && (
@@ -282,7 +291,7 @@ const Users: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                users.map((u) => {
+                pagedUsers.map((u) => {
                   const isAdmin = u.role.toUpperCase() === 'ADMIN';
                   const isSelfManaged = u.username.toLowerCase() === 'admin';
 
@@ -401,9 +410,10 @@ const Users: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <div className="px-4 pb-4">
+          <PaginationBar page={page} pageSize={pageSize} total={users.length} onPageChange={setPage} />
+        </div>
       </div>
-
-      {/* Add User Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">

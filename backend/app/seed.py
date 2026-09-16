@@ -92,6 +92,23 @@ async def seed_database():
         logger.info("Database initialization complete: Admin user and Real Device configured.")
 
 
+async def seed_all():
+    """Wipe every table, then seed admin, device, shifts, settings, and personnel."""
+    from app.database import reset_db
+    from app.seed_personnel import seed_personnel
+
+    logger.info("Resetting database (drop all tables)...")
+    await reset_db()
+    await seed_database()
+    await seed_personnel()
+    logger.info("Full rebuild complete: admin, shifts, device, and Nafri personnel.")
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    asyncio.run(seed_database())
+    import sys
+
+    if "--reset-all" in sys.argv:
+        asyncio.run(seed_all())
+    else:
+        asyncio.run(seed_database())
