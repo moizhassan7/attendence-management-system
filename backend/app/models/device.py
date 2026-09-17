@@ -24,9 +24,12 @@ class Device(Base):
 
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    preferred_transport: Mapped[str] = mapped_column(
+        String(10), default="auto", nullable=False
+    )  # auto, tcp, udp
     connection_status: Mapped[str] = mapped_column(
         String(20), default="UNKNOWN", nullable=False
-    )  # ONLINE, OFFLINE, UNKNOWN, ERROR
+    )  # ONLINE, OFFLINE, UNKNOWN, ERROR, SYNCING, DEGRADED
     last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(

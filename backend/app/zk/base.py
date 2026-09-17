@@ -108,6 +108,11 @@ class BaseAttendanceDevice(ABC):
         ...
 
     @abstractmethod
+    def clear_attendance(self) -> bool:
+        """Wipe attendance logs on the physical device after they have been saved."""
+        ...
+
+    @abstractmethod
     def get_device_info(self) -> DeviceInfo:
         """Get device hardware/firmware information."""
         ...

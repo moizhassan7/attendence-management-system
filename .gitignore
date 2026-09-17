@@ -67,3 +67,8 @@ alembic/versions/__pycache__/
 *.bak
 *.backup
 .agents/
+
+# HTTPS reverse proxy
+tools/caddy.exe
+tools/caddy-data/
+tools/caddy.zip

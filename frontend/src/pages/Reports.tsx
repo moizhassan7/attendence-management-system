@@ -226,7 +226,7 @@ const Reports: React.FC = () => {
         params.append('course_id', selectedCourse);
       }
 
-      const baseURL = api.defaults.baseURL || 'http://localhost:8000/api/v1';
+      const baseURL = api.defaults.baseURL || '/api/v1';
       const token = localStorage.getItem('token');
       
       const response = await fetch(`${baseURL}/attendance/report/export?${params.toString()}`, {

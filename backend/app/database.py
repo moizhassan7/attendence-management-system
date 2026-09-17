@@ -63,6 +63,50 @@ async def init_db() -> None:
     import app.models  # noqa: F401 - ensure all models are registered
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(_ensure_sync_log_retry_count)
+        await conn.run_sync(_ensure_device_preferred_transport)
+
+
+def _ensure_sync_log_retry_count(sync_conn) -> None:
+    """Add retry_count to existing databases without requiring a manual migration."""
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(sync_conn)
+    if "device_sync_logs" not in inspector.get_table_names():
+        return
+    columns = {col["name"] for col in inspector.get_columns("device_sync_logs")}
+    if "retry_count" in columns:
+        return
+    dialect = sync_conn.dialect.name
+    if dialect == "postgresql":
+        sync_conn.execute(text(
+            "ALTER TABLE device_sync_logs ADD COLUMN IF NOT EXISTS retry_count INTEGER NOT NULL DEFAULT 0"
+        ))
+    else:
+        sync_conn.execute(text(
+            "ALTER TABLE device_sync_logs ADD COLUMN retry_count INTEGER NOT NULL DEFAULT 0"
+        ))
+
+
+def _ensure_device_preferred_transport(sync_conn) -> None:
+    """Add preferred_transport to existing device rows."""
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(sync_conn)
+    if "devices" not in inspector.get_table_names():
+        return
+    columns = {col["name"] for col in inspector.get_columns("devices")}
+    if "preferred_transport" in columns:
+        return
+    dialect = sync_conn.dialect.name
+    if dialect == "postgresql":
+        sync_conn.execute(text(
+            "ALTER TABLE devices ADD COLUMN IF NOT EXISTS preferred_transport VARCHAR(10) NOT NULL DEFAULT 'auto'"
+        ))
+    else:
+        sync_conn.execute(text(
+            "ALTER TABLE devices ADD COLUMN preferred_transport VARCHAR(10) NOT NULL DEFAULT 'auto'"
+        ))
 
 
 async def reset_db() -> None:

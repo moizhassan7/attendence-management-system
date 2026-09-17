@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 
 class PersonnelCreate(BaseModel):
-    biometric_user_id: str
+    biometric_user_id: str | None = None
     employee_code: str | None = None
     full_name: str
     rank_id: int | None = None

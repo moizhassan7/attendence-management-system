@@ -13,6 +13,7 @@ import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
 import PaginationBar from '../components/PaginationBar';
 import { rankChartLabel, rankDisplayName } from '../utils/rankLabels';
+import { fetchNextDevicePin } from '../utils/nextDevicePin';
 
 const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28`}>
@@ -145,12 +146,27 @@ const Personnel: React.FC = () => {
       .catch(() => setPickerList([]));
   }, [showMarkModal]);
 
+  useEffect(() => {
+    if (!showAddModal) return;
+    let cancelled = false;
+    fetchNextDevicePin(false)
+      .then((pin) => {
+        if (!cancelled && pin) {
+          setNewStaff((prev) => ({ ...prev, biometric_user_id: pin }));
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [showAddModal]);
+
   const handleAddStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await api.post('/personnel', {
         full_name: newStaff.full_name,
-        biometric_user_id: parseInt(newStaff.biometric_user_id, 10),
+        biometric_user_id: newStaff.biometric_user_id.trim() || undefined,
         employee_code: newStaff.employee_code || null,
         category: newStaff.category,
         gender: newStaff.gender,
@@ -628,14 +644,14 @@ const Personnel: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Biometric PIN *</label>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Device PIN (assigned)</label>
                   <input 
-                    type="number" 
-                    required
-                    placeholder="e.g. 101"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Assigned automatically"
                     value={newStaff.biometric_user_id}
                     onChange={(e) => setNewStaff({...newStaff, biometric_user_id: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                    className="w-full px-3 py-2 border border-indigo-200 bg-indigo-50/40 rounded-xl text-sm font-mono font-bold focus:outline-none focus:ring-1 focus:ring-indigo-600"
                   />
                 </div>
                 <div>

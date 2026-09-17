@@ -23,11 +23,43 @@ from app.schemas.personnel import (
     PersonnelUpdate,
     PersonnelBulkShiftUpdate,
 )
+from app.services.pin_allocator import next_numeric_pin, parse_numeric_pin
 from app.zk.device_manager import DeviceManager, create_device_adapter
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/personnel", tags=["personnel"])
+
+
+async def _load_pin_ranges(db: AsyncSession) -> tuple[int, int, int]:
+    result = await db.execute(
+        select(SystemSetting).where(
+            SystemSetting.key.in_(("trainee_pin_min", "trainee_pin_max", "staff_pin_min"))
+        )
+    )
+    rows = {row.key: row.value for row in result.scalars().all()}
+    trainee_min = int(rows.get("trainee_pin_min") or 1)
+    trainee_max = int(rows.get("trainee_pin_max") or 2000)
+    staff_min = int(rows.get("staff_pin_min") or 2001)
+    return trainee_min, trainee_max, staff_min
+
+
+async def allocate_next_pin(db: AsyncSession, *, is_trainee: bool) -> str:
+    trainee_min, trainee_max, staff_min = await _load_pin_ranges(db)
+    result = await db.execute(select(Personnel.biometric_user_id))
+    used = {
+        pin
+        for (raw,) in result.all()
+        if (pin := parse_numeric_pin(raw)) is not None
+    }
+    try:
+        if is_trainee:
+            next_pin = next_numeric_pin(used, trainee_min, trainee_max)
+        else:
+            next_pin = next_numeric_pin(used, staff_min)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return str(next_pin)
 
 
 def _to_out(p: Personnel) -> PersonnelOut:
@@ -193,6 +225,24 @@ async def list_personnel(
     )
 
 
+@router.get("/next-pin", response_model=ApiResponse)
+async def get_next_pin(
+    db: AsyncSession = Depends(get_db),
+    is_trainee: Annotated[bool, Query()] = False,
+):
+    """Return the next free device PIN for staff or trainee range."""
+    trainee_min, trainee_max, staff_min = await _load_pin_ranges(db)
+    pin = await allocate_next_pin(db, is_trainee=is_trainee)
+    return ApiResponse(
+        data={
+            "pin": pin,
+            "is_trainee": is_trainee,
+            "range_start": trainee_min if is_trainee else staff_min,
+            "range_end": trainee_max if is_trainee else None,
+        }
+    )
+
+
 @router.post("/bulk-shift", response_model=ApiResponse)
 async def bulk_update_shift(
     payload: PersonnelBulkShiftUpdate,
@@ -235,12 +285,23 @@ async def get_personnel(person_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.post("", response_model=ApiResponse, status_code=201)
 async def create_personnel(payload: PersonnelCreate, db: AsyncSession = Depends(get_db)):
-    # Prevent duplicate biometric_user_id
+    requested = (payload.biometric_user_id or "").strip()
+    pin = requested or await allocate_next_pin(db, is_trainee=bool(payload.is_trainee))
+    payload = payload.model_copy(update={"biometric_user_id": pin})
+
     existing = await db.execute(
         select(Personnel).where(Personnel.biometric_user_id == payload.biometric_user_id)
     )
     if existing.scalar_one_or_none():
-        raise HTTPException(status_code=409, detail="Biometric user ID already exists")
+        if requested:
+            raise HTTPException(status_code=409, detail="Biometric user ID already exists")
+        pin = await allocate_next_pin(db, is_trainee=bool(payload.is_trainee))
+        payload = payload.model_copy(update={"biometric_user_id": pin})
+        existing = await db.execute(
+            select(Personnel).where(Personnel.biometric_user_id == payload.biometric_user_id)
+        )
+        if existing.scalar_one_or_none():
+            raise HTTPException(status_code=409, detail="Biometric user ID already exists")
 
     person = Personnel(**payload.model_dump())
     db.add(person)

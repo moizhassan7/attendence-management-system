@@ -30,6 +30,7 @@ class DeviceSyncLog(Base):
     logs_found: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     logs_inserted: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     logs_skipped: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     # Relationships

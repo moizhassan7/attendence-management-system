@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import logging
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 
-from app.utils.timezone import now, today, get_tz
+from app.utils.timezone import get_tz, today
 from app.zk.base import (
     BaseAttendanceDevice,
     DeviceAttendanceLog,
@@ -46,13 +46,19 @@ _MOCK_EMPLOYEES = [
 class MockZKDeviceAdapter(BaseAttendanceDevice):
     """Development-only mock that simulates a ZKTeco device."""
 
-    def __init__(self, ip: str, port: int = 4370, password: str | None = None):
+    def __init__(self, ip: str, port: int = 4370, password: str | None = None, name: str | None = None):
         self.ip = ip
         self.port = port
         self.password = password
+        self.name = name or ip
+        self.last_transport = "tcp"
+        self.terminal_record_count = 0
         self._connected = False
 
-    def connect(self) -> bool:
+    def set_io_timeout(self, seconds: int) -> None:
+        return None
+
+    def connect(self, timeout: int | None = None) -> bool:
         self._connected = True
         logger.info("[MOCK] Connected to simulated device at %s:%s", self.ip, self.port)
         return True
@@ -110,7 +116,7 @@ class MockZKDeviceAdapter(BaseAttendanceDevice):
         logger.info("[MOCK] User deleted from device: PIN=%s", user_id)
         return True
 
-    def get_attendance(self) -> list[DeviceAttendanceLog]:
+    def get_attendance(self, since=None) -> list[DeviceAttendanceLog]:
         """Generate realistic attendance logs for today."""
         logs: list[DeviceAttendanceLog] = []
         tz = get_tz()
@@ -158,7 +164,19 @@ class MockZKDeviceAdapter(BaseAttendanceDevice):
                 ))
 
         logger.info("[MOCK] Generated %d attendance logs for %s", len(logs), current_date)
-        return logs
+        self.terminal_record_count = len(logs)
+        if since is None:
+            return logs
+        since_cmp = since.replace(tzinfo=None) if since.tzinfo is not None else since
+        return [
+            log for log in logs
+            if (log.timestamp.replace(tzinfo=None) if log.timestamp.tzinfo else log.timestamp) >= since_cmp
+        ]
+
+    def clear_attendance(self) -> bool:
+        logger.info("[MOCK] Cleared attendance log on simulated device %s", self.ip)
+        self.terminal_record_count = 0
+        return True
 
     def get_device_info(self) -> DeviceInfo:
         return DeviceInfo(

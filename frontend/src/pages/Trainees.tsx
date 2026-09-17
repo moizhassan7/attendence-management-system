@@ -11,6 +11,7 @@ import {
 import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
 import PaginationBar from '../components/PaginationBar';
+import { fetchNextDevicePin } from '../utils/nextDevicePin';
 
 interface DashboardKPI {
   total_strength: number;
@@ -176,12 +177,27 @@ const Trainees: React.FC = () => {
       .catch(() => setPickerList([]));
   }, [showMarkModal]);
 
+  useEffect(() => {
+    if (!showAddModal) return;
+    let cancelled = false;
+    fetchNextDevicePin(true)
+      .then((pin) => {
+        if (!cancelled && pin) {
+          setNewTrainee((prev) => ({ ...prev, biometric_user_id: pin }));
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [showAddModal]);
+
   const handleAddTrainee = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await api.post('/personnel', {
         full_name: newTrainee.full_name,
-        biometric_user_id: parseInt(newTrainee.biometric_user_id, 10),
+        biometric_user_id: newTrainee.biometric_user_id.trim() || undefined,
         employee_code: newTrainee.employee_code || null,
         gender: newTrainee.gender,
         course_id: newTrainee.course_id ? parseInt(newTrainee.course_id, 10) : null,
@@ -660,14 +676,14 @@ const Trainees: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Biometric PIN *</label>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Device PIN (assigned)</label>
                   <input 
-                    type="number" 
-                    required
-                    placeholder="e.g. 501"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Assigned automatically"
                     value={newTrainee.biometric_user_id}
                     onChange={(e) => setNewTrainee({...newTrainee, biometric_user_id: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                    className="w-full px-3 py-2 border border-indigo-200 bg-indigo-50/40 rounded-xl text-sm font-mono font-bold focus:outline-none focus:ring-1 focus:ring-indigo-600"
                   />
                 </div>
                 <div>

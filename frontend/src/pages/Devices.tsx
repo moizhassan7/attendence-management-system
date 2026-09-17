@@ -19,6 +19,7 @@ interface DeviceItem {
   last_sync_at?: string | null;
   connection_status: string;
   last_error?: string | null;
+  preferred_transport?: string;
 }
 
 interface DeviceStats {
@@ -40,6 +41,8 @@ interface SyncLogItem {
   logs_found: number;
   logs_inserted: number;
   logs_skipped: number;
+  retry_count?: number;
+  duration_seconds?: number | null;
   started_at: string;
   completed_at?: string | null;
   error_message?: string | null;
@@ -80,6 +83,7 @@ const Devices: React.FC = () => {
     communication_password: '',
     location: '',
     enabled: true,
+    preferred_transport: 'auto',
   });
 
   const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -142,13 +146,50 @@ const Devices: React.FC = () => {
     try {
       const res = await api.post(`/devices/${device.id}/sync`);
       if (res.data.success) {
-        showToast(`Sync complete for ${device.name}: ${res.data.data.logs_inserted} new logs ingested`);
+        const inserted = res.data.data?.logs_inserted ?? 0;
+        const skipped = res.data.data?.logs_skipped ?? 0;
+        const cleared = res.data.data?.device_log_cleared;
+        showToast(
+          cleared
+            ? `Sync complete for ${device.name}: ${inserted} created, ${skipped} skipped. Terminal log cleared.`
+            : `Sync complete for ${device.name}: ${inserted} created, ${skipped} skipped`
+        );
         fetchData();
       } else {
         showToast(res.data.message || 'Sync failed', 'error');
+        fetchData();
       }
     } catch (err: any) {
-      showToast(err.response?.data?.detail || 'Sync failed', 'error');
+      const detail = err.response?.data?.detail || err.response?.data?.message || err.message || 'Sync failed';
+      showToast(detail, 'error');
+      fetchData();
+    } finally {
+      setSyncingId(null);
+    }
+  };
+
+  const handleImportHistory = async (device: DeviceItem) => {
+    if (!confirm(`Import the full historical attendance log from ${device.name} into the local database, then wipe that log on the terminal? Existing punches in this system are kept.`)) {
+      return;
+    }
+    setSyncingId(device.id);
+    try {
+      const res = await api.post(`/devices/${device.id}/import-history`);
+      if (res.data.success) {
+        const inserted = res.data.data?.logs_inserted ?? 0;
+        const cleared = res.data.data?.device_log_cleared;
+        showToast(
+          cleared
+            ? `Historical import for ${device.name}: ${inserted} created. Terminal log cleared.`
+            : `Historical import for ${device.name}: ${inserted} created`
+        );
+      } else {
+        showToast(res.data.message || 'Historical import failed', 'error');
+      }
+      fetchData();
+    } catch (err: any) {
+      showToast(err.response?.data?.detail || err.message || 'Historical import failed', 'error');
+      fetchData();
     } finally {
       setSyncingId(null);
     }
@@ -159,7 +200,7 @@ const Devices: React.FC = () => {
     setIsSyncingAll(true);
     try {
       const res = await api.post('/devices/sync-all');
-      showToast(`Batch sync finished: ${res.data.data.success} of ${res.data.data.total} devices synced successfully`);
+      showToast(`Batch sync finished: ${res.data.data.success} of ${res.data.data.total} devices succeeded`);
       fetchData();
     } catch (err: any) {
       showToast('Batch sync failed', 'error');
@@ -216,6 +257,7 @@ const Devices: React.FC = () => {
         communication_password: '',
         location: '',
         enabled: true,
+        preferred_transport: 'auto',
       });
       fetchData();
     } catch (err: any) {
@@ -245,6 +287,7 @@ const Devices: React.FC = () => {
       communication_password: dev.communication_password || '',
       location: dev.location || '',
       enabled: dev.enabled,
+      preferred_transport: dev.preferred_transport || 'auto',
     });
     setIsAddModalOpen(true);
   };
@@ -313,6 +356,7 @@ const Devices: React.FC = () => {
                 communication_password: '',
                 location: '',
                 enabled: true,
+                preferred_transport: 'auto',
               });
               setIsAddModalOpen(true);
             }}
@@ -384,10 +428,10 @@ const Devices: React.FC = () => {
               BACKGROUND SYNC LOOP
             </div>
             <div className="text-2xl font-black text-indigo-600 tracking-tight">
-              Every 30s
+              Isolated per terminal
             </div>
             <div className="text-[10px] font-medium text-slate-400">
-              Last ingest: {stats?.last_sync_inserted ?? 0} logs inserted
+              Save to database, then wipe the terminal log
             </div>
           </div>
           <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -395,6 +439,26 @@ const Devices: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {(stats?.online ?? devices.filter(d => d.connection_status === 'ONLINE').length) === 0 && devices.length > 0 && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-bold">This PC cannot open a ZKTeco session to the terminals</p>
+              <p className="text-amber-900/80 leading-relaxed">
+                Typical causes: TCP port 4370 unreachable, the terminal is busy, the IP is wrong,
+                or another attendance client already holds the only allowed session.
+                Confirm LAN IPs (TR-1 <span className="font-mono">192.168.1.205</span>,
+                TR-2 <span className="font-mono">192.168.1.210</span>,
+                TR-3 <span className="font-mono">192.168.1.220</span>,
+                PTS Staff <span className="font-mono">192.168.1.201</span>)
+                and use Test on each terminal for a classified error.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Terminals Card */}
       <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-6">
@@ -492,7 +556,7 @@ const Devices: React.FC = () => {
                               {device.name}
                             </div>
                             <div className="text-[10px] text-slate-400 font-medium">
-                              Protocol: ZKTeco UDP/TCP
+                              Protocol: {(device.preferred_transport || 'auto').toUpperCase()}
                             </div>
                           </div>
                         </div>
@@ -512,16 +576,39 @@ const Devices: React.FC = () => {
 
                       {/* Connection Status */}
                       <td className="py-3.5 px-3">
-                        {isOnline ? (
+                        {device.connection_status === 'ONLINE' ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-100">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                             ONLINE
                           </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold border border-rose-100">
-                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                            OFFLINE
+                        ) : device.connection_status === 'SYNCING' ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100">
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                            SYNCING
                           </span>
+                        ) : device.connection_status === 'DEGRADED' ? (
+                          <div className="space-y-1 max-w-[14rem]">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold border border-amber-100">
+                              DEGRADED
+                            </span>
+                            {device.last_error && (
+                              <div className="text-[10px] text-amber-700 font-medium leading-snug line-clamp-2" title={device.last_error}>
+                                {device.last_error.split('\n')[0]}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="space-y-1 max-w-[14rem]">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold border border-rose-100">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                              OFFLINE
+                            </span>
+                            {device.last_error && (
+                              <div className="text-[10px] text-rose-500 font-medium leading-snug line-clamp-2" title={device.last_error}>
+                                {device.last_error.split('\n')[0]}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </td>
 
@@ -573,6 +660,14 @@ const Devices: React.FC = () => {
                           >
                             <RefreshCw className={`w-3 h-3 ${syncingId === device.id ? 'animate-spin text-indigo-500' : 'text-indigo-500'}`} />
                             Sync
+                          </button>
+                          <button
+                            disabled={syncingId === device.id}
+                            onClick={() => handleImportHistory(device)}
+                            title="Import full historical attendance (one-time)"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 hover:border-slate-500 text-[11px] font-bold text-slate-600 transition-colors bg-white shadow-2xs"
+                          >
+                            History
                           </button>
 
                           {/* View Users on Device */}
@@ -635,15 +730,16 @@ const Devices: React.FC = () => {
                 <th className="pb-3 px-3">SYNC TIMESTAMP</th>
                 <th className="pb-3 px-3">STATUS</th>
                 <th className="pb-3 px-3">LOGS FOUND</th>
-                <th className="pb-3 px-3">NEW INSERTED</th>
-                <th className="pb-3 px-3">SKIPPED (DEDUPED)</th>
+                <th className="pb-3 px-3">CREATED</th>
+                <th className="pb-3 px-3">SKIPPED</th>
+                <th className="pb-3 px-3">RETRIES</th>
                 <th className="pb-3 px-3">DURATION / NOTES</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-6 text-center text-slate-400">
+                  <td colSpan={8} className="py-6 text-center text-slate-400">
                     No sync logs recorded yet.
                   </td>
                 </tr>
@@ -683,9 +779,17 @@ const Devices: React.FC = () => {
                     <td className="py-2.5 px-3 text-slate-400">
                       {log.logs_skipped}
                     </td>
-                    <td className="py-2.5 px-3 text-slate-500 text-[11px]">
+                    <td className="py-2.5 px-3 font-semibold text-slate-700">
+                      {log.retry_count ?? 0}
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-500 text-[11px] max-w-xs whitespace-normal">
+                      {log.duration_seconds != null && (
+                        <span className="text-slate-400 mr-2">{log.duration_seconds}s</span>
+                      )}
                       {log.error_message ? (
-                        <span className="text-rose-500 font-medium">{log.error_message}</span>
+                        <span className="text-rose-500 font-medium" title={log.error_message}>
+                          {log.error_message.split('\n').find((line) => line.startsWith('Reason:')) || log.error_message.split('\n')[0]}
+                        </span>
                       ) : (
                         <span className="text-slate-400">Clean sync</span>
                       )}
@@ -752,6 +856,19 @@ const Devices: React.FC = () => {
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-mono font-medium"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-600 mb-1">Transport</label>
+                <select
+                  value={formData.preferred_transport}
+                  onChange={(e) => setFormData({...formData, preferred_transport: e.target.value})}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium bg-white"
+                >
+                  <option value="auto">Auto (TCP then UDP fallback)</option>
+                  <option value="tcp">TCP</option>
+                  <option value="udp">UDP</option>
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

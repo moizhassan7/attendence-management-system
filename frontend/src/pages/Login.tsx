@@ -53,7 +53,11 @@ const Login: React.FC = () => {
 
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Invalid username or password');
+      if (!err.response) {
+        setError('Cannot reach the attendance server. Open this app with the host PC IP (not localhost) and keep the backend running.');
+      } else {
+        setError(err.response?.data?.detail || 'Invalid username or password');
+      }
     } finally {
       setIsLoading(false);
     }

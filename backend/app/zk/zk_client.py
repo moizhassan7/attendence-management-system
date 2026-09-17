@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from datetime import datetime
+from struct import unpack
+from typing import Any, Iterator
 
 from app.config import get_settings
 from app.zk.base import (
@@ -13,72 +15,303 @@ from app.zk.base import (
     DeviceTemplate,
     DeviceUser,
 )
+from app.zk.diagnostics import probe_tcp
 from app.zk.exceptions import (
     DeviceAuthenticationError,
+    DeviceBusyError,
     DeviceConnectionError,
     DeviceReadError,
     DeviceTimeoutError,
+    DeviceUnreachableError,
+    classify_exception,
+    format_diagnostic,
+    short_reason_label,
 )
 
 logger = logging.getLogger(__name__)
 
 
+def _decode_zk_time(raw: bytes) -> datetime:
+    """ZK packed timestamp. Same algorithm as pyzk ZK._ZK__decode_time."""
+    value = unpack("<I", raw)[0]
+    second = value % 60
+    value //= 60
+    minute = value % 60
+    value //= 60
+    hour = value % 24
+    value //= 24
+    day = value % 31 + 1
+    value //= 31
+    month = value % 12 + 1
+    value //= 12
+    year = value + 2000
+    return datetime(year, month, day, hour, minute, second)
+
+
+def parse_attendance_buffer(
+    attendance_data: bytes,
+    record_count: int,
+    since: datetime | None = None,
+) -> list[DeviceAttendanceLog]:
+    """Parse a CMD_ATTLOG buffer already downloaded by pyzk.read_with_buffer.
+
+    pyzk/CMD_ATTLOG_RRQ always returns the full terminal log. `since` drops older
+    records while parsing so incremental sync does not process tens of thousands
+    of historical punches on every cycle.
+    """
+    if len(attendance_data) < 4 or record_count <= 0:
+        return []
+
+    total_size = unpack("I", attendance_data[:4])[0]
+    record_size = total_size / record_count
+    payload = attendance_data[4:]
+    since_naive = None
+    if since is not None:
+        since_naive = since.replace(tzinfo=None) if since.tzinfo is not None else since
+    logs: list[DeviceAttendanceLog] = []
+
+    def _keep(ts: datetime) -> bool:
+        return since_naive is None or ts >= since_naive
+
+    if record_size == 8:
+        while len(payload) >= 8:
+            uid, status, timestamp, punch = unpack("HB4sB", payload[:8].ljust(8, b"\x00"))
+            payload = payload[8:]
+            ts = _decode_zk_time(timestamp)
+            if not _keep(ts):
+                continue
+            logs.append(
+                DeviceAttendanceLog(
+                    user_id=str(uid),
+                    timestamp=ts,
+                    status=status,
+                    punch=punch,
+                    uid=uid,
+                )
+            )
+    elif record_size == 16:
+        while len(payload) >= 16:
+            user_id, timestamp, status, punch, _reserved, _workcode = unpack(
+                "<I4sBB2sI", payload[:16].ljust(16, b"\x00")
+            )
+            payload = payload[16:]
+            ts = _decode_zk_time(timestamp)
+            if not _keep(ts):
+                continue
+            logs.append(
+                DeviceAttendanceLog(
+                    user_id=str(user_id),
+                    timestamp=ts,
+                    status=status,
+                    punch=punch,
+                    uid=int(user_id),
+                )
+            )
+    else:
+        while len(payload) >= 40:
+            uid, user_id, status, timestamp, punch, _space = unpack(
+                "<H24sB4sB8s", payload[:40].ljust(40, b"\x00")
+            )
+            payload = payload[40:]
+            ts = _decode_zk_time(timestamp)
+            if not _keep(ts):
+                continue
+            pin = (user_id.split(b"\x00")[0]).decode(errors="ignore")
+            logs.append(
+                DeviceAttendanceLog(
+                    user_id=pin,
+                    timestamp=ts,
+                    status=status,
+                    punch=punch,
+                    uid=uid,
+                )
+            )
+    return logs
+
+
 class ZKTecoDeviceAdapter(BaseAttendanceDevice):
     """Production adapter — communicates with real ZKTeco hardware via pyzk."""
 
-    def __init__(self, ip: str, port: int = 4370, password: str | None = None):
+    def __init__(
+        self,
+        ip: str,
+        port: int = 4370,
+        password: str | None = None,
+        name: str | None = None,
+        transport: str = "auto",
+    ):
         self.ip = ip
         self.port = port
         self.password = password or ""
+        self.name = name or ip
+        self.transport = (transport or "auto").lower()
+        self.last_transport: str | None = None
+        self.terminal_record_count = 0
         self._conn = None
+        self._zk = None
         self._settings = get_settings()
+        self.last_tcp_probe: dict[str, str] | None = None
 
-    def connect(self) -> bool:
-        """Open TCP connection to ZKTeco device."""
+    def _label(self) -> str:
+        return self.name or self.ip
+
+    def _connection_timeout(self) -> int:
+        return self._settings.device_connection_timeout or self._settings.device_timeout_seconds
+
+    def _command_timeout(self) -> int:
+        return self._settings.device_command_timeout
+
+    def _read_timeout(self) -> int:
+        return self._settings.device_read_timeout
+
+    def _force_close_socket(self) -> None:
+        for obj in (self._conn, self._zk):
+            if obj is None:
+                continue
+            sock = getattr(obj, "_ZK__sock", None)
+            if sock is None:
+                continue
+            try:
+                sock.close()
+            except Exception:
+                pass
+
+    def set_io_timeout(self, seconds: int) -> None:
+        """Apply a socket timeout to the live pyzk connection."""
+        sock = None
+        if self._conn is not None:
+            sock = getattr(self._conn, "_ZK__sock", None)
+        if sock is None and self._zk is not None:
+            sock = getattr(self._zk, "_ZK__sock", None)
+        if sock is not None:
+            sock.settimeout(seconds)
+
+    def _connect_once(self, force_udp: bool, timeout: int) -> bool:
+        from zk import ZK
+
+        transport = "UDP" if force_udp else "TCP"
+        logger.info(
+            "[%s] Connecting to %s:%s via %s (timeout=%ss)",
+            self._label(),
+            self.ip,
+            self.port,
+            transport,
+            timeout,
+        )
+        zk = ZK(
+            self.ip,
+            port=self.port,
+            timeout=timeout,
+            password=int(self.password) if self.password else 0,
+            force_udp=force_udp,
+            ommit_ping=True,
+        )
+        self._zk = zk
         try:
-            from zk import ZK
-
-            zk = ZK(
-                self.ip,
-                port=self.port,
-                timeout=self._settings.device_timeout_seconds,
-                password=int(self.password) if self.password else 0,
-                force_udp=False,
-                ommit_ping=True,
-            )
             self._conn = zk.connect()
-            if self._conn is None:
-                raise DeviceConnectionError(f"Connection returned None for {self.ip}:{self.port}")
-            logger.info("Connected to ZKTeco device at %s:%s", self.ip, self.port)
-            return True
-        except ImportError:
-            raise DeviceConnectionError(
-                "pyzk library not installed. Install with: pip install pyzk"
-            )
-        except Exception as e:
-            error_msg = str(e)
-            if "timeout" in error_msg.lower():
-                raise DeviceTimeoutError(f"Timeout connecting to {self.ip}:{self.port}: {error_msg}")
-            if "password" in error_msg.lower() or "auth" in error_msg.lower():
-                raise DeviceAuthenticationError(f"Auth failed for {self.ip}:{self.port}: {error_msg}")
-            raise DeviceConnectionError(f"Failed to connect to {self.ip}:{self.port}: {error_msg}")
+        except Exception:
+            self._force_close_socket()
+            self._conn = None
+            self._zk = None
+            raise
+        if self._conn is None:
+            self._force_close_socket()
+            self._zk = None
+            raise DeviceConnectionError(f"Connection returned None for {self.ip}:{self.port}")
+        logger.info("[%s] %s connection established to %s:%s", self._label(), transport, self.ip, self.port)
+        self.last_transport = "udp" if force_udp else "tcp"
+        return True
+
+    def _raise_connect_failure(self, last_error: Exception | None) -> None:
+        self.last_tcp_probe = probe_tcp(self.ip, self.port, timeout=min(3, self._connection_timeout()))
+        detail = str(last_error) if last_error else "unknown error"
+        reason = classify_exception(last_error) if last_error else "unknown"
+        tcp_status = self.last_tcp_probe.get("detail") if self.last_tcp_probe else None
+        message = format_diagnostic(self._label(), self.ip, self.port, reason, detail, tcp_status)
+        logger.error(
+            "[%s] Connection failed: %s | TCP check: %s",
+            self._label(),
+            short_reason_label(reason),
+            tcp_status,
+        )
+        if reason == "authentication":
+            raise DeviceAuthenticationError(message) from last_error
+        if reason == "host_unreachable":
+            raise DeviceUnreachableError(message) from last_error
+        if reason == "session_busy":
+            raise DeviceBusyError(message) from last_error
+        if reason in {"connection_timeout", "socket_timeout", "read_timeout"}:
+            raise DeviceTimeoutError(message) from last_error
+        raise DeviceConnectionError(message) from last_error
+
+    def connect(self, timeout: int | None = None) -> bool:
+        """Open a session using preferred transport, with one alternate fallback."""
+        last_error: Exception | None = None
+        base_timeout = timeout or self._connection_timeout()
+        mode = (self.transport or "auto").lower()
+        logger.info("[%s] Transport preference: %s", self._label(), mode)
+
+        if mode == "udp":
+            attempts: list[tuple[bool, int]] = [
+                (True, base_timeout),
+                (False, min(8, base_timeout)),
+            ]
+        else:
+            # auto and tcp: TCP first, one UDP fallback (required for TR-2).
+            attempts = [
+                (False, base_timeout),
+                (True, min(8, base_timeout)),
+            ]
+
+        for index, (force_udp, attempt_timeout) in enumerate(attempts):
+            try:
+                return self._connect_once(force_udp=force_udp, timeout=attempt_timeout)
+            except ImportError:
+                raise DeviceConnectionError(
+                    "pyzk library not installed. Install with: pip install pyzk"
+                )
+            except Exception as exc:
+                last_error = exc
+                reason = classify_exception(exc)
+                logger.warning(
+                    "[%s] %s connect to %s:%s failed: %s (%s)",
+                    self._label(),
+                    "UDP" if force_udp else "TCP",
+                    self.ip,
+                    self.port,
+                    short_reason_label(reason),
+                    exc,
+                )
+                self.disconnect()
+                if reason == "authentication" or reason == "host_unreachable":
+                    break
+                if index < len(attempts) - 1:
+                    logger.info("[%s] Trying alternate transport", self._label())
+
+        self._raise_connect_failure(last_error)
+        return False
 
     def disconnect(self) -> None:
-        """Close connection to device."""
-        if self._conn:
-            try:
+        """Close connection to device. Always drop the socket, even if CMD_EXIT fails."""
+        if not self._conn and not self._zk:
+            return
+        logger.info("[%s] Disconnecting from %s:%s", self._label(), self.ip, self.port)
+        try:
+            if self._conn is not None:
                 self._conn.disconnect()
-                logger.info("Disconnected from ZKTeco device at %s:%s", self.ip, self.port)
-            except Exception as e:
-                logger.warning("Error disconnecting from %s:%s: %s", self.ip, self.port, e)
-            finally:
-                self._conn = None
+        except Exception as exc:
+            logger.warning("[%s] Disconnect command failed: %s", self._label(), exc)
+            self._force_close_socket()
+        finally:
+            self._conn = None
+            self._zk = None
 
     def test_connection(self) -> dict[str, Any]:
-        """Connect, get basic info, disconnect."""
-        self.connect()
+        """Connect, get basic info, disconnect. Skips full log dump so Test stays fast."""
+        self.connect(timeout=self._connection_timeout())
         try:
-            info = self.get_device_info()
+            self.set_io_timeout(self._command_timeout())
+            info = self.get_device_info(include_logs=False)
             return {
                 "connected": True,
                 "serial_number": info.serial_number,
@@ -105,13 +338,13 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                     name=u.name or "",
                     privilege=u.privilege,
                     password=u.password or "",
-                    group_id=str(u.group_id) if hasattr(u, 'group_id') else "",
-                    card=u.card if hasattr(u, 'card') else 0,
+                    group_id=str(u.group_id) if hasattr(u, "group_id") else "",
+                    card=u.card if hasattr(u, "card") else 0,
                 )
                 for u in (users or [])
             ]
-        except Exception as e:
-            raise DeviceReadError(f"Failed to read users: {e}")
+        except Exception as exc:
+            raise DeviceReadError(f"Failed to read users: {exc}") from exc
 
     def set_user(
         self,
@@ -147,11 +380,11 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                 self._conn.refresh_data()
             except Exception:
                 pass
-            logger.info("Set user %s (%s) on device %s (uid=%d)", user_id, name, self.ip, uid)
+            logger.info("[%s] Set user %s (%s) uid=%d", self._label(), user_id, name, uid)
             return True
-        except Exception as e:
-            logger.error("Failed to set user %s on device %s: %s", user_id, self.ip, e)
-            raise DeviceReadError(f"Failed to set user on device: {e}")
+        except Exception as exc:
+            logger.error("[%s] Failed to set user %s: %s", self._label(), user_id, exc)
+            raise DeviceReadError(f"Failed to set user on device: {exc}") from exc
 
     def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
         """Trigger remote fingerprint enrollment prompt on device."""
@@ -179,12 +412,12 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
             else:
                 uid = user.uid
 
-            logger.info("Starting remote enrollment for user %s (uid=%d) on %s", user_id, uid, self.ip)
+            logger.info("[%s] Starting remote enrollment for user %s (uid=%d)", self._label(), user_id, uid)
             success = self._conn.enroll_user(uid=uid, temp_id=temp_id, user_id=str(user_id))
             return bool(success)
-        except Exception as e:
-            logger.error("Enrollment failed for user %s on %s: %s", user_id, self.ip, e)
-            raise DeviceReadError(f"Enrollment failed on device: {e}")
+        except Exception as exc:
+            logger.error("[%s] Enrollment failed for user %s: %s", self._label(), user_id, exc)
+            raise DeviceReadError(f"Enrollment failed on device: {exc}") from exc
         finally:
             try:
                 self._conn.cancel_capture()
@@ -207,8 +440,8 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                 )
                 for t in raw_templates
             ]
-        except Exception as e:
-            logger.warning("Failed to read templates from device %s: %s", self.ip, e)
+        except Exception as exc:
+            logger.warning("[%s] Failed to read templates: %s", self._label(), exc)
             return []
 
     def delete_user(self, user_id: str) -> bool:
@@ -224,34 +457,103 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                     self._conn.refresh_data()
                 except Exception:
                     pass
-                logger.info("Deleted user %s from device %s", user_id, self.ip)
+                logger.info("[%s] Deleted user %s", self._label(), user_id)
                 return True
             return False
-        except Exception as e:
-            logger.error("Failed to delete user %s from %s: %s", user_id, self.ip, e)
-            raise DeviceReadError(f"Failed to delete user from device: {e}")
+        except Exception as exc:
+            logger.error("[%s] Failed to delete user %s: %s", self._label(), user_id, exc)
+            raise DeviceReadError(f"Failed to delete user from device: {exc}") from exc
 
-    def get_attendance(self) -> list[DeviceAttendanceLog]:
-        """Retrieve attendance logs."""
+    def _read_attendance_buffered(self, since: datetime | None = None) -> list[DeviceAttendanceLog]:
+        """Download attendance via pyzk's buffered CMD_ATTLOG_RRQ (internally chunked)."""
+        from zk import const
+
+        self._conn.read_sizes()
+        record_count = int(getattr(self._conn, "records", 0) or 0)
+        self.terminal_record_count = record_count
+        logger.info("[%s] Terminal reports %d attendance records", self._label(), record_count)
+        if record_count == 0:
+            return []
+
+        logger.info("[%s] Reading attendance records", self._label())
+        attendance_data, size = self._conn.read_with_buffer(const.CMD_ATTLOG_RRQ)
+        if size < 4:
+            logger.warning("[%s] Attendance buffer too small (%s bytes)", self._label(), size)
+            return []
+
+        logs = parse_attendance_buffer(attendance_data, record_count, since=since)
+        logger.info(
+            "[%s] Attendance read completed: terminal=%d relevant=%d",
+            self._label(),
+            record_count,
+            len(logs),
+        )
+        return logs
+
+    def iter_attendance_batches(self, batch_size: int = 500) -> Iterator[list[DeviceAttendanceLog]]:
+        """Yield parsed attendance in application batches after a chunked protocol read."""
+        logs = self.get_attendance()
+        if batch_size <= 0:
+            yield logs
+            return
+        for index in range(0, len(logs), batch_size):
+            yield logs[index:index + batch_size]
+
+    def get_attendance(self, since: datetime | None = None) -> list[DeviceAttendanceLog]:
+        """Retrieve attendance. Protocol dump is full; `since` filters after download."""
         if not self._conn:
             raise DeviceConnectionError("Not connected")
         try:
-            records = self._conn.get_attendance()
-            return [
-                DeviceAttendanceLog(
-                    user_id=str(r.user_id),
-                    timestamp=r.timestamp,
-                    status=r.status if hasattr(r, 'status') else 0,
-                    punch=r.punch if hasattr(r, 'punch') else 0,
-                    uid=r.uid if hasattr(r, 'uid') else 0,
-                )
-                for r in (records or [])
-            ]
-        except Exception as e:
-            raise DeviceReadError(f"Failed to read attendance: {e}")
+            return self._read_attendance_buffered(since=since)
+        except Exception as buffered_error:
+            logger.warning(
+                "[%s] Buffered attendance read failed (%s); falling back to pyzk get_attendance()",
+                self._label(),
+                buffered_error,
+            )
+            try:
+                records = self._conn.get_attendance()
+                since_naive = None
+                if since is not None:
+                    since_naive = since.replace(tzinfo=None) if since.tzinfo is not None else since
+                logs = []
+                for r in records or []:
+                    ts = r.timestamp
+                    if since_naive is not None and ts.replace(tzinfo=None) < since_naive:
+                        continue
+                    logs.append(
+                        DeviceAttendanceLog(
+                            user_id=str(r.user_id),
+                            timestamp=ts,
+                            status=r.status if hasattr(r, "status") else 0,
+                            punch=r.punch if hasattr(r, "punch") else 0,
+                            uid=r.uid if hasattr(r, "uid") else 0,
+                        )
+                    )
+                self.terminal_record_count = len(records or [])
+                logger.info("[%s] Fallback parsed %d relevant attendance records", self._label(), len(logs))
+                return logs
+            except Exception as exc:
+                raise DeviceReadError(f"Failed to read attendance: {exc}") from exc
 
-    def get_device_info(self) -> DeviceInfo:
-        """Get device serial, firmware, etc."""
+    def clear_attendance(self) -> bool:
+        """Wipe the terminal attendance log via pyzk CMD_CLEAR_ATTLOG."""
+        if not self._conn:
+            raise DeviceConnectionError("Not connected")
+        try:
+            ok = bool(self._conn.clear_attendance())
+            if not ok:
+                raise DeviceReadError("Device refused to clear attendance log")
+            self.terminal_record_count = 0
+            logger.info("[%s] CMD_CLEAR_ATTLOG succeeded", self._label())
+            return True
+        except DeviceReadError:
+            raise
+        except Exception as exc:
+            raise DeviceReadError(f"Failed to clear attendance log: {exc}") from exc
+
+    def get_device_info(self, include_logs: bool = True) -> DeviceInfo:
+        """Get device serial, firmware, etc. Log count uses read_sizes, not a full dump."""
         if not self._conn:
             raise DeviceConnectionError("Not connected")
         try:
@@ -282,15 +584,20 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
             except Exception:
                 pass
 
-            users = self._conn.get_users() or []
-            user_count = len(users)
-
-            log_count = 0
+            user_count = 0
             try:
-                attendance = self._conn.get_attendance() or []
-                log_count = len(attendance)
+                users = self._conn.get_users() or []
+                user_count = len(users)
             except Exception:
                 pass
+
+            log_count = 0
+            if include_logs:
+                try:
+                    self._conn.read_sizes()
+                    log_count = int(getattr(self._conn, "records", 0) or 0)
+                except Exception:
+                    pass
 
             return DeviceInfo(
                 serial_number=serial,
@@ -301,21 +608,21 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                 user_count=user_count,
                 log_count=log_count,
             )
-        except Exception as e:
-            raise DeviceReadError(f"Failed to read device info: {e}")
+        except Exception as exc:
+            raise DeviceReadError(f"Failed to read device info: {exc}") from exc
 
     def enable(self) -> None:
         """Re-enable device."""
         if self._conn:
             try:
                 self._conn.enable_device()
-            except Exception as e:
-                logger.warning("Failed to enable device %s: %s", self.ip, e)
+            except Exception as exc:
+                logger.warning("[%s] Failed to enable device: %s", self._label(), exc)
 
     def disable(self) -> None:
         """Temporarily disable device."""
         if self._conn:
             try:
                 self._conn.disable_device()
-            except Exception as e:
-                logger.warning("Failed to disable device %s: %s", self.ip, e)
+            except Exception as exc:
+                logger.warning("[%s] Failed to disable device: %s", self._label(), exc)

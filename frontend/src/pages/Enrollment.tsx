@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import api from '../api/client';
 import PaginationBar from '../components/PaginationBar';
+import { fetchNextDevicePin } from '../utils/nextDevicePin';
 
 interface MasterRank {
   id: number;
@@ -131,6 +132,8 @@ const Enrollment: React.FC = () => {
     duty_type: '',
     shift_id: '' as string | number,
   });
+  const [pinLoading, setPinLoading] = useState(false);
+  const [pinFromUnlinked, setPinFromUnlinked] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -185,6 +188,20 @@ const Enrollment: React.FC = () => {
     }
   };
 
+  const assignNextPin = async (personType: 'Staff' | 'Trainee') => {
+    setPinLoading(true);
+    try {
+      const pin = await fetchNextDevicePin(personType === 'Trainee');
+      if (pin) {
+        setFormData((prev) => ({ ...prev, biometric_user_id: pin }));
+      }
+    } catch (err) {
+      console.error('Failed to assign next device PIN', err);
+    } finally {
+      setPinLoading(false);
+    }
+  };
+
   // Helper to open Add Person modal initialized properly
   const openAddPersonModal = (prefillPin?: string) => {
     const isTrainee = activeTab === 'Trainees';
@@ -192,14 +209,16 @@ const Enrollment: React.FC = () => {
     const defaultDept = masterDepartments.length > 0 ? masterDepartments[0].id : '';
     const defaultDesignation = civilDesignations.length > 0 ? civilDesignations[0] : 'Senior Clerk';
     const defaultCourse = masterCourses.length > 0 ? masterCourses[0].id : '';
+    const personType = isTrainee ? 'Trainee' : 'Staff';
 
+    setPinFromUnlinked(Boolean(prefillPin));
     setFormData({
       full_name: '',
       father_name: '',
       cnic: '',
       biometric_user_id: prefillPin || '',
       employee_code: '',
-      person_type: isTrainee ? 'Trainee' : 'Staff',
+      person_type: personType,
       staff_category: 'Uniform',
       rank_id: defaultRank,
       course_id: defaultCourse,
@@ -211,6 +230,9 @@ const Enrollment: React.FC = () => {
       shift_id: '',
     });
     setIsAddModalOpen(true);
+    if (!prefillPin) {
+      void assignNextPin(personType);
+    }
   };
 
   // Fetch personnel list for active tab
@@ -327,7 +349,7 @@ const Enrollment: React.FC = () => {
         full_name: formData.full_name.trim(),
         father_name: formData.father_name.trim() || null,
         cnic: formData.cnic.trim() || null,
-        biometric_user_id: formData.biometric_user_id.trim(),
+        biometric_user_id: formData.biometric_user_id.trim() || undefined,
         employee_code: formData.employee_code.trim() || null,
         is_trainee: isTrainee,
         course_id: isTrainee && formData.course_id ? Number(formData.course_id) : null,
@@ -343,7 +365,8 @@ const Enrollment: React.FC = () => {
 
       const res = await api.post('/personnel', payload);
       if (res.data.success) {
-        showToast(`Person ${formData.full_name} added with Device PIN ${formData.biometric_user_id}`);
+        const assignedPin = res.data.data?.biometric_user_id || formData.biometric_user_id;
+        showToast(`Person ${formData.full_name} added with Device PIN ${assignedPin}`);
         setIsAddModalOpen(false);
         await fetchPersonnel();
         await fetchKpis();
@@ -819,7 +842,7 @@ const Enrollment: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-slate-900">Add Person</h3>
-                    <p className="text-xs text-slate-400">Register profile and link device PIN</p>
+                    <p className="text-xs text-slate-400">System assigns a device ID and writes it to the terminals</p>
                   </div>
                 </div>
                 <button 
@@ -850,6 +873,9 @@ const Enrollment: React.FC = () => {
                           rank_id: defaultRank,
                           designation: civilDesignations.length > 0 ? civilDesignations[0] : 'Senior Clerk',
                         }));
+                        if (!pinFromUnlinked) {
+                          void assignNextPin('Staff');
+                        }
                       }}
                       className={`flex items-center gap-3 p-3 rounded-2xl border transition-all text-left ${
                         formData.person_type === 'Staff'
@@ -881,6 +907,9 @@ const Enrollment: React.FC = () => {
                           rank_id: traineeRank ? traineeRank.id : '',
                           designation: 'Recruit / Trainee',
                         }));
+                        if (!pinFromUnlinked) {
+                          void assignNextPin('Trainee');
+                        }
                       }}
                       className={`flex items-center gap-3 p-3 rounded-2xl border transition-all text-left ${
                         formData.person_type === 'Trainee'
@@ -914,8 +943,8 @@ const Enrollment: React.FC = () => {
                   </div>
                   <span>
                     {formData.person_type === 'Staff'
-                      ? <><strong>Staff PIN Policy:</strong> Device PIN should be <strong>≥ {configRanges.staff_pin_min}</strong> (Range 1 – {configRanges.trainee_pin_max} is reserved for Trainees)</>
-                      : <><strong>Trainee PIN Policy:</strong> Device PIN should be between <strong>1 and {configRanges.trainee_pin_max}</strong> (Configured in System Settings)</>
+                      ? <><strong>Staff PIN:</strong> the next free ID from <strong>{configRanges.staff_pin_min}+</strong> is assigned automatically and written to the terminals on save.</>
+                      : <><strong>Trainee PIN:</strong> the next free ID between <strong>1 and {configRanges.trainee_pin_max}</strong> is assigned automatically and written to the terminals on save.</>
                     }
                   </span>
                 </div>
@@ -1130,20 +1159,26 @@ const Enrollment: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-slate-600 mb-1">
-                      Device PIN (User ID) *
+                      Device PIN (User ID)
+                      <span className="ml-2 inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-indigo-600">
+                        {pinFromUnlinked ? 'From terminal' : 'Assigned'}
+                      </span>
                     </label>
                     <input 
-                      type="text" 
-                      required
-                      placeholder={formData.person_type === 'Staff' ? `e.g. ${configRanges.staff_pin_min}` : "e.g. 101"}
-                      value={formData.biometric_user_id}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder={pinLoading ? 'Assigning next free PIN…' : 'Assigned automatically'}
+                      value={pinLoading ? '' : formData.biometric_user_id}
                       onChange={(e) => setFormData(prev => ({ ...prev, biometric_user_id: e.target.value }))}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border outline-none font-bold text-slate-800 ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border outline-none font-mono text-base font-bold tracking-wide text-slate-800 ${
                         isPinExceedsTrainee || isPinBelowStaff
                           ? 'border-amber-400 bg-amber-50/40 focus:ring-2 focus:ring-amber-400'
-                          : 'border-slate-200 focus:ring-2 focus:ring-indigo-500'
+                          : 'border-indigo-200 bg-indigo-50/40 focus:ring-2 focus:ring-indigo-500'
                       }`}
                     />
+                    <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                      This is this person's ID on the fingerprint terminals. Change it only if they already have a PIN on a device.
+                    </p>
                     {isPinExceedsTrainee && (
                       <p className="text-[10px] text-amber-600 font-semibold mt-1">
                         ⚠️ PIN exceeds Trainee limit ({configRanges.trainee_pin_max}). Staff starts at {configRanges.staff_pin_min}.
@@ -1207,7 +1242,8 @@ const Enrollment: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all"
+                    disabled={pinLoading}
+                    className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     Save Person
                   </button>

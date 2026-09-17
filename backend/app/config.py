@@ -36,7 +36,18 @@ class Settings(BaseSettings):
     sync_interval_seconds: int = 30
     debounce_seconds: int = 60
     use_mock_device: bool = True
-    device_timeout_seconds: int = 10
+    device_timeout_seconds: int = 10  # legacy alias for connection timeout
+    device_connection_timeout: int = 10
+    device_command_timeout: int = 30
+    device_read_timeout: int = 60
+    device_max_retries: int = 3
+    device_retry_backoff: int = 2
+    device_persist_batch_size: int = 500
+    device_sync_concurrency: int = 4
+    device_sync_lookback_minutes: int = 120
+    # After a successful persist, wipe the terminal attendance log (CMD_CLEAR_ATTLOG).
+    # pyzk cannot filter downloads, so this is what keeps later 90s cycles small.
+    device_clear_log_after_sync: bool = True
 
     # ── Authentication ──
     jwt_secret: str = "CHANGE_ME"
@@ -77,7 +88,19 @@ class Settings(BaseSettings):
         origins: list[str] = []
         seen: set[str] = set()
         extras = [o.strip() for o in self.cors_origins.split(",") if o.strip()]
-        for origin in [self.frontend_url, *extras, "http://localhost:5173", "http://localhost:3000"]:
+        for origin in [
+            self.frontend_url,
+            *extras,
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+            "http://182.176.174.69",
+            "http://182.176.174.69:5173",
+            "https://182.176.174.69.sslip.io",
+            "http://182.176.174.69.sslip.io",
+            "http://192.168.1.3",
+            "http://192.168.1.3:5173",
+        ]:
             if origin and origin not in seen:
                 seen.add(origin)
                 origins.append(origin)

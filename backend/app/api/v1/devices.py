@@ -7,15 +7,17 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.device import Device
 from app.models.device_sync_log import DeviceSyncLog
 from app.schemas.common import ApiResponse, PaginatedResponse, PaginationMeta
-from app.schemas.device import DeviceCreate, DeviceOut, DeviceUpdate, DeviceTestResult, DeviceSyncResult
+from app.schemas.device import DeviceCreate, DeviceOut, DeviceSyncResult, DeviceTestResult, DeviceUpdate
+from app.utils.timezone import now
 from app.zk.device_manager import DeviceManager, create_device_adapter
+from app.zk.exceptions import DeviceSyncBusyError
 from app.zk.sync_service import SyncService
 
 logger = logging.getLogger(__name__)
@@ -74,9 +76,15 @@ async def device_sync_logs(
             "logs_found": l.logs_found,
             "logs_inserted": l.logs_inserted,
             "logs_skipped": l.logs_skipped,
+            "retry_count": getattr(l, "retry_count", 0) or 0,
             "started_at": l.started_at.isoformat() if l.started_at else None,
             "completed_at": l.completed_at.isoformat() if l.completed_at else None,
             "error_message": l.error_message,
+            "duration_seconds": (
+                round((l.completed_at - l.started_at).total_seconds(), 2)
+                if l.completed_at and l.started_at
+                else None
+            ),
         })
     return ApiResponse(data=out)
 
@@ -86,7 +94,10 @@ async def sync_all_devices(db: AsyncSession = Depends(get_db)):
     """Trigger synchronization for all enabled devices."""
     sync_service = SyncService()
     summary = await sync_service.sync_all_devices(db)
-    return ApiResponse(data=summary, message=f"Sync completed. {summary.get('success', 0)} devices synced.")
+    return ApiResponse(
+        data=summary,
+        message=f"Sync completed. {summary.get('success', 0)} succeeded, {summary.get('failed', 0)} failed.",
+    )
 
 
 @router.get("", response_model=PaginatedResponse)
@@ -184,12 +195,20 @@ async def test_device_connection(device_id: int, db: AsyncSession = Depends(get_
             ip=device.ip_address,
             port=device.port,
             password=device.communication_password,
+            name=device.name,
+            transport=getattr(device, "preferred_transport", None) or "auto",
         )
+        manager = DeviceManager(adapter, name=device.name)
         loop = asyncio.get_running_loop()
-        test_result = await loop.run_in_executor(None, adapter.test_connection)
+        test_result = await loop.run_in_executor(None, manager.test_connection)
+        device.connection_status = "ONLINE"
+        device.last_seen_at = now()
+        device.last_error = None
         return ApiResponse(data=DeviceTestResult(**test_result))
     except Exception as e:
         logger.error("Test connection failed for device %s: %s", device.name, e)
+        device.connection_status = "DEGRADED" if device.last_sync_at else "OFFLINE"
+        device.last_error = str(e)
         return ApiResponse(
             data=DeviceTestResult(connected=False, error=str(e)),
             message=f"Connection failed: {e}",
@@ -207,7 +226,15 @@ async def sync_device_now(device_id: int, db: AsyncSession = Depends(get_db)):
     try:
         sync_service = SyncService()
         sync_result = await sync_service.sync_device(db, device)
+        if sync_result.get("status") == "FAILED":
+            return ApiResponse(
+                success=False,
+                data=DeviceSyncResult(**sync_result),
+                message=f"Sync failed: {sync_result.get('error') or 'terminal error'}",
+            )
         return ApiResponse(data=DeviceSyncResult(**sync_result), message="Sync complete")
+    except DeviceSyncBusyError as e:
+        raise HTTPException(status_code=409, detail=str(e))
     except Exception as e:
         logger.error("Manual sync failed for device %s: %s", device.name, e)
         return ApiResponse(
@@ -219,6 +246,40 @@ async def sync_device_now(device_id: int, db: AsyncSession = Depends(get_db)):
                 error=str(e),
             ),
             message=f"Sync failed: {e}",
+        )
+
+
+@router.post("/{device_id}/import-history", response_model=ApiResponse)
+async def import_device_history(device_id: int, db: AsyncSession = Depends(get_db)):
+    """Explicit historical import. Not used by the 90s scheduler."""
+    result = await db.execute(select(Device).where(Device.id == device_id))
+    device = result.scalar_one_or_none()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    try:
+        sync_service = SyncService()
+        sync_result = await sync_service.sync_device(db, device, full=True)
+        if sync_result.get("status") == "FAILED":
+            return ApiResponse(
+                success=False,
+                data=DeviceSyncResult(**sync_result),
+                message=f"Historical import failed: {sync_result.get('error') or 'terminal error'}",
+            )
+        return ApiResponse(data=DeviceSyncResult(**sync_result), message="Historical import complete")
+    except DeviceSyncBusyError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    except Exception as e:
+        logger.error("Historical import failed for device %s: %s", device.name, e)
+        return ApiResponse(
+            success=False,
+            data=DeviceSyncResult(
+                device_id=device.id,
+                device_name=device.name,
+                status="FAILED",
+                error=str(e),
+            ),
+            message=f"Historical import failed: {e}",
         )
 
 
@@ -257,8 +318,10 @@ async def fetch_device_users(device_id: int, db: AsyncSession = Depends(get_db))
             ip=device.ip_address,
             port=device.port,
             password=device.communication_password,
+            name=device.name,
+            transport=getattr(device, "preferred_transport", None) or "auto",
         )
-        manager = DeviceManager(adapter)
+        manager = DeviceManager(adapter, name=device.name)
         loop = asyncio.get_running_loop()
         users = await loop.run_in_executor(None, manager.fetch_users)
         return ApiResponse(

@@ -44,21 +44,25 @@ async def seed_database():
                 is_active=True,
             ))
 
-        # Check if real device already exists
-        device_exists = (await db.execute(
-            select(Device).where(Device.ip_address == "192.168.1.220")
-        )).scalar_one_or_none()
-
-        if not device_exists:
-            logger.info("Adding real ZKTeco K40 device (192.168.1.220:4370)...")
-            db.add(Device(
-                name="Main K40 Terminal",
-                ip_address="192.168.1.220",
-                port=4370,
-                location="Main Entrance",
-                enabled=True,
-                connection_status="ONLINE",
-            ))
+        live_terminals = [
+            ("TR-3", "192.168.1.220", "TR-3 entrance"),
+            ("TR-2", "192.168.1.210", "TR-2 entrance"),
+            ("PTS Staff", "192.168.1.201", "PTS Staff"),
+        ]
+        for name, ip, location in live_terminals:
+            device_exists = (await db.execute(
+                select(Device).where(Device.ip_address == ip)
+            )).scalar_one_or_none()
+            if not device_exists:
+                logger.info("Adding ZKTeco terminal %s (%s:4370)...", name, ip)
+                db.add(Device(
+                    name=name,
+                    ip_address=ip,
+                    port=4370,
+                    location=location,
+                    enabled=True,
+                    connection_status="UNKNOWN",
+                ))
 
         # Shifts (required for attendance calculation)
         shift_count = (await db.execute(select(func.count(Shift.id)))).scalar()

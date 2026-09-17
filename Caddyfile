@@ -1,0 +1,33 @@
+{
+	email hassanmoizdev@gmail.com
+	http_port 5173
+}
+
+(app) {
+	encode gzip
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+	handle /ws/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+	handle {
+		root * ./frontend/dist
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+# Current F670L rule: WAN 80 -> 192.168.1.3:5173. ACME HTTP-01 must land here.
+:5173 {
+	import app
+}
+
+# Office LAN without a port
+:80 {
+	import app
+}
+
+182.176.174.69.sslip.io {
+	import app
+}

@@ -60,10 +60,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Private-network origins so other PCs can use the app over LAN in development.
+_LAN_ORIGIN_RE = (
+    r"https?://("
+    r"localhost"
+    r"|127\.0\.0\.1"
+    r"|\[::1\]"
+    r"|192\.168\.\d{1,3}\.\d{1,3}"
+    r"|10\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+    r"|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}"
+    r")(?::\d+)?"
+)
+
 # ── CORS ──
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
+    allow_origin_regex=_LAN_ORIGIN_RE if settings.is_development else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
