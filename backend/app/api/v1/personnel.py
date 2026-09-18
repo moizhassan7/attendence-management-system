@@ -841,7 +841,7 @@ async def export_personnel(
 
     # Title header
     setting_res = await db.execute(select(SystemSetting.value).where(SystemSetting.key == "org_display_name"))
-    org_display_name = setting_res.scalar_one_or_none() or "Police Training School Rawat"
+    org_display_name = setting_res.scalar_one_or_none() or "Police Training School Sargodha"
 
     ws.merge_cells("A1:L1")
     ws["A1"] = f"{org_display_name} — {entity_label} Directory ({t_date})"

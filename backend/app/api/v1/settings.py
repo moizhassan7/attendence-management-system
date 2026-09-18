@@ -20,11 +20,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/settings", tags=["settings"])
 
 DEFAULT_SETTINGS = {
-    "org_acronym": ("PTS", "string", "Organization acronym / avatar chip"),
-    "org_display_name": ("Police Training School Rawat", "string", "Organization display name"),
-    "org_legal_name": ("Police Training School, Rawat — Rawalpindi", "string", "Full / legal organization name"),
+    "org_acronym": ("PTS Sargodha", "string", "Organization acronym / avatar chip"),
+    "org_display_name": ("Police Training School Sargodha", "string", "Organization display name"),
+    "org_legal_name": ("Police Training School, Sargodha — Punjab Police", "string", "Full / legal organization name"),
     "org_system_name": ("Biometric Attendance Management System", "string", "System brand title"),
-    "org_tagline": ("Train to Serve", "string", "Organization motto or tagline"),
+    "org_tagline": ("Training for Service · خدمت اور تحفظ", "string", "Organization motto or tagline"),
     "org_logo_url": ("/pts_logo.png", "string", "White-label organization logo URL"),
     "trainee_pin_min": ("1", "int", "Trainee PIN range minimum"),
     "trainee_pin_max": ("2000", "int", "Trainee PIN range maximum"),
@@ -139,11 +139,11 @@ async def get_all_settings(db: AsyncSession = Depends(get_db)):
 
     return ApiResponse(data={
         "branding": {
-            "acronym": settings_map.get("org_acronym", "PTS"),
-            "display_name": settings_map.get("org_display_name", "Police Training School Rawat"),
-            "legal_name": settings_map.get("org_legal_name", "Police Training School, Rawat — Rawalpindi"),
+            "acronym": settings_map.get("org_acronym", "PTS Sargodha"),
+            "display_name": settings_map.get("org_display_name", "Police Training School Sargodha"),
+            "legal_name": settings_map.get("org_legal_name", "Police Training School, Sargodha — Punjab Police"),
             "system_name": settings_map.get("org_system_name", "Biometric Attendance Management System"),
-            "tagline": settings_map.get("org_tagline", "Train to Serve"),
+            "tagline": settings_map.get("org_tagline", "Training for Service · خدمت اور تحفظ"),
             "logo_url": settings_map.get("org_logo_url", "/pts_logo.png"),
         },
         "ranges": {

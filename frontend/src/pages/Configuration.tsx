@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { 
-  CalendarDays, Image as ImageIcon, Upload, 
-  CheckCircle2, AlertTriangle, Shield, Award, Plus, 
+import {
+  CalendarDays, Image as ImageIcon, Upload,
+  CheckCircle2, AlertTriangle, Shield, Award, Plus,
   Trash2, Edit3, X, Save, Building2, GraduationCap, Sliders, Clock
 } from 'lucide-react';
 import api from '../api/client';
@@ -68,11 +68,11 @@ const Configuration: React.FC = () => {
   const { branding: globalBranding, updateBranding: updateGlobalBranding } = useBranding();
   const [loading, setLoading] = useState(true);
   const [branding, setBranding] = useState<BrandingData>({
-    acronym: globalBranding.acronym || 'PTS',
-    display_name: globalBranding.display_name || 'Police Training School Rawat',
-    legal_name: globalBranding.legal_name || 'Police Training School, Rawat — Rawalpindi',
+    acronym: globalBranding.acronym || 'PTS Sargodha',
+    display_name: globalBranding.display_name || 'Police Training School Sargodha',
+    legal_name: globalBranding.legal_name || 'Police Training School, Sargodha — Punjab Police',
     system_name: globalBranding.system_name || 'Biometric Attendance Management System',
-    tagline: globalBranding.tagline || 'Train to Serve',
+    tagline: globalBranding.tagline || 'Training for Service · خدمت اور تحفظ',
     logo_url: globalBranding.logo_url || '/pts_logo.png',
   });
 
@@ -440,12 +440,11 @@ const Configuration: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      
+
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border animate-in slide-in-from-bottom-5 ${
-          toast.type === 'error' ? 'bg-rose-900 text-white border-rose-700' : 'bg-slate-900 text-white border-slate-700'
-        }`}>
+        <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border animate-in slide-in-from-bottom-5 ${toast.type === 'error' ? 'bg-rose-900 text-white border-rose-700' : 'bg-slate-900 text-white border-slate-700'
+          }`}>
           {toast.type === 'error' ? (
             <AlertTriangle className="w-5 h-5 text-rose-400" />
           ) : (
@@ -499,12 +498,12 @@ const Configuration: React.FC = () => {
             )}
           </div>
           <div>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleLogoUpload} 
-              accept="image/*" 
-              className="hidden" 
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleLogoUpload}
+              accept="image/*"
+              className="hidden"
             />
             <button
               type="button"
@@ -526,8 +525,8 @@ const Configuration: React.FC = () => {
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 ACRONYM (AVATAR CHIP)
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={branding.acronym}
                 onChange={(e) => setBranding({ ...branding, acronym: e.target.value })}
                 className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -539,8 +538,8 @@ const Configuration: React.FC = () => {
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 DISPLAY NAME
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={branding.display_name}
                 onChange={(e) => setBranding({ ...branding, display_name: e.target.value })}
                 className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -554,8 +553,8 @@ const Configuration: React.FC = () => {
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 FULL / LEGAL NAME
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={branding.legal_name}
                 onChange={(e) => setBranding({ ...branding, legal_name: e.target.value })}
                 className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -567,8 +566,8 @@ const Configuration: React.FC = () => {
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 SYSTEM NAME
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={branding.system_name}
                 onChange={(e) => setBranding({ ...branding, system_name: e.target.value })}
                 className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -582,8 +581,8 @@ const Configuration: React.FC = () => {
               <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                 TAGLINE
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={branding.tagline}
                 onChange={(e) => setBranding({ ...branding, tagline: e.target.value })}
                 className="w-full px-4 py-2.5 bg-slate-50 border-none rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -619,8 +618,8 @@ const Configuration: React.FC = () => {
           {/* Trainee PINs range */}
           <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
             <span>TRAINEE PINS: 1 TO</span>
-            <input 
-              type="number" 
+            <input
+              type="number"
               value={ranges.trainee_pin_max}
               onChange={(e) => handleTraineeMaxChange(parseInt(e.target.value) || 2000)}
               className="w-24 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-center focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -630,8 +629,8 @@ const Configuration: React.FC = () => {
           {/* Staff PINs range */}
           <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
             <span>STAFF PINS: FROM</span>
-            <input 
-              type="number" 
+            <input
+              type="number"
               value={ranges.staff_pin_min}
               onChange={(e) => setRanges({ ...ranges, staff_pin_min: parseInt(e.target.value) || 2001 })}
               className="w-24 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-center focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -655,7 +654,7 @@ const Configuration: React.FC = () => {
 
       {/* Bottom Split Row: Uniform ranks & Non-uniform designations */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Uniform ranks */}
         <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4 flex flex-col justify-between">
           <div>
@@ -729,8 +728,8 @@ const Configuration: React.FC = () => {
 
             {/* Add designation input */}
             <form onSubmit={handleAddDesignation} className="flex gap-2 pt-1 pb-3">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Enter designation (e.g. Stenographer)"
                 value={newDesignation}
                 onChange={(e) => setNewDesignation(e.target.value)}
@@ -747,12 +746,12 @@ const Configuration: React.FC = () => {
             {/* Designations tags */}
             <div className="flex flex-wrap gap-2 max-h-72 overflow-y-auto pr-1 pt-1">
               {designations.map((item) => (
-                <span 
+                <span
                   key={item}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/80 text-slate-700 text-xs font-bold border border-slate-200/50 hover:bg-slate-200/60 transition-colors"
                 >
                   {item}
-                  <button 
+                  <button
                     onClick={() => handleRemoveDesignation(item)}
                     className="w-3.5 h-3.5 rounded-full hover:bg-slate-300 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors"
                   >
@@ -798,7 +797,7 @@ const Configuration: React.FC = () => {
                   <div>
                     <h4 className="font-bold text-slate-800 text-sm">{shift.name}</h4>
                     <p className="text-xs text-slate-500 font-medium">
-                      {shift.start_time.substring(0,5)} to {shift.end_time.substring(0,5)} • Grace: {shift.late_grace_minutes}m
+                      {shift.start_time.substring(0, 5)} to {shift.end_time.substring(0, 5)} • Grace: {shift.late_grace_minutes}m
                     </p>
                   </div>
                   <div className="flex gap-1.5">
@@ -853,7 +852,7 @@ const Configuration: React.FC = () => {
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
               >
                 <option value="">-- No Default (Awaiting) --</option>
-                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0,5)} - {s.end_time.substring(0,5)})</option>)}
+                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0, 5)} - {s.end_time.substring(0, 5)})</option>)}
               </select>
             </div>
 
@@ -865,7 +864,7 @@ const Configuration: React.FC = () => {
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
               >
                 <option value="">-- No Default (Awaiting) --</option>
-                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0,5)} - {s.end_time.substring(0,5)})</option>)}
+                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0, 5)} - {s.end_time.substring(0, 5)})</option>)}
               </select>
             </div>
 
@@ -877,10 +876,10 @@ const Configuration: React.FC = () => {
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
               >
                 <option value="">-- No Default (Awaiting) --</option>
-                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0,5)} - {s.end_time.substring(0,5)})</option>)}
+                {shifts.map(s => <option key={s.id} value={s.id.toString()}>{s.name} ({s.start_time.substring(0, 5)} - {s.end_time.substring(0, 5)})</option>)}
               </select>
             </div>
-            
+
             <button
               onClick={handleSaveDefaultShifts}
               disabled={savingDefaultShifts}
@@ -894,7 +893,7 @@ const Configuration: React.FC = () => {
 
       {/* Row 5: Departments & Trainee Courses */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Card: Departments & Branches */}
         <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-slate-100">
@@ -1047,7 +1046,7 @@ const Configuration: React.FC = () => {
               <h3 className="text-base font-bold text-slate-900">
                 {editingRank ? 'Edit Rank' : 'Add Uniform Rank'}
               </h3>
-              <button 
+              <button
                 onClick={() => setIsRankModalOpen(false)}
                 className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center"
               >
@@ -1058,8 +1057,8 @@ const Configuration: React.FC = () => {
             <form onSubmit={handleSaveRank} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Rank Title</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="e.g. Assistant Sub-Inspector"
                   value={rankForm.name}
@@ -1071,8 +1070,8 @@ const Configuration: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">Rank Code</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     placeholder="e.g. ASI"
                     value={rankForm.code}
@@ -1082,8 +1081,8 @@ const Configuration: React.FC = () => {
                 </div>
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">Seniority Order</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     required
                     value={rankForm.sort_order}
                     onChange={(e) => setRankForm({ ...rankForm, sort_order: parseInt(e.target.value) || 1 })}
@@ -1120,7 +1119,7 @@ const Configuration: React.FC = () => {
               <h3 className="text-base font-bold text-slate-900">
                 {editingDept ? 'Edit Department / Wing' : 'Add Department / Wing'}
               </h3>
-              <button 
+              <button
                 onClick={() => setIsDeptModalOpen(false)}
                 className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center"
               >
@@ -1131,8 +1130,8 @@ const Configuration: React.FC = () => {
             <form onSubmit={handleSaveDept} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Department / Branch Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="e.g. Tactical Training Wing"
                   value={deptForm.name}
@@ -1143,8 +1142,8 @@ const Configuration: React.FC = () => {
 
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Branch Code / Acronym</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="e.g. TAC-WING"
                   value={deptForm.code}
@@ -1181,7 +1180,7 @@ const Configuration: React.FC = () => {
               <h3 className="text-base font-bold text-slate-900">
                 {editingCourse ? 'Edit Trainee Course' : 'Add Trainee Course'}
               </h3>
-              <button 
+              <button
                 onClick={() => setIsCourseModalOpen(false)}
                 className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center"
               >
@@ -1192,8 +1191,8 @@ const Configuration: React.FC = () => {
             <form onSubmit={handleSaveCourse} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Course Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="e.g. Basic Recruit Class Course"
                   value={courseForm.name}
@@ -1204,8 +1203,8 @@ const Configuration: React.FC = () => {
 
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Course Code (Optional)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   placeholder="e.g. BRCC-2026"
                   value={courseForm.code}
                   onChange={(e) => setCourseForm({ ...courseForm, code: e.target.value.toUpperCase() })}
@@ -1216,8 +1215,8 @@ const Configuration: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">Start Date</label>
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     value={courseForm.start_date}
                     onChange={(e) => setCourseForm({ ...courseForm, start_date: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium bg-white"
@@ -1225,8 +1224,8 @@ const Configuration: React.FC = () => {
                 </div>
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">End Date</label>
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     value={courseForm.end_date}
                     onChange={(e) => setCourseForm({ ...courseForm, end_date: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-medium bg-white"
@@ -1262,7 +1261,7 @@ const Configuration: React.FC = () => {
               <h3 className="text-base font-bold text-slate-900">
                 {editingShift ? 'Edit Shift' : 'Add Shift'}
               </h3>
-              <button 
+              <button
                 onClick={() => setIsShiftModalOpen(false)}
                 className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center"
               >
@@ -1273,8 +1272,8 @@ const Configuration: React.FC = () => {
             <form onSubmit={handleSaveShift} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-bold text-slate-600 mb-1">Shift Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="e.g. General Shift"
                   value={shiftForm.name}
@@ -1286,8 +1285,8 @@ const Configuration: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">Start Time</label>
-                  <input 
-                    type="time" 
+                  <input
+                    type="time"
                     required
                     value={shiftForm.start_time}
                     onChange={(e) => setShiftForm({ ...shiftForm, start_time: e.target.value })}
@@ -1296,8 +1295,8 @@ const Configuration: React.FC = () => {
                 </div>
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">End Time</label>
-                  <input 
-                    type="time" 
+                  <input
+                    type="time"
                     required
                     value={shiftForm.end_time}
                     onChange={(e) => setShiftForm({ ...shiftForm, end_time: e.target.value })}
@@ -1309,8 +1308,8 @@ const Configuration: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">Late Grace (mins)</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     required
                     value={shiftForm.late_grace_minutes}
                     onChange={(e) => setShiftForm({ ...shiftForm, late_grace_minutes: parseInt(e.target.value) || 0 })}
@@ -1319,8 +1318,8 @@ const Configuration: React.FC = () => {
                 </div>
                 <div>
                   <label className="block font-bold text-slate-600 mb-1">Early Leave (mins)</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     required
                     value={shiftForm.early_leave_minutes}
                     onChange={(e) => setShiftForm({ ...shiftForm, early_leave_minutes: parseInt(e.target.value) || 0 })}

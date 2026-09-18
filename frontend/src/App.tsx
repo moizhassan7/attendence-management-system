@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { BrandingProvider } from './context/BrandingContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Trainees from './pages/Trainees';
@@ -35,7 +36,7 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.Re
   }
 
   if (requireAdmin && user?.role !== 'ADMIN') {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
   
   return <>{children}</>;
@@ -44,6 +45,10 @@ const ProtectedRoute = ({ children, requireAdmin = false }: { children: React.Re
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public Institutional Website */}
+      <Route path="/" element={<Home />} />
+
+      {/* Staff & Officer Login */}
       <Route path="/login" element={<Login />} />
       
       {/* Full-screen Kiosk Route */}
@@ -56,25 +61,26 @@ const AppRoutes = () => {
         } 
       />
 
-      {/* Main Authenticated Layout */}
-      <Route path="/" element={
+      {/* Main Authenticated Layout & Portal */}
+      <Route element={
         <ProtectedRoute>
           <Layout />
         </ProtectedRoute>
       }>
-        <Route index element={<Dashboard />} />
-        <Route path="trainees" element={<Trainees />} />
-        <Route path="personnel" element={<Personnel />} />
-        <Route path="security" element={<Security />} />
-        <Route path="directory" element={<Directory />} />
-        <Route path="enrollment" element={<Enrollment />} />
-        <Route path="attendance" element={<Attendance />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="devices" element={<Devices />} />
-        <Route path="users" element={<Users />} />
-        <Route path="settings" element={<Configuration />} />
-        <Route path="configuration" element={<Configuration />} />
-        <Route path="backup" element={<ProtectedRoute requireAdmin><Backup /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/portal" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/trainees" element={<Trainees />} />
+        <Route path="/personnel" element={<Personnel />} />
+        <Route path="/security" element={<Security />} />
+        <Route path="/directory" element={<Directory />} />
+        <Route path="/enrollment" element={<Enrollment />} />
+        <Route path="/attendance" element={<Attendance />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/devices" element={<Devices />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/settings" element={<Configuration />} />
+        <Route path="/configuration" element={<Configuration />} />
+        <Route path="/backup" element={<ProtectedRoute requireAdmin><Backup /></ProtectedRoute>} />
       </Route>
 
       {/* Fallback */}

@@ -373,7 +373,7 @@ const LiveScreen: React.FC = () => {
         {/* Left: Exit & Brand */}
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className={`px-3 py-2 rounded-xl text-xs font-semibold border flex items-center gap-2 transition-all cursor-pointer ${theme.btnDefault}`}
             title="Return to Main Dashboard"
           >

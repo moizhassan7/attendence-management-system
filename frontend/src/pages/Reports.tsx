@@ -358,7 +358,7 @@ const Reports: React.FC = () => {
         </div>
 
         <Link 
-          to="/" 
+          to="/live-screen" 
           className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 transition-colors shadow-xs"
         >
           <Tv className="w-3 h-3 text-emerald-400" />

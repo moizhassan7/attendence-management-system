@@ -12,12 +12,12 @@ export interface BrandingData {
 }
 
 const DEFAULT_BRANDING: BrandingData = {
-  acronym: 'PTS',
-  display_name: 'Police Training School Rawat',
-  legal_name: 'Police Training School, Rawat — Rawalpindi',
+  acronym: 'PTS Sargodha',
+  display_name: 'Police Training School Sargodha',
+  legal_name: 'Police Training School, Sargodha — Punjab Police',
   system_name: 'Biometric Attendance Management System',
-  tagline: 'Train to Serve',
-  logo_url: '',
+  tagline: 'Training for Service · خدمت اور تحفظ',
+  logo_url: '/pts_logo.png',
 };
 
 interface BrandingContextType {

@@ -696,7 +696,7 @@ async def export_attendance_report(
 
     # Title header
     setting_res = await db.execute(select(SystemSetting.value).where(SystemSetting.key == "org_display_name"))
-    org_display_name = setting_res.scalar_one_or_none() or "Police Training School Rawat"
+    org_display_name = setting_res.scalar_one_or_none() or "Police Training School Sargodha"
 
     ws.merge_cells("A1:K1")
     ws["A1"] = f"{org_display_name} — {entity_label} Attendance Report ({target_date_str})"

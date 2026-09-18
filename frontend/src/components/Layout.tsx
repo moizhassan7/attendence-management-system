@@ -18,13 +18,15 @@ import {
   LogOut,
   Sun,
   Moon,
+  Globe,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBranding } from '../context/BrandingContext';
 import { useTheme } from '../context/ThemeContext';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Overview', end: true },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Overview', end: true },
   { to: '/trainees', icon: GraduationCap, label: 'Trainees' },
   { to: '/personnel', icon: Users, label: 'Staff' },
   { to: '/security', icon: ShieldCheck, label: 'Security' },
@@ -83,6 +85,19 @@ const Layout: React.FC = () => {
               Biometric Attendance Management
             </p>
           </div>
+        </div>
+
+        <div className="px-1 py-1.5">
+          <NavLink
+            to="/"
+            className="flex items-center justify-between px-3 py-2 rounded-2xl bg-indigo-50/70 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-[12px] font-bold border border-indigo-200/50 dark:border-indigo-500/20 transition-all group"
+          >
+            <span className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-indigo-600 dark:text-indigo-400 group-hover:rotate-12 transition-transform" />
+              <span>Public Website</span>
+            </span>
+            <ExternalLink className="w-3 h-3 text-indigo-400" />
+          </NavLink>
         </div>
 
         <nav className="flex-1 overflow-y-auto no-scrollbar space-y-0.5">
