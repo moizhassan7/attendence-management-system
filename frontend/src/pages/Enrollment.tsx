@@ -3,11 +3,11 @@ import {
   Users, CheckCircle2, Clock, AlertTriangle, 
   CalendarDays, Wifi, Plus, Search, 
   ChevronDown, Fingerprint, ScanFace, Play, ChevronRight, X,
-  UserCheck, Shield, Briefcase, GraduationCap, RefreshCw, UploadCloud
+  UserCheck, Shield, Briefcase, GraduationCap, RefreshCw, UploadCloud, RotateCcw
 } from 'lucide-react';
 import api from '../api/client';
 import PaginationBar from '../components/PaginationBar';
-import { fetchNextDevicePin } from '../utils/nextDevicePin';
+import { fetchNextDevicePin, digitsOnlyPin } from '../utils/nextDevicePin';
 
 interface MasterRank {
   id: number;
@@ -89,6 +89,10 @@ const Enrollment: React.FC = () => {
   const [pushingId, setPushingId] = useState<number | null>(null);
   const [isSyncingBiometrics, setIsSyncingBiometrics] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [reEnrollPerson, setReEnrollPerson] = useState<PersonnelItem | null>(null);
+  const [assignNewPin, setAssignNewPin] = useState(false);
+  const [reEnrollPin, setReEnrollPin] = useState('');
+  const [suggestingPin, setSuggestingPin] = useState(false);
 
   const fetchUnlinkedUsers = async () => {
     setLoadingUnlinked(true);
@@ -134,6 +138,8 @@ const Enrollment: React.FC = () => {
   });
   const [pinLoading, setPinLoading] = useState(false);
   const [pinFromUnlinked, setPinFromUnlinked] = useState(false);
+  const [enrolAfterSave, setEnrolAfterSave] = useState(true);
+  const [savingPerson, setSavingPerson] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -269,18 +275,49 @@ const Enrollment: React.FC = () => {
     setPage(1);
   }, [activeTab, searchTerm]);
 
+  useEffect(() => {
+    const devices = kpiData?.devices || [];
+    if (!devices.length) return;
+    if (activeTab === 'Trainees') {
+      const tr = devices.find((d) => d.name.toUpperCase().startsWith('TR'));
+      if (tr) setSelectedDevice(tr.display_label);
+      return;
+    }
+    const staffTerminal = devices.find((d) => !d.name.toUpperCase().startsWith('TR')) || devices[0];
+    setSelectedDevice(staffTerminal.display_label);
+  }, [activeTab, kpiData]);
+
   // Handle enrollment button click (Finger or Face)
-  const handleEnrollBiometric = async (personId: number, type: 'finger' | 'face', name: string) => {
+  const handleEnrollBiometric = async (
+    personId: number,
+    type: 'finger' | 'face',
+    name: string,
+    deviceOverride?: DeviceOption,
+    options?: { reEnroll?: boolean; newPin?: string },
+  ) => {
     setEnrollingId(personId);
     try {
-      const dev = kpiData?.devices?.find(d => d.display_label === selectedDevice);
-      const devParam = dev ? `&device_id=${dev.id}` : '';
+      const dev = deviceOverride || kpiData?.devices?.find(d => d.display_label === selectedDevice);
+      const params = new URLSearchParams({ biometric_type: type });
+      if (dev) params.set('device_id', String(dev.id));
+      if (options?.reEnroll) params.set('re_enroll', 'true');
+      if (options?.newPin) params.set('new_pin', options.newPin);
       if (type === 'finger') {
-        showToast(`Terminal prompt active! Place finger 3 times on the sensor for ${name}...`);
+        showToast(`Terminal prompt active on ${dev?.name || 'the scanner'}! Place finger 3 times for ${name}...`);
       }
-      const res = await api.post(`/personnel/${personId}/enroll-biometric?biometric_type=${type}${devParam}`);
+      const res = await api.post(
+        `/personnel/${personId}/enroll-biometric?${params.toString()}`,
+        {},
+        { timeout: 180000 }
+      );
       if (res.data.success) {
         showToast(res.data.message || `Fingerprint enrolled successfully for ${name}!`);
+        const updated = res.data.data as PersonnelItem | undefined;
+        if (updated) {
+          setViewPerson((current) => (
+            current && current.id === personId ? { ...current, ...updated } : current
+          ));
+        }
         await fetchPersonnel();
         await fetchKpis();
       }
@@ -290,6 +327,44 @@ const Enrollment: React.FC = () => {
       showToast(detail);
     } finally {
       setEnrollingId(null);
+    }
+  };
+
+  const requestFingerprintEnroll = (person: PersonnelItem, deviceOverride?: DeviceOption) => {
+    if (person.has_fingerprint) {
+      setReEnrollPerson(person);
+      setAssignNewPin(false);
+      setReEnrollPin(person.biometric_user_id);
+      return;
+    }
+    handleEnrollBiometric(person.id, 'finger', person.full_name, deviceOverride);
+  };
+
+  const handleConfirmReEnroll = async () => {
+    if (!reEnrollPerson) return;
+    const person = reEnrollPerson;
+    const newPin = assignNewPin ? reEnrollPin.trim() : '';
+    setReEnrollPerson(null);
+    await handleEnrollBiometric(person.id, 'finger', person.full_name, undefined, {
+      reEnroll: true,
+      newPin: newPin && newPin !== person.biometric_user_id ? newPin : undefined,
+    });
+  };
+
+  const handleToggleNewPin = async (checked: boolean) => {
+    setAssignNewPin(checked);
+    if (!checked || !reEnrollPerson) {
+      if (reEnrollPerson) setReEnrollPin(reEnrollPerson.biometric_user_id);
+      return;
+    }
+    setSuggestingPin(true);
+    try {
+      const pin = await fetchNextDevicePin(reEnrollPerson.is_trainee);
+      if (pin) setReEnrollPin(pin);
+    } catch {
+      setReEnrollPin('');
+    } finally {
+      setSuggestingPin(false);
     }
   };
 
@@ -336,6 +411,7 @@ const Enrollment: React.FC = () => {
   // Handle Add Person form submission
   const handleAddPerson = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSavingPerson(true);
     try {
       const isTrainee = formData.person_type === 'Trainee';
       const isUniform = formData.person_type === 'Staff' && formData.staff_category === 'Uniform';
@@ -349,7 +425,7 @@ const Enrollment: React.FC = () => {
         full_name: formData.full_name.trim(),
         father_name: formData.father_name.trim() || null,
         cnic: formData.cnic.trim() || null,
-        biometric_user_id: formData.biometric_user_id.trim() || undefined,
+        biometric_user_id: digitsOnlyPin(formData.biometric_user_id) || undefined,
         employee_code: formData.employee_code.trim() || null,
         is_trainee: isTrainee,
         course_id: isTrainee && formData.course_id ? Number(formData.course_id) : null,
@@ -365,15 +441,29 @@ const Enrollment: React.FC = () => {
 
       const res = await api.post('/personnel', payload);
       if (res.data.success) {
-        const assignedPin = res.data.data?.biometric_user_id || formData.biometric_user_id;
-        showToast(`Person ${formData.full_name} added with Device PIN ${assignedPin}`);
+        const created = res.data.data;
+        const assignedPin = created?.biometric_user_id || formData.biometric_user_id;
         setIsAddModalOpen(false);
+        if (isTrainee) {
+          setActiveTab('Trainees');
+        }
         await fetchPersonnel();
         await fetchKpis();
+        const enrolDevice = isTrainee
+          ? (kpiData?.devices || []).find((d) => d.name.toUpperCase().startsWith('TR'))
+          : (kpiData?.devices || []).find((d) => !d.name.toUpperCase().startsWith('TR'));
+        const savedNote = res.data.message || `Person ${formData.full_name} added with Device PIN ${assignedPin}`;
+        if (enrolAfterSave && created?.id) {
+          await handleEnrollBiometric(created.id, 'finger', formData.full_name, enrolDevice);
+        } else {
+          showToast(savedNote);
+        }
       }
     } catch (err: any) {
       console.error('Failed to add person', err);
       showToast(err.response?.data?.detail || 'Failed to add person');
+    } finally {
+      setSavingPerson(false);
     }
   };
 
@@ -479,7 +569,7 @@ const Enrollment: React.FC = () => {
               2
             </div>
             <p className="text-[11px] font-medium text-slate-600 leading-relaxed">
-              The dashboard pushes them to every connected terminal automatically — no need to add them on each device.
+              The dashboard writes staff to PTS Staff and trainees to TR-1 / TR-2 / TR-3 automatically — no need to add them on each device.
             </p>
           </div>
 
@@ -737,17 +827,20 @@ const Enrollment: React.FC = () => {
                       {/* Biometrics Icons (Fingerprint & Face) */}
                       <td className="py-3.5 px-3">
                         <div className="flex items-center gap-2">
-                          {/* Fingerprint indicator */}
-                          <div 
-                            title={person.has_fingerprint ? "Fingerprint enrolled" : "Fingerprint not enrolled"}
+                          {/* Fingerprint indicator — click to enroll or re-enroll */}
+                          <button
+                            type="button"
+                            disabled={enrollingId === person.id}
+                            onClick={() => requestFingerprintEnroll(person)}
+                            title={person.has_fingerprint ? 'Already enrolled — click to re-enroll' : 'Fingerprint not enrolled — click to enroll'}
                             className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
                               person.has_fingerprint 
-                                ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' 
-                                : 'bg-slate-100 text-slate-300'
+                                ? 'bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100' 
+                                : 'bg-slate-100 text-slate-300 hover:text-indigo-500 hover:bg-indigo-50'
                             }`}
                           >
                             <Fingerprint className="w-3.5 h-3.5" />
-                          </div>
+                          </button>
 
                           {/* Face scan indicator */}
                           <div 
@@ -768,20 +861,24 @@ const Enrollment: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <button
                             disabled={enrollingId === person.id}
-                            onClick={() => handleEnrollBiometric(person.id, 'finger', person.full_name)}
-                            title="Trigger fingerprint enrollment on physical terminal"
+                            onClick={() => requestFingerprintEnroll(person)}
+                            title={person.has_fingerprint ? 'Replace existing fingerprint on the terminal' : 'Trigger fingerprint enrollment on physical terminal'}
                             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-bold transition-all shadow-2xs ${
                               enrollingId === person.id
                                 ? 'bg-indigo-600 text-white border-indigo-600 animate-pulse'
-                                : 'border-slate-200 hover:border-indigo-500 hover:text-indigo-600 text-slate-600 bg-white hover:bg-indigo-50/40'
+                                : person.has_fingerprint
+                                  ? 'border-indigo-200 hover:border-indigo-500 text-indigo-600 bg-indigo-50/40 hover:bg-indigo-50'
+                                  : 'border-slate-200 hover:border-indigo-500 hover:text-indigo-600 text-slate-600 bg-white hover:bg-indigo-50/40'
                             }`}
                           >
                             {enrollingId === person.id ? (
                               <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+                            ) : person.has_fingerprint ? (
+                              <RotateCcw className="w-2.5 h-2.5" />
                             ) : (
                               <Play className="w-2.5 h-2.5 fill-current text-slate-400 group-hover:text-indigo-500" />
                             )}
-                            {enrollingId === person.id ? 'Scanning...' : 'Finger'}
+                            {enrollingId === person.id ? 'Scanning...' : person.has_fingerprint ? 'Re-enroll' : 'Finger'}
                           </button>
 
                           <button
@@ -1167,9 +1264,10 @@ const Enrollment: React.FC = () => {
                     <input 
                       type="text"
                       inputMode="numeric"
+                      maxLength={14}
                       placeholder={pinLoading ? 'Assigning next free PIN…' : 'Assigned automatically'}
                       value={pinLoading ? '' : formData.biometric_user_id}
-                      onChange={(e) => setFormData(prev => ({ ...prev, biometric_user_id: e.target.value }))}
+                      onChange={(e) => setFormData(prev => ({ ...prev, biometric_user_id: digitsOnlyPin(e.target.value) }))}
                       className={`w-full px-3.5 py-2.5 rounded-xl border outline-none font-mono text-base font-bold tracking-wide text-slate-800 ${
                         isPinExceedsTrainee || isPinBelowStaff
                           ? 'border-amber-400 bg-amber-50/40 focus:ring-2 focus:ring-amber-400'
@@ -1232,21 +1330,38 @@ const Enrollment: React.FC = () => {
                 </div>
 
                 {/* Modal Actions */}
-                <div className="flex justify-end gap-2 pt-4 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddModalOpen(false)}
-                    className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={pinLoading}
-                    className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    Save Person
-                  </button>
+                <div className="pt-4 border-t border-slate-100 space-y-3">
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={enrolAfterSave}
+                      onChange={(e) => setEnrolAfterSave(e.target.checked)}
+                      className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="text-[11px] font-medium text-slate-600 leading-snug">
+                      {formData.person_type === 'Trainee'
+                        ? 'After save, open fingerprint enrol on a TR terminal — person must be at the scanner.'
+                        : 'After save, open fingerprint enrol on PTS Staff — person must be at the scanner.'}
+                    </span>
+                  </label>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddModalOpen(false)}
+                      className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={pinLoading || savingPerson}
+                      className="px-5 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {savingPerson
+                        ? (enrolAfterSave ? 'Saving & enrolling…' : 'Saving…')
+                        : (enrolAfterSave ? 'Save & enrol finger' : 'Save person')}
+                    </button>
+                  </div>
                 </div>
               </form>
 
@@ -1318,16 +1433,96 @@ const Enrollment: React.FC = () => {
 
             <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
               <button
-                onClick={() => handleEnrollBiometric(viewPerson.id, 'finger', viewPerson.full_name)}
+                onClick={() => requestFingerprintEnroll(viewPerson)}
                 className="px-3 py-1.5 rounded-lg border border-indigo-200 text-indigo-600 text-xs font-bold hover:bg-indigo-50 flex items-center gap-1.5"
               >
-                <Fingerprint className="w-3.5 h-3.5" /> Enrol Finger
+                {viewPerson.has_fingerprint ? <RotateCcw className="w-3.5 h-3.5" /> : <Fingerprint className="w-3.5 h-3.5" />}
+                {viewPerson.has_fingerprint ? 'Re-enroll finger' : 'Enrol Finger'}
               </button>
               <button
                 onClick={() => setViewPerson(null)}
                 className="px-4 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {reEnrollPerson && (
+        <div className="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100 space-y-4">
+            <div className="flex justify-between items-start gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <RotateCcw className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Re-enroll fingerprint</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {reEnrollPerson.full_name} is already enrolled on PIN {reEnrollPerson.biometric_user_id}.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReEnrollPerson(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Confirm to replace the existing finger on the terminal. You can keep this PIN, or assign a new Device ID before scanning.
+            </p>
+
+            <label className="flex items-start gap-2.5 rounded-2xl border border-slate-100 bg-slate-50/80 px-3.5 py-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={assignNewPin}
+                onChange={(e) => handleToggleNewPin(e.target.checked)}
+                className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <span>
+                <span className="block text-xs font-bold text-slate-800">Register on a new Device PIN</span>
+                <span className="block text-[11px] text-slate-400 mt-0.5">Old ID is removed from the terminal, then a new fingerprint is captured.</span>
+              </span>
+            </label>
+
+            {assignNewPin && (
+              <div>
+                <label htmlFor="re-enroll-pin" className="block text-xs font-bold text-slate-700 mb-1">
+                  New Device PIN
+                </label>
+                <input
+                  id="re-enroll-pin"
+                  inputMode="numeric"
+                  maxLength={14}
+                  value={suggestingPin ? '' : reEnrollPin}
+                  onChange={(e) => setReEnrollPin(digitsOnlyPin(e.target.value))}
+                  placeholder={suggestingPin ? 'Suggesting next PIN…' : 'Enter new PIN'}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-slate-800 text-xs"
+                />
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setReEnrollPerson(null)}
+                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={assignNewPin && !reEnrollPin.trim()}
+                onClick={handleConfirmReEnroll}
+                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold"
+              >
+                Place finger on terminal
               </button>
             </div>
           </div>

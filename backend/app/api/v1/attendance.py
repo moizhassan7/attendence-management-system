@@ -20,9 +20,34 @@ from app.models.settings import SystemSetting
 from app.schemas.common import ApiResponse, PaginatedResponse, PaginationMeta
 from app.schemas.attendance import AttendancePunchOut, AttendanceDailyOut
 from app.services.attendance_engine import AttendanceService
+from app.services.pin_match import candidate_device_pins, resolve_personnel_pin
 from app.utils.timezone import today, now, to_local, get_tz
 
 router = APIRouter(prefix="/attendance", tags=["attendance"])
+
+
+def _person_for_punch_pin(punch_pin: str, people_by_pin: dict[str, Personnel]):
+    resolved = resolve_personnel_pin(punch_pin, people_by_pin)
+    if resolved:
+        return people_by_pin.get(resolved)
+    return people_by_pin.get(str(punch_pin))
+
+
+def _matches_quick_filter(status: str, quick_filter: str) -> bool:
+    if quick_filter in ("all", "by_department", "summary"):
+        return True
+    if quick_filter == "present":
+        return status in ("Present", "Late")
+    if quick_filter == "late":
+        return status == "Late"
+    if quick_filter == "absent":
+        return status in ("Absent", "Weekend")
+    if quick_filter == "leave":
+        return status == "Leave"
+    return True
+
+
+_STATUS_SORT = {"Present": 0, "Late": 1, "Leave": 2, "Weekend": 3, "Absent": 4}
 
 
 @router.get("/punches", response_model=PaginatedResponse)
@@ -47,8 +72,9 @@ async def list_punches(
         count_query = count_query.where(AttendancePunch.punch_time >= t0, AttendancePunch.punch_time <= t1)
 
     if biometric_user_id:
-        query = query.where(AttendancePunch.biometric_user_id == biometric_user_id)
-        count_query = count_query.where(AttendancePunch.biometric_user_id == biometric_user_id)
+        pins = candidate_device_pins(biometric_user_id)
+        query = query.where(AttendancePunch.biometric_user_id.in_(pins))
+        count_query = count_query.where(AttendancePunch.biometric_user_id.in_(pins))
 
     if device_id:
         query = query.where(AttendancePunch.device_id == device_id)
@@ -61,14 +87,12 @@ async def list_punches(
         .limit(page_size)
     )
     punches = result.scalars().all()
+    people = (await db.execute(select(Personnel))).scalars().all()
+    people_by_pin = {str(person.biometric_user_id): person for person in people}
 
-    # Resolve personnel names
     out = []
     for p in punches:
-        personnel = await db.execute(
-            select(Personnel).where(Personnel.biometric_user_id == p.biometric_user_id)
-        )
-        person = personnel.scalar_one_or_none()
+        person = _person_for_punch_pin(p.biometric_user_id, people_by_pin)
         out.append(AttendancePunchOut(
             id=p.id,
             device_id=p.device_id,
@@ -171,15 +195,20 @@ async def recent_punches(
         .limit(limit)
     )
     punches = result.scalars().all()
+    people = (
+        await db.execute(
+            select(Personnel).options(
+                selectinload(Personnel.rank),
+                selectinload(Personnel.department),
+                selectinload(Personnel.course),
+            )
+        )
+    ).scalars().all()
+    people_by_pin = {str(person.biometric_user_id): person for person in people}
 
     out = []
     for p in punches:
-        personnel = await db.execute(
-            select(Personnel)
-            .options(selectinload(Personnel.rank), selectinload(Personnel.department), selectinload(Personnel.course))
-            .where(Personnel.biometric_user_id == p.biometric_user_id)
-        )
-        person = personnel.scalar_one_or_none()
+        person = _person_for_punch_pin(p.biometric_user_id, people_by_pin)
         rank_course = None
         dept_name = None
         emp_code = None
@@ -347,11 +376,7 @@ async def get_attendance_report(
             else:
                 status = "Absent"
 
-            if quick_filter == "late" and status != "Late":
-                continue
-            elif quick_filter == "absent" and status not in ("Absent", "Weekend"):
-                continue
-            elif quick_filter == "leave" and status != "Leave":
+            if not _matches_quick_filter(status, quick_filter):
                 continue
 
             rank_title = (p.rank.name if p.rank else None) or p.designation or (p.course.name if p.course else "Trainee" if p.is_trainee else "Staff")
@@ -375,6 +400,7 @@ async def get_attendance_report(
                 "status": status,
                 "check_in": check_in_str,
                 "check_out": check_out_str,
+                "check_in_sort": first_in_local.strftime("%H:%M") if first_in_local else "99:99",
                 "hours": hours_str,
                 "late_minutes": a.late_minutes if a else 0,
                 "date": target_start.isoformat(),
@@ -440,13 +466,7 @@ async def get_attendance_report(
                     else:
                         status = "Absent"
 
-                    if quick_filter == "late" and status != "Late":
-                        cur_d += timedelta(days=1)
-                        continue
-                    elif quick_filter == "absent" and status not in ("Absent", "Weekend"):
-                        cur_d += timedelta(days=1)
-                        continue
-                    elif quick_filter == "leave" and status != "Leave":
+                    if not _matches_quick_filter(status, quick_filter):
                         cur_d += timedelta(days=1)
                         continue
 
@@ -471,6 +491,7 @@ async def get_attendance_report(
                         "status": status,
                         "check_in": check_in_str,
                         "check_out": check_out_str,
+                        "check_in_sort": first_in_local.strftime("%H:%M") if first_in_local else "99:99",
                         "hours": hours_str,
                         "late_minutes": a.late_minutes if a else 0,
                         "date": cur_d.isoformat(),
@@ -481,8 +502,12 @@ async def get_attendance_report(
 
     if quick_filter == "by_department":
         items.sort(key=lambda x: (x["department"], x["name"]))
-        for idx, item in enumerate(items, 1):
-            item["sr"] = idx
+    elif quick_filter == "present":
+        items.sort(key=lambda x: (x.get("check_in_sort") or "99:99", x["name"]))
+    elif quick_filter == "all":
+        items.sort(key=lambda x: (_STATUS_SORT.get(x["status"], 9), x["name"]))
+    for idx, item in enumerate(items, 1):
+        item["sr"] = idx
 
     total_matching = len(items)
     present_cnt = sum(1 for it in items if it["status"] == "Present")

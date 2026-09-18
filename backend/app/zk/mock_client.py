@@ -15,6 +15,7 @@ from app.zk.base import (
     DeviceTemplate,
     DeviceUser,
 )
+from app.services.pin_allocator import require_numeric_device_pin
 
 logger = logging.getLogger(__name__)
 
@@ -100,10 +101,12 @@ class MockZKDeviceAdapter(BaseAttendanceDevice):
         card: int = 0,
     ) -> bool:
         logger.info("[MOCK] User set on device: PIN=%s, Name=%s", user_id, name)
+        require_numeric_device_pin(user_id)
         return True
 
-    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
-        logger.info("[MOCK] Fingerprint enrolled for user PIN=%s", user_id)
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0, replace: bool = False) -> bool:
+        logger.info("[MOCK] Fingerprint enrolled for user PIN=%s replace=%s", user_id, replace)
+        require_numeric_device_pin(user_id)
         return True
 
     def get_templates(self) -> list[DeviceTemplate]:

@@ -88,7 +88,7 @@ class BaseAttendanceDevice(ABC):
         ...
 
     @abstractmethod
-    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0, replace: bool = False) -> bool:
         """Trigger remote fingerprint enrollment prompt on device."""
         ...
 

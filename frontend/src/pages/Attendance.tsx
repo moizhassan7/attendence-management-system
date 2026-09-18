@@ -56,6 +56,8 @@ const Attendance: React.FC = () => {
   // Exception state
   const [exceptionType, setExceptionType] = useState('LEAVE');
   const [exceptionReason, setExceptionReason] = useState('');
+  const [exceptionStartDate, setExceptionStartDate] = useState(targetDate);
+  const [exceptionEndDate, setExceptionEndDate] = useState(targetDate);
 
   // Load list of personnel for dropdowns
   useEffect(() => {
@@ -159,8 +161,8 @@ const Attendance: React.FC = () => {
       await api.post('/attendance/exceptions', {
         personnel_id: parseInt(selectedPersonId, 10),
         exception_type: exceptionType,
-        start_date: targetDate,
-        end_date: targetDate,
+        start_date: exceptionStartDate,
+        end_date: exceptionEndDate,
         reason: exceptionReason || null,
       });
       setShowExceptionModal(false);
@@ -232,6 +234,8 @@ const Attendance: React.FC = () => {
           <button
             onClick={() => {
               setSelectedPersonId('');
+              setExceptionStartDate(targetDate);
+              setExceptionEndDate(targetDate);
               setShowExceptionModal(true);
             }}
             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-indigo-200 transition-all"
@@ -500,6 +504,29 @@ const Attendance: React.FC = () => {
                   <option value="EVIDENCE">Court / Evidence</option>
                   <option value="REPATRIATION">Repatriation</option>
                 </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Start Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={exceptionStartDate}
+                    onChange={(e) => setExceptionStartDate(e.target.value)}
+                    className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">End Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={exceptionEndDate}
+                    onChange={(e) => setExceptionEndDate(e.target.value)}
+                    className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
+                  />
+                </div>
               </div>
 
               <div>

@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     # After a successful persist, wipe the terminal attendance log (CMD_CLEAR_ATTLOG).
     # pyzk cannot filter downloads, so this is what keeps later 90s cycles small.
     device_clear_log_after_sync: bool = True
+    device_clear_log_min_records: int = 5000
 
     # ── Authentication ──
     jwt_secret: str = "CHANGE_ME"

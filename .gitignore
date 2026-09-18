@@ -68,7 +68,8 @@ alembic/versions/__pycache__/
 *.backup
 .agents/
 
-# HTTPS reverse proxy
+# HTTPS reverse proxy / Windows service wrapper
 tools/caddy.exe
 tools/caddy-data/
 tools/caddy.zip
+tools/zkt-attendance.exe

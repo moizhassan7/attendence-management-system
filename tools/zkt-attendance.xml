@@ -1,0 +1,17 @@
+<service>
+  <id>zkt-attendance</id>
+  <name>ZKT Attendance Stack</name>
+  <description>Starts the FastAPI backend and Caddy HTTPS frontend after boot.</description>
+  <executable>C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</executable>
+  <arguments>-NoProfile -ExecutionPolicy Bypass -File "%BASE%\..\scripts\start-attendance.ps1" -Supervise</arguments>
+  <workingdirectory>%BASE%\..</workingdirectory>
+  <logpath>%BASE%\..\logs</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>4</keepFiles>
+  </log>
+  <onfailure action="restart" delay="8 sec"/>
+  <startmode>Automatic</startmode>
+  <delayedAutoStart>true</delayedAutoStart>
+  <depend>postgresql-x64-18</depend>
+</service>

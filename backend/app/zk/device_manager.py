@@ -145,7 +145,22 @@ class DeviceManager:
                         exc,
                     )
 
-        return self._with_retry("fetch_attendance", _run)
+        logs = self._with_retry("fetch_attendance", _run)
+        last_transport = getattr(self.adapter, "last_transport", None)
+        if logs or str(last_transport or "").lower() != "udp":
+            return logs
+        if not hasattr(self.adapter, "transport"):
+            return logs
+        logger.warning(
+            "[%s] UDP reported 0 attendance records; retrying over TCP",
+            self._label(),
+        )
+        original = self.adapter.transport
+        self.adapter.transport = "tcp"
+        try:
+            return self._with_retry("fetch_attendance_tcp", _run)
+        finally:
+            self.adapter.transport = original
 
     def clear_attendance(self) -> bool:
         """Connect, wipe the terminal attendance log, disconnect. Never call before persist."""
@@ -214,16 +229,72 @@ class DeviceManager:
 
         return self._with_retry("push_user", _run)
 
-    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
-        """Trigger remote fingerprint enrollment on the device."""
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0, replace: bool = False) -> bool:
+        """Trigger remote fingerprint enrollment on the device. Do not retry the scan."""
         def _run() -> bool:
-            self.adapter.connect(timeout=self._settings().device_connection_timeout)
+            self.adapter.connect(timeout=max(90, self._settings().device_connection_timeout))
             try:
-                return self.adapter.enroll_fingerprint(user_id=user_id, temp_id=temp_id)
+                if hasattr(self.adapter, "set_io_timeout"):
+                    self.adapter.set_io_timeout(90)
+                return self.adapter.enroll_fingerprint(user_id=user_id, temp_id=temp_id, replace=replace)
             finally:
                 self.adapter.disconnect()
 
-        return self._with_retry("enroll", _run)
+        return self._with_retry("enroll", _run, max_retries=1)
+
+    def push_and_enroll_fingerprint(
+        self,
+        user_id: str,
+        name: str,
+        temp_id: int = 0,
+        replace: bool = False,
+    ) -> bool:
+        """Create the user and start fingerprint capture in one terminal session."""
+        def _run() -> bool:
+            self.adapter.connect(timeout=max(90, self._settings().device_connection_timeout))
+            try:
+                if hasattr(self.adapter, "set_io_timeout"):
+                    self.adapter.set_io_timeout(90)
+                self.adapter.set_user(user_id=user_id, name=name)
+                return self.adapter.enroll_fingerprint(
+                    user_id=user_id, temp_id=temp_id, replace=replace
+                )
+            finally:
+                self.adapter.disconnect()
+
+        return self._with_retry("enroll", _run, max_retries=1)
+
+    def fetch_enrollment_state(self, max_retries: int | None = None) -> tuple[list[DeviceUser], set[int]]:
+        """Read users and fingerprint template UIDs in one session."""
+        def _run() -> tuple[list[DeviceUser], set[int]]:
+            settings = self._settings()
+            timeout = settings.device_connection_timeout
+
+            def _connect() -> None:
+                self.adapter.connect(timeout=timeout)
+                if hasattr(self.adapter, "set_io_timeout"):
+                    self.adapter.set_io_timeout(settings.device_command_timeout)
+
+            _connect()
+            try:
+                users = self.adapter.get_users()
+                templates = self.adapter.get_templates()
+                if users and not templates:
+                    logger.warning(
+                        "[%s] Template dump empty after user list; reconnecting to retry fingerprints",
+                        self._label(),
+                    )
+                    try:
+                        self.adapter.disconnect()
+                    except Exception:
+                        pass
+                    _connect()
+                    templates = self.adapter.get_templates()
+                return users, {template.uid for template in templates}
+            finally:
+                self.adapter.disconnect()
+
+        return self._with_retry("fetch_enrollment_state", _run, max_retries=max_retries)
 
     def fetch_templates(self) -> list[Any]:
         """Fetch all biometric templates from the device."""
@@ -246,3 +317,16 @@ class DeviceManager:
                 self.adapter.disconnect()
 
         return self._with_retry("delete_user", _run)
+
+    def purge_temp_users_without_fingerprints(self) -> dict[str, int]:
+        """Delete TEMP-* IDs on this terminal only if they have no fingerprint."""
+        def _run() -> dict[str, int]:
+            self.adapter.connect(timeout=max(90, self._settings().device_connection_timeout))
+            try:
+                if hasattr(self.adapter, "set_io_timeout"):
+                    self.adapter.set_io_timeout(self._settings().device_command_timeout)
+                return self.adapter.purge_temp_users_without_fingerprints()
+            finally:
+                self.adapter.disconnect()
+
+        return self._with_retry("purge_temp_users", _run, max_retries=1)

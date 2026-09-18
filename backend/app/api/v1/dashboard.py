@@ -675,10 +675,8 @@ async def enrollment_dashboard(
         except ValueError:
             staff_unlinked += 1
 
-    # Devices for enrollment target selector
-    devices_result = await db.execute(
-        select(Device).where(Device.enabled == True)
-    )
+    # Include disabled TR units so trainee fingerprints can be enrolled/synced there.
+    devices_result = await db.execute(select(Device).order_by(Device.name))
     devices = devices_result.scalars().all()
     device_list = [
         {

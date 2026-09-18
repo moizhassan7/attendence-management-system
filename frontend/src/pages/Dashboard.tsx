@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Users, UserCheck, Clock, UserX, 
+  Users, Clock, UserX, 
   MonitorPlay, ChevronRight, Stethoscope, Briefcase, FileWarning, CalendarDays, ArrowRightLeft, ShieldCheck, RefreshCw
 } from 'lucide-react';
 import { 
@@ -560,7 +560,7 @@ const Dashboard: React.FC = () => {
                   />
                   <RechartsTooltip 
                     cursor={{fill: '#F1F5F9'}}
-                    formatter={(value: number) => [value, 'Strength']}
+                    formatter={(value) => [value ?? 0, 'Strength']}
                     labelFormatter={(_label, payload) => payload?.[0]?.payload?.fullName || ''}
                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} 
                   />

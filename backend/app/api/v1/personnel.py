@@ -8,6 +8,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, func, or_, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,7 +24,14 @@ from app.schemas.personnel import (
     PersonnelUpdate,
     PersonnelBulkShiftUpdate,
 )
-from app.services.pin_allocator import next_numeric_pin, parse_numeric_pin
+from app.services.pin_allocator import (
+    is_temp_pin,
+    next_numeric_pin,
+    parse_numeric_pin,
+    require_numeric_device_pin,
+    used_numeric_pins,
+)
+from app.services.pin_match import device_enroll_pin
 from app.zk.device_manager import DeviceManager, create_device_adapter
 
 logger = logging.getLogger(__name__)
@@ -47,11 +55,7 @@ async def _load_pin_ranges(db: AsyncSession) -> tuple[int, int, int]:
 async def allocate_next_pin(db: AsyncSession, *, is_trainee: bool) -> str:
     trainee_min, trainee_max, staff_min = await _load_pin_ranges(db)
     result = await db.execute(select(Personnel.biometric_user_id))
-    used = {
-        pin
-        for (raw,) in result.all()
-        if (pin := parse_numeric_pin(raw)) is not None
-    }
+    used = used_numeric_pins(raw for (raw,) in result.all())
     try:
         if is_trainee:
             next_pin = next_numeric_pin(used, trainee_min, trainee_max)
@@ -59,7 +63,128 @@ async def allocate_next_pin(db: AsyncSession, *, is_trainee: bool) -> str:
             next_pin = next_numeric_pin(used, staff_min)
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
-    return str(next_pin)
+    pin = str(next_pin)
+    return pin
+
+
+async def _unique_numeric_pin(
+    db: AsyncSession,
+    *,
+    is_trainee: bool,
+    requested: str | None,
+    exclude_person_id: int | None = None,
+) -> str:
+    wanted = (requested or "").strip()
+    if wanted and (is_temp_pin(wanted) or parse_numeric_pin(wanted) is None):
+        wanted = ""
+    if wanted:
+        try:
+            wanted = require_numeric_device_pin(wanted)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        taken_query = select(Personnel.id).where(Personnel.biometric_user_id == wanted)
+        if exclude_person_id is not None:
+            taken_query = taken_query.where(Personnel.id != exclude_person_id)
+        if await db.scalar(taken_query):
+            raise HTTPException(status_code=409, detail="Biometric user ID already exists")
+        return wanted
+    for _ in range(8):
+        pin = await allocate_next_pin(db, is_trainee=is_trainee)
+        taken_query = select(Personnel.id).where(Personnel.biometric_user_id == pin)
+        if exclude_person_id is not None:
+            taken_query = taken_query.where(Personnel.id != exclude_person_id)
+        if not await db.scalar(taken_query):
+            return pin
+    raise HTTPException(status_code=409, detail="No free device PIN left in this range")
+
+
+def resolve_re_enroll_pin(current_pin: str, new_pin: str | None) -> str | None:
+    """Return a different PIN to switch to, or None to keep the current Device PIN."""
+    candidate = (new_pin or "").strip()
+    if not candidate or candidate == (current_pin or "").strip():
+        return None
+    return candidate
+
+
+def is_trainee_terminal(device: Device) -> bool:
+    return str(getattr(device, "name", "") or "").strip().upper().startswith("TR")
+
+
+def terminals_for_person(person: Personnel, devices: list[Device]) -> list[Device]:
+    """Staff → PTS terminals. Trainees → TR units even when attendance ingest is disabled."""
+    listed = [item for item in devices if item is not None]
+    if not listed:
+        return []
+    if person.is_trainee:
+        tr_units = [item for item in listed if is_trainee_terminal(item)]
+        return tr_units or listed
+    staff_units = [item for item in listed if not is_trainee_terminal(item)]
+    enabled = [item for item in staff_units if item.enabled]
+    return enabled or staff_units or listed
+
+
+async def _push_person_to_devices(person: Personnel, devices: list[Device]) -> tuple[list[str], list[str]]:
+    loop = asyncio.get_running_loop()
+    pushed: list[str] = []
+    errors: list[str] = []
+    for dev in devices:
+        try:
+            device_pin = require_numeric_device_pin(person.biometric_user_id)
+            manager = DeviceManager(_adapter_for(dev, pin=device_pin), name=dev.name)
+            await loop.run_in_executor(
+                None,
+                lambda m=manager, pin=device_pin, p=person: m.push_user(
+                    user_id=pin, name=p.full_name
+                ),
+            )
+            pushed.append(dev.name)
+        except Exception as exc:
+            logger.warning(
+                "Could not push person %s to device %s: %s",
+                person.biometric_user_id,
+                getattr(dev, "name", "?"),
+                exc,
+            )
+            errors.append(f"{dev.name}: {exc}")
+    return pushed, errors
+
+
+async def _delete_pin_from_devices(pin: str, devices: list[Device]) -> None:
+    """Remove an old Device PIN from terminals so a re-enroll can use a new ID."""
+    if not pin or not devices:
+        return
+    loop = asyncio.get_running_loop()
+    pins = {pin, device_enroll_pin(pin)}
+    for dev in devices:
+        try:
+            manager = DeviceManager(_adapter_for(dev, pin=pin), name=dev.name)
+            for old_pin in pins:
+                await loop.run_in_executor(
+                    None, lambda m=manager, p=old_pin: m.delete_user(p)
+                )
+        except Exception as exc:
+            logger.warning("Could not remove PIN %s from device %s: %s", pin, getattr(dev, "name", "?"), exc)
+
+
+def _adapter_for(device: Device, *, pin: str | None = None, force_tcp: bool = False):
+    transport = getattr(device, "preferred_transport", None) or "auto"
+    # UDP enroll packs user_id as int(); TEMP- PINs and templates need TCP.
+    if force_tcp or (pin and not str(pin).strip().isdigit()):
+        transport = "tcp"
+    return create_device_adapter(
+        ip=device.ip_address,
+        port=device.port,
+        password=device.communication_password,
+        name=device.name,
+        transport=transport,
+    )
+
+
+def _fingerprint_on_device(manager: DeviceManager, personnel_pin: str) -> bool:
+    from app.services.pin_match import personnel_has_device_fingerprint
+
+    users, template_uids = manager.fetch_enrollment_state()
+    return personnel_has_device_fingerprint(personnel_pin, users, template_uids)
 
 
 def _to_out(p: Personnel) -> PersonnelOut:
@@ -285,27 +410,16 @@ async def get_personnel(person_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.post("", response_model=ApiResponse, status_code=201)
 async def create_personnel(payload: PersonnelCreate, db: AsyncSession = Depends(get_db)):
-    requested = (payload.biometric_user_id or "").strip()
-    pin = requested or await allocate_next_pin(db, is_trainee=bool(payload.is_trainee))
-    payload = payload.model_copy(update={"biometric_user_id": pin})
-
-    existing = await db.execute(
-        select(Personnel).where(Personnel.biometric_user_id == payload.biometric_user_id)
+    pin = await _unique_numeric_pin(
+        db, is_trainee=bool(payload.is_trainee), requested=payload.biometric_user_id
     )
-    if existing.scalar_one_or_none():
-        if requested:
-            raise HTTPException(status_code=409, detail="Biometric user ID already exists")
-        pin = await allocate_next_pin(db, is_trainee=bool(payload.is_trainee))
-        payload = payload.model_copy(update={"biometric_user_id": pin})
-        existing = await db.execute(
-            select(Personnel).where(Personnel.biometric_user_id == payload.biometric_user_id)
-        )
-        if existing.scalar_one_or_none():
-            raise HTTPException(status_code=409, detail="Biometric user ID already exists")
-
+    payload = payload.model_copy(update={"biometric_user_id": pin})
     person = Personnel(**payload.model_dump())
     db.add(person)
-    await db.flush()
+    try:
+        await db.flush()
+    except IntegrityError as exc:
+        raise HTTPException(status_code=409, detail="Biometric user ID already exists") from exc
 
     res = await db.execute(
         select(Personnel)
@@ -314,25 +428,25 @@ async def create_personnel(payload: PersonnelCreate, db: AsyncSession = Depends(
     )
     person = res.scalar_one()
 
-    # Automatically push new person to enabled terminals
+    # Staff → PTS Staff. Trainees → TR-1/TR-2/TR-3 even if those units are disabled for attendance ingest.
     try:
-        dev_res = await db.execute(select(Device).where(Device.enabled == True))
-        devices = dev_res.scalars().all()
-        loop = asyncio.get_running_loop()
-        for dev in devices:
-            try:
-                adapter = create_device_adapter(
-                    ip=dev.ip_address,
-                    port=dev.port,
-                    password=dev.communication_password,
-                )
-                manager = DeviceManager(adapter)
-                await loop.run_in_executor(
-                    None,
-                    lambda m=manager, p=person: m.push_user(user_id=p.biometric_user_id, name=p.full_name)
-                )
-            except Exception as dev_err:
-                logger.warning("Could not auto-push person %s to device %s: %s", person.biometric_user_id, dev.name, dev_err)
+        devices = list((await db.execute(select(Device))).scalars().all())
+        pushed, errors = await _push_person_to_devices(person, terminals_for_person(person, devices))
+        if person.is_trainee:
+            message = (
+                f"Trainee created and written to {', '.join(pushed)}"
+                if pushed
+                else "Trainee created. Could not write to a TR terminal yet."
+            )
+        else:
+            message = (
+                f"Personnel created and pushed to {', '.join(pushed)}"
+                if pushed
+                else "Personnel created and pushed to terminal(s)"
+            )
+        if errors:
+            logger.warning("Auto-push partial failure for %s: %s", person.biometric_user_id, errors)
+        return ApiResponse(data=_to_out(person), message=message)
     except Exception as err:
         logger.warning("Auto-push to devices encountered an error: %s", err)
 
@@ -380,6 +494,8 @@ async def enroll_biometric(
     person_id: int,
     biometric_type: Annotated[str, Query(pattern="^(finger|face)$")],
     device_id: Annotated[int | None, Query()] = None,
+    re_enroll: Annotated[bool, Query()] = False,
+    new_pin: Annotated[str | None, Query()] = None,
     db: AsyncSession = Depends(get_db),
 ):
     """Enroll fingerprint or face for a personnel on the physical terminal."""
@@ -389,14 +505,22 @@ async def enroll_biometric(
         raise HTTPException(status_code=404, detail="Personnel not found")
 
     if biometric_type == "finger":
-        # Determine target device
+        from app.services.enrollment_sync import remap_truncated_punches
+
+        # Determine target device. TR units stay selectable even when attendance ingest is disabled.
+        devices = list((await db.execute(select(Device).order_by(Device.name))).scalars().all())
         target_device = None
         if device_id:
-            dev_res = await db.execute(select(Device).where(Device.id == device_id))
-            target_device = dev_res.scalar_one_or_none()
-        else:
-            dev_res = await db.execute(select(Device).where(Device.enabled == True).limit(1))
-            target_device = dev_res.scalar_one_or_none()
+            target_device = next((item for item in devices if item.id == device_id), None)
+        elif person.is_trainee:
+            target_device = next(
+                (item for item in devices if str(item.name).upper().startswith("TR")),
+                None,
+            )
+        if target_device is None:
+            target_device = next((item for item in devices if item.enabled), None)
+            if target_device is None and devices:
+                target_device = devices[0]
 
         if not target_device:
             raise HTTPException(
@@ -404,48 +528,98 @@ async def enroll_biometric(
                 detail="No active attendance terminal available. Please ensure the terminal is enabled."
             )
 
+        old_pin = person.biometric_user_id
+        switched_pin = resolve_re_enroll_pin(old_pin, new_pin) if re_enroll else None
+        if switched_pin:
+            switched_pin = await _unique_numeric_pin(
+                db,
+                is_trainee=bool(person.is_trainee),
+                requested=switched_pin,
+                exclude_person_id=person.id,
+            )
+            person.biometric_user_id = switched_pin
+            person.has_fingerprint = False
+            await remap_truncated_punches(db, old_pin, switched_pin)
+            await db.flush()
+            await _delete_pin_from_devices(old_pin, terminals_for_person(person, devices))
+        elif re_enroll:
+            person.has_fingerprint = False
+            await db.flush()
+
         loop = asyncio.get_running_loop()
         try:
-            adapter = create_device_adapter(
-                ip=target_device.ip_address,
-                port=target_device.port,
-                password=target_device.communication_password,
-            )
-            manager = DeviceManager(adapter)
-
-            # Step 1: Ensure user is registered on the terminal memory
-            await loop.run_in_executor(
-                None,
-                lambda: manager.push_user(user_id=person.biometric_user_id, name=person.full_name)
-            )
-
-            # Step 2: Trigger remote enrollment prompt on the hardware
-            # (Physical terminal beeps and prompts: "Place Finger 1/3, 2/3, 3/3")
+            device_pin = require_numeric_device_pin(person.biometric_user_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        manager = DeviceManager(_adapter_for(target_device, pin=device_pin), name=target_device.name)
+        enroll_error: Exception | None = None
+        enrolled = False
+        replace_existing = bool(re_enroll and not switched_pin)
+        try:
             enrolled = await loop.run_in_executor(
                 None,
-                lambda: manager.enroll_fingerprint(user_id=person.biometric_user_id)
+                lambda: manager.push_and_enroll_fingerprint(
+                    user_id=device_pin,
+                    name=person.full_name,
+                    replace=replace_existing,
+                ),
+            )
+        except Exception as exc:
+            enroll_error = exc
+            logger.warning(
+                "Enrollment command failed for %s on %s: %s",
+                person.full_name,
+                target_device.name,
+                exc,
             )
 
-            if not enrolled:
-                raise HTTPException(
-                    status_code=408,
-                    detail="Enrollment timed out: Finger was not scanned 3 times on the terminal. Please try again."
+        has_fp = False
+        verify_error: Exception | None = None
+        for attempt in range(1, 4):
+            try:
+                await asyncio.sleep(0.8 if attempt == 1 else 2.0)
+                has_fp = await loop.run_in_executor(
+                    None,
+                    lambda: _fingerprint_on_device(manager, person.biometric_user_id),
+                )
+                if has_fp:
+                    break
+            except Exception as exc:
+                verify_error = exc
+                logger.warning(
+                    "Fingerprint verify attempt %d failed for %s: %s",
+                    attempt,
+                    person.full_name,
+                    exc,
                 )
 
+        if has_fp or enrolled:
             person.has_fingerprint = True
             await db.flush()
-            return ApiResponse(
-                data=_to_out(person),
-                message=f"Fingerprint enrolled successfully for {person.full_name} on {target_device.name}!"
-            )
-        except HTTPException:
-            raise
-        except Exception as e:
-            logger.error("Enrollment error on %s: %s", target_device.name, e)
+            if switched_pin:
+                message = (
+                    f"Re-enrolled {person.full_name} on new PIN {person.biometric_user_id} "
+                    f"at {target_device.name}."
+                )
+            elif re_enroll:
+                message = f"Fingerprint re-enrolled for {person.full_name} on {target_device.name}."
+            else:
+                message = f"Fingerprint enrolled successfully for {person.full_name} on {target_device.name}!"
+            return ApiResponse(data=_to_out(person), message=message)
+
+        if enroll_error or verify_error:
+            detail = enroll_error or verify_error
             raise HTTPException(
                 status_code=500,
-                detail=f"Device communication error: {e}"
+                detail=f"Device communication error: {detail}",
             )
+        raise HTTPException(
+            status_code=408,
+            detail=(
+                "Terminal did not capture a fingerprint. Confirm the selected device showed "
+                "the scan prompt, then place the finger 3 times."
+            ),
+        )
 
     elif biometric_type == "face":
         # Remote face capture isn't supported over network on these units
@@ -463,7 +637,7 @@ async def push_personnel_to_terminal(
     device_id: Annotated[int | None, Query()] = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """Push a personnel record to a specific or all enabled terminals."""
+    """Push a personnel record to the matching terminals (TR for trainees, PTS for staff)."""
     result = await db.execute(select(Personnel).where(Personnel.id == person_id))
     person = result.scalar_one_or_none()
     if not person:
@@ -474,28 +648,13 @@ async def push_personnel_to_terminal(
         dev = dev_res.scalar_one_or_none()
         devices = [dev] if dev else []
     else:
-        dev_res = await db.execute(select(Device).where(Device.enabled == True))
-        devices = dev_res.scalars().all()
+        all_devices = list((await db.execute(select(Device))).scalars().all())
+        devices = terminals_for_person(person, all_devices)
 
     if not devices:
-        raise HTTPException(status_code=400, detail="No active device found")
+        raise HTTPException(status_code=400, detail="No matching terminal found")
 
-    loop = asyncio.get_running_loop()
-    pushed = []
-    errors = []
-    for dev in devices:
-        if not dev:
-            continue
-        try:
-            adapter = create_device_adapter(ip=dev.ip_address, port=dev.port, password=dev.communication_password)
-            manager = DeviceManager(adapter)
-            await loop.run_in_executor(
-                None,
-                lambda m=manager, p=person: m.push_user(user_id=p.biometric_user_id, name=p.full_name)
-            )
-            pushed.append(dev.name)
-        except Exception as e:
-            errors.append(f"{dev.name}: {e}")
+    pushed, errors = await _push_person_to_devices(person, devices)
 
     if pushed:
         return ApiResponse(
@@ -510,46 +669,38 @@ async def sync_biometrics_from_devices(
     device_id: Annotated[int | None, Query()] = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """Sync enrolled fingerprint status from terminal to database."""
+    """Sync enrolled fingerprint status from every terminal, including disabled TR units."""
+    from app.zk.sync_service import SyncService
+
+    sync_service = SyncService()
     if device_id:
-        dev_res = await db.execute(select(Device).where(Device.id == device_id))
-        dev = dev_res.scalar_one_or_none()
-        devices = [dev] if dev else []
+        row = await sync_service._sync_enrollments_isolated(device_id)
+        row.pop("confirmed_person_ids", None)
+        updated = int(row.get("fingerprints_updated") or 0)
+        remapped = int(row.get("punches_remapped") or 0)
+        cleared = 0
+        if row.get("status") != "SUCCESS":
+            raise HTTPException(status_code=500, detail=row.get("error") or "Enrollment sync failed")
+        summary = {"updated": updated, "punches_remapped": remapped, "details": [row]}
     else:
-        dev_res = await db.execute(select(Device).where(Device.enabled == True))
-        devices = dev_res.scalars().all()
-
-    loop = asyncio.get_running_loop()
-    synced_count = 0
-    all_personnel_res = await db.execute(select(Personnel))
-    all_personnel = all_personnel_res.scalars().all()
-    person_by_pin = {str(p.biometric_user_id): p for p in all_personnel}
-
-    for dev in devices:
-        if not dev:
-            continue
-        try:
-            adapter = create_device_adapter(ip=dev.ip_address, port=dev.port, password=dev.communication_password)
-            manager = DeviceManager(adapter)
-            dev_users = await loop.run_in_executor(None, manager.fetch_users)
-            dev_templates = await loop.run_in_executor(None, manager.fetch_templates)
-
-            uids_with_templates = {t.uid for t in dev_templates}
-            for du in dev_users:
-                pin = str(du.user_id)
-                if pin in person_by_pin and du.uid in uids_with_templates:
-                    p = person_by_pin[pin]
-                    if not p.has_fingerprint:
-                        p.has_fingerprint = True
-                        synced_count += 1
-        except Exception as e:
-            logger.warning("Failed to sync biometrics from %s: %s", dev.name, e)
-
-    await db.flush()
-    return ApiResponse(
-        data={"updated": synced_count},
-        message=f"Biometrics synced successfully. Updated {synced_count} profiles."
-    )
+        result = await sync_service.sync_enrollments_all_devices()
+        updated = int(result.get("fingerprints_updated") or 0)
+        cleared = int(result.get("fingerprints_cleared") or 0)
+        remapped = sum(int(item.get("punches_remapped") or 0) for item in result.get("details") or [])
+        summary = {
+            "updated": updated,
+            "cleared": cleared,
+            "punches_remapped": remapped,
+            "devices_ok": result.get("success"),
+            "devices_failed": result.get("failed"),
+            "details": result.get("details"),
+        }
+    message = f"Biometrics synced successfully. Updated {updated} profiles."
+    if cleared:
+        message += f" Cleared {cleared} profiles with no fingerprint on any terminal."
+    if remapped:
+        message += f" Linked {remapped} punches from truncated device PINs."
+    return ApiResponse(data=summary, message=message)
 
 
 @router.delete("/{person_id}", response_model=ApiResponse)
@@ -576,9 +727,13 @@ async def delete_personnel(person_id: int, db: AsyncSession = Depends(get_db)):
         loop = asyncio.get_running_loop()
         for dev in devices:
             try:
-                adapter = create_device_adapter(ip=dev.ip_address, port=dev.port, password=dev.communication_password)
-                manager = DeviceManager(adapter)
-                await loop.run_in_executor(None, lambda m=manager, pin=person.biometric_user_id: m.delete_user(pin))
+                adapter = _adapter_for(dev, pin=person.biometric_user_id)
+                manager = DeviceManager(adapter, name=dev.name)
+                pins = {person.biometric_user_id, device_enroll_pin(person.biometric_user_id)}
+                for pin in pins:
+                    await loop.run_in_executor(
+                        None, lambda m=manager, p=pin: m.delete_user(p)
+                    )
             except Exception as dev_err:
                 logger.warning("Could not delete user %s from device %s: %s", person.biometric_user_id, dev.name, dev_err)
     except Exception:

@@ -45,7 +45,7 @@ const Reports: React.FC = () => {
   const [cadre, setCadre] = useState<'Staff' | 'Trainee'>('Staff');
 
   // Quick report filter tabs
-  const [quickFilter, setQuickFilter] = useState<'all' | 'late' | 'absent' | 'leave' | 'by_department' | 'summary'>('all');
+  const [quickFilter, setQuickFilter] = useState<'all' | 'present' | 'late' | 'absent' | 'leave' | 'by_department' | 'summary'>('all');
 
   // Time period state with dynamic default dates
   const todayStr = () => new Date().toISOString().split('T')[0];
@@ -340,6 +340,7 @@ const Reports: React.FC = () => {
 
   const quickFiltersList = [
     { id: 'all', label: 'Daily Attendance' },
+    { id: 'present', label: 'Present' },
     { id: 'late', label: 'Late Comers' },
     { id: 'absent', label: 'Absentees' },
     { id: 'leave', label: 'On Leave' },
@@ -369,7 +370,7 @@ const Reports: React.FC = () => {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Attendance Reports</h1>
         <p className="text-xs text-slate-500 mt-0.5">
-          Build any attendance report — pick who, when, which columns, then preview &amp; export to Excel or CSV
+          Present list, late comers, absentees and leave — pick a tab, then export Excel or CSV
         </p>
         
         {/* Navigation sub-links */}
@@ -379,6 +380,13 @@ const Reports: React.FC = () => {
             className="hover:underline flex items-center gap-1 transition-colors"
           >
             Daily Register — mark attendance <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setQuickFilter('present')}
+            className="hover:underline flex items-center gap-1 text-emerald-700 hover:text-emerald-800 transition-colors font-semibold"
+          >
+            Present today <ChevronRight className="w-3.5 h-3.5" />
           </button>
           <Link 
             to="/enrollment" 
@@ -396,14 +404,19 @@ const Reports: React.FC = () => {
         </span>
         {quickFiltersList.map((item) => {
           const isActive = quickFilter === item.id;
+          const isPresentTab = item.id === 'present';
           return (
             <button
               key={item.id}
               onClick={() => setQuickFilter(item.id as any)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                isActive 
-                  ? 'bg-white text-indigo-600 shadow-xs border border-indigo-200 font-semibold' 
-                  : 'bg-transparent text-slate-600 hover:bg-white/80 hover:text-slate-900'
+                isActive
+                  ? isPresentTab
+                    ? 'bg-emerald-600 text-white shadow-xs border border-emerald-600 font-semibold'
+                    : 'bg-white text-indigo-600 shadow-xs border border-indigo-200 font-semibold'
+                  : isPresentTab
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold'
+                    : 'bg-transparent text-slate-600 hover:bg-white/80 hover:text-slate-900'
               }`}
             >
               {item.label}
@@ -638,11 +651,15 @@ const Reports: React.FC = () => {
           {/* Header Row: Preview Title & Export Buttons */}
           <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Preview</h2>
+              <h2 className="text-sm font-bold text-slate-900">
+                {quickFilter === 'present' ? 'Present today' : 'Preview'}
+              </h2>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                {periodMode === 'single'
-                  ? `Single day · ${singleDate}`
-                  : `Date range · ${startDate} to ${endDate}`}
+                {quickFilter === 'present'
+                  ? 'Everyone who checked in (on time + late)'
+                  : periodMode === 'single'
+                    ? `Single day · ${singleDate}`
+                    : `Date range · ${startDate} to ${endDate}`}
               </p>
             </div>
 
@@ -675,18 +692,34 @@ const Reports: React.FC = () => {
               <span className="font-semibold text-slate-700">{totalRows} rows</span>
               <div className="h-3 w-px bg-slate-300" />
               <div className="flex items-center gap-2 text-[11px]">
-                <span className="inline-flex items-center gap-1 text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                  Present: {summary.present}
-                </span>
-                <span className="inline-flex items-center gap-1 text-amber-700 font-medium bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+                <button
+                  type="button"
+                  onClick={() => setQuickFilter('present')}
+                  className="inline-flex items-center gap-1 text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 hover:bg-emerald-100"
+                >
+                  Present: {quickFilter === 'present' ? totalRows : summary.present + summary.late}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuickFilter('late')}
+                  className="inline-flex items-center gap-1 text-amber-700 font-medium bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100 hover:bg-amber-100"
+                >
                   Late: {summary.late}
-                </span>
-                <span className="inline-flex items-center gap-1 text-sky-700 font-medium bg-sky-50 px-2 py-0.5 rounded-md border border-sky-100">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuickFilter('leave')}
+                  className="inline-flex items-center gap-1 text-sky-700 font-medium bg-sky-50 px-2 py-0.5 rounded-md border border-sky-100 hover:bg-sky-100"
+                >
                   Leave: {summary.leave}
-                </span>
-                <span className="inline-flex items-center gap-1 text-rose-700 font-medium bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setQuickFilter('absent')}
+                  className="inline-flex items-center gap-1 text-rose-700 font-medium bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100 hover:bg-rose-100"
+                >
                   Absent: {summary.absent}
-                </span>
+                </button>
               </div>
             </div>
 

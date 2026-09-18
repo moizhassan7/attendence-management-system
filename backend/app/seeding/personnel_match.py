@@ -20,8 +20,8 @@ from app.seeding.personnel_normalize import (
     biometric_from_ac_no,
     name_tokens,
     platoon_course_code,
-    unmapped_biometric_id,
 )
+from app.services.pin_allocator import parse_numeric_pin
 from app.seeding.personnel_sources import EmpRecord, NafriRecord
 
 
@@ -201,8 +201,11 @@ def _record_from_nafri(nafri: NafriRecord, emp: EmpRecord | None = None, method:
     category = category_for_record(department_code, nafri.rank_name)
     if civil:
         category = "Non-Uniform"
+    bio = biometric_from_ac_no(emp.ac_no) if emp else ""
+    if parse_numeric_pin(bio) is None:
+        bio = ""
     return {
-        "biometric_user_id": unmapped_biometric_id(nafri.cnic, belt),
+        "biometric_user_id": bio,
         "employee_code": belt,
         "full_name": nafri.full_name,
         "rank_name": None if civil else (nafri.rank_name or None),
@@ -214,7 +217,7 @@ def _record_from_nafri(nafri: NafriRecord, emp: EmpRecord | None = None, method:
         "category": category,
         "duty_type": "Security" if department_code == "SECURITY" else None,
         "match_method": method,
-        "temp_biometric": True,
+        "temp_biometric": not bool(bio),
     }
 
 
@@ -283,7 +286,7 @@ def build_canonical_records(report: MatchReport) -> list[dict]:
         link = _pick_emp(links)
         rows.append(_record_from_nafri(link.nafri, emp=link.emp, method=link.method))
     rows.extend(_record_from_nafri(nafri) for nafri in report.unmatched_nafri)
-    seen_bios = {row["biometric_user_id"] for row in rows}
+    seen_bios = {row["biometric_user_id"] for row in rows if row["biometric_user_id"]}
     for emp in report.unmatched_emp:
         if not emp.department_code or emp.department_code == "PTS_SARGODHA":
             continue
@@ -294,7 +297,7 @@ def build_canonical_records(report: MatchReport) -> list[dict]:
             continue
         seen_bios.add(extra["biometric_user_id"])
         rows.append(extra)
-    return [row for row in rows if row["biometric_user_id"] and row["full_name"]]
+    return [row for row in rows if row["full_name"]]
 
 
 def build_trainee_records(emp_rows: list[EmpRecord]) -> list[dict]:

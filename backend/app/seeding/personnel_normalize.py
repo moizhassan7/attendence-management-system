@@ -124,13 +124,12 @@ def cnic_digits(cnic: str | None) -> str:
 
 
 def unmapped_biometric_id(cnic: str | None, belt: str | None = None) -> str:
-    digits = cnic_digits(cnic)
-    if digits:
-        return f"TEMP-{digits}"
-    belt_part = canonical_belt(belt).replace("/", "-")
-    if belt_part:
-        return f"TEMP-{belt_part}"
-    return "TEMP-UNKNOWN"
+    """Staff without an AC_NO do not get a device PIN here.
+
+    TEMP-<CNIC> overflowed the terminal User ID field and created duplicate
+    twins. Seed/API allocate a unique numeric PIN at insert time instead.
+    """
+    return ""
 
 
 def biometric_from_ac_no(ac_no: object) -> str:

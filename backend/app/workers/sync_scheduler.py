@@ -58,6 +58,7 @@ async def _sync_loop() -> None:
             async with async_session_factory() as db:
                 try:
                     result = await sync_service.sync_all_devices(db)
+                    enrollments = await sync_service.sync_enrollments_all_devices()
                     
                     # Compute daily attendance for today after a successful sync
                     from app.services.attendance_engine import AttendanceService
@@ -69,8 +70,9 @@ async def _sync_loop() -> None:
                     await db.commit()
                     new_punches = sum(d.get("logs_inserted", 0) for d in result.get("details", []))
                     logger.info(
-                        "🔄 [SYNC CYCLE] Devices: %d/%d OK | New Punches: +%d | Personnel Evaluated: %d | Status: ACTIVE",
-                        result["success"], result["total"], new_punches, processed
+                        "🔄 [SYNC CYCLE] Devices: %d/%d OK | New Punches: +%d | Fingerprints updated: %d | Personnel Evaluated: %d | Status: ACTIVE",
+                        result["success"], result["total"], new_punches,
+                        enrollments.get("fingerprints_updated", 0), processed
                     )
                     # Broadcast dashboard update via WebSocket
                     await ws_manager.broadcast({

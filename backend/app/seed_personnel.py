@@ -22,7 +22,9 @@ from app.models.settings import SystemSetting
 from app.models.shift import Shift
 from app.seeding.personnel_config import COURSE_BASIC, COURSE_LOWER, RANK_ORDER, designation_label, is_civil_title, make_code
 from app.seeding.personnel_match import MatchReport, build_canonical_records, build_trainee_records, match_personnel
+from app.seeding.personnel_normalize import cnic_digits
 from app.seeding.personnel_sources import EmpRecord, NafriRecord, load_emp_data, load_nafri_master
+from app.services.pin_allocator import is_temp_pin, next_numeric_pin, parse_numeric_pin
 
 logger = logging.getLogger(__name__)
 
@@ -126,15 +128,47 @@ async def _upsert_personnel(
     department_ids: dict[str, int],
     rank_ids: dict[str, int],
 ) -> tuple[int, int, set[str]]:
-    existing = {row.biometric_user_id: row for row in (await db.execute(select(Personnel))).scalars()}
+    existing_rows = list((await db.execute(select(Personnel))).scalars())
+    existing = {row.biometric_user_id: row for row in existing_rows}
+    by_cnic: dict[str, Personnel] = {}
+    for row in existing_rows:
+        digits = cnic_digits(row.cnic)
+        if digits:
+            by_cnic.setdefault(digits, row)
+    used_pins = {
+        pin
+        for row in existing_rows
+        if (pin := parse_numeric_pin(row.biometric_user_id)) is not None
+    }
     created = 0
     updated = 0
     seen_bio: set[str] = set()
     for rec in records:
         bio = rec["biometric_user_id"]
-        if not bio or bio in seen_bio:
-            continue
-        seen_bio.add(bio)
+        cnic_key = cnic_digits(rec.get("cnic"))
+        row = existing.get(bio) if bio else None
+        if row is None and cnic_key:
+            row = by_cnic.get(cnic_key)
+        if row is None:
+            if not bio or is_temp_pin(bio) or parse_numeric_pin(bio) is None:
+                bio = str(next_numeric_pin(used_pins, 2001))
+            pin_n = parse_numeric_pin(bio)
+            if pin_n is not None:
+                used_pins.add(pin_n)
+            if bio in seen_bio:
+                continue
+            seen_bio.add(bio)
+        else:
+            bio = row.biometric_user_id
+            if is_temp_pin(bio) or parse_numeric_pin(bio) is None:
+                bio = str(next_numeric_pin(used_pins, 2001))
+                row.biometric_user_id = bio
+            pin_n = parse_numeric_pin(bio)
+            if pin_n is not None:
+                used_pins.add(pin_n)
+            if bio in seen_bio:
+                continue
+            seen_bio.add(bio)
         rank_key = (rec.get("rank_name") or "").strip().upper()
         dept_code = rec.get("department_code")
         designation = rec.get("designation")
@@ -151,9 +185,12 @@ async def _upsert_personnel(
             "duty_type": rec.get("duty_type"),
             "is_trainee": False,
         }
-        row = existing.get(bio)
         if row is None:
-            db.add(Personnel(biometric_user_id=bio, **payload))
+            person = Personnel(biometric_user_id=bio, **payload)
+            db.add(person)
+            existing[bio] = person
+            if cnic_key:
+                by_cnic.setdefault(cnic_key, person)
             created += 1
         else:
             for key, value in payload.items():
@@ -284,6 +321,8 @@ async def _upsert_trainees(
     seen: set[str] = set()
     for rec in records:
         bio = rec["biometric_user_id"]
+        if is_temp_pin(bio) or parse_numeric_pin(bio) is None:
+            continue
         if not bio or bio in seen:
             continue
         seen.add(bio)

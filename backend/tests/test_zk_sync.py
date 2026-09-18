@@ -106,6 +106,7 @@ def test_incremental_since_uses_lookback_from_last_punch():
     assert should_clear_device_log(succeeded=True, enabled=False, terminal_records=48115, logs_found=48115) is False
     assert should_clear_device_log(succeeded=True, enabled=True, terminal_records=0, logs_found=0) is False
     assert should_clear_device_log(succeeded=True, enabled=True, terminal_records=48115, logs_found=0) is False
+    assert should_clear_device_log(succeeded=True, enabled=True, terminal_records=50, logs_found=50) is False
 
 
 def test_different_terminals_are_not_globally_locked():

@@ -136,9 +136,8 @@ def test_belt_match_keeps_nafri_name_and_emp_biometric():
     assert len(report.linked) == 1
     assert report.linked[0].method == "belt"
     recs = build_canonical_records(report)
-    assert recs[0]["biometric_user_id"] == unmapped_biometric_id("38403-2111484-7")
-    assert recs[0]["biometric_user_id"].startswith("TEMP-")
-    assert recs[0]["temp_biometric"] is True
+    assert recs[0]["biometric_user_id"] == "4"
+    assert recs[0]["temp_biometric"] is False
     assert recs[0]["employee_code"] == "R/499"
     assert recs[0]["full_name"] == "AFTAB AHMAD"
     assert recs[0]["rank_name"] == "Inspector"
@@ -156,6 +155,8 @@ def test_civil_nafri_title_becomes_designation():
     assert recs[0]["category"] == "Non-Uniform"
     assert recs[0]["designation"] == "Sweeper"
     assert recs[0]["rank_name"] is None
+    assert recs[0]["biometric_user_id"] == ""
+    assert not str(recs[0]["biometric_user_id"]).upper().startswith("TEMP")
 
 
 def test_platoon_records_are_not_seeded():
@@ -191,14 +192,14 @@ def test_multi_biometric_same_belt_picks_one_nafri_person():
     recs = build_canonical_records(report)
     assert len(recs) == 1
     assert recs[0]["cnic"] == "11111-1111111-1"
-    assert recs[0]["biometric_user_id"] == unmapped_biometric_id("11111-1111111-1")
-    assert recs[0]["biometric_user_id"].startswith("TEMP-")
+    assert recs[0]["biometric_user_id"] == "3"
+    assert recs[0]["temp_biometric"] is False
     assert recs[0]["department_code"] == "ADMIN"
 
 
 def test_unmapped_placeholder_is_not_numeric_device_id():
     bio = unmapped_biometric_id("38403-2111484-7")
-    assert bio.startswith("TEMP-")
+    assert bio == ""
     assert not bio.isdigit()
 
 

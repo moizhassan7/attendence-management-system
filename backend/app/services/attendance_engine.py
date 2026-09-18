@@ -15,11 +15,25 @@ from app.models.exception import AttendanceException
 from app.models.holiday import Holiday
 from app.models.personnel import Personnel
 from app.models.shift import Shift
+from app.services.pin_match import candidate_device_pins
 from app.utils.timezone import get_tz, now, to_local
 
 logger = logging.getLogger(__name__)
 
 SECURITY_SHIFT_KEYWORDS = ("morning", "evening", "night")
+SANCTIONED_EXCEPTION_TYPES = frozenset(
+    {
+        "LEAVE",
+        "OSD",
+        "MEDICAL",
+        "DUTY_REST",
+        "REPATRIATION",
+        "EVIDENCE",
+        "PRESENT",
+        "ABSENT",
+        "LATE",
+    }
+)
 
 
 def is_security_staff(duty_type: str | None) -> bool:
@@ -31,6 +45,16 @@ def status_for_security_without_punch(exception_type: str | None) -> str:
     if exception_type:
         return exception_type.upper()
     return "DUTY_REST"
+
+
+def apply_sanctioned_exception(status: str, exception_type: str | None) -> str:
+    """Admin-marked leave/OSD/etc. is the official status, even after a check-in."""
+    if not exception_type:
+        return status
+    marked = exception_type.strip().upper()
+    if marked in SANCTIONED_EXCEPTION_TYPES:
+        return marked
+    return status
 
 
 def infer_shift_for_punch(punch_local: datetime, shifts: Sequence) -> Shift | None:
@@ -112,9 +136,10 @@ class AttendanceService:
         tz = get_tz()
         t0 = datetime.combine(target_date, time.min, tzinfo=tz)
         t1 = datetime.combine(target_date, time.max, tzinfo=tz)
+        pin_ids = candidate_device_pins(personnel.biometric_user_id)
         punches = (await db.execute(
             select(AttendancePunch).where(
-                AttendancePunch.biometric_user_id == personnel.biometric_user_id,
+                AttendancePunch.biometric_user_id.in_(pin_ids),
                 AttendancePunch.punch_time >= t0,
                 AttendancePunch.punch_time <= t1,
             ).order_by(AttendancePunch.punch_time)
@@ -168,9 +193,7 @@ class AttendanceService:
                         overtime_minutes = max(0, int(ot_delta.total_seconds() / 60))
         else:
             if security:
-                status = status_for_security_without_punch(exc.exception_type if exc else None)
-            elif exc:
-                status = exc.exception_type
+                status = status_for_security_without_punch(None)
             elif is_holiday:
                 status = "HOLIDAY"
             else:
@@ -184,6 +207,12 @@ class AttendanceService:
                     status = "AWAITING"
                 else:
                     status = "ABSENT"
+
+        # Check-in does not block leave: someone may punch and then go on leave.
+        if exc:
+            status = apply_sanctioned_exception(status, exc.exception_type)
+            if status != "LATE":
+                late_minutes = 0
 
         # 6. Upsert Daily Record
         existing_daily = (await db.execute(

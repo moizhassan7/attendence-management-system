@@ -12,8 +12,9 @@ import {
 import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
 import PaginationBar from '../components/PaginationBar';
+import SearchablePersonSelect from '../components/SearchablePersonSelect';
 import { rankChartLabel, rankDisplayName } from '../utils/rankLabels';
-import { fetchNextDevicePin } from '../utils/nextDevicePin';
+import { fetchNextDevicePin, digitsOnlyPin } from '../utils/nextDevicePin';
 
 const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass }: any) => (
   <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28`}>
@@ -166,7 +167,7 @@ const Personnel: React.FC = () => {
     try {
       await api.post('/personnel', {
         full_name: newStaff.full_name,
-        biometric_user_id: newStaff.biometric_user_id.trim() || undefined,
+        biometric_user_id: digitsOnlyPin(newStaff.biometric_user_id) || undefined,
         employee_code: newStaff.employee_code || null,
         category: newStaff.category,
         gender: newStaff.gender,
@@ -514,7 +515,7 @@ const Personnel: React.FC = () => {
                     />
                     <RechartsTooltip 
                       cursor={{fill: '#F8FAFC'}}
-                      formatter={(value: number) => [value, 'Strength']}
+                      formatter={(value) => [value ?? 0, 'Strength']}
                       labelFormatter={(_label, payload) => payload?.[0]?.payload?.fullName || ''}
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600 }} 
                     />
@@ -648,9 +649,10 @@ const Personnel: React.FC = () => {
                   <input 
                     type="text"
                     inputMode="numeric"
+                    maxLength={14}
                     placeholder="Assigned automatically"
                     value={newStaff.biometric_user_id}
-                    onChange={(e) => setNewStaff({...newStaff, biometric_user_id: e.target.value})}
+                    onChange={(e) => setNewStaff({...newStaff, biometric_user_id: digitsOnlyPin(e.target.value)})}
                     className="w-full px-3 py-2 border border-indigo-200 bg-indigo-50/40 rounded-xl text-sm font-mono font-bold focus:outline-none focus:ring-1 focus:ring-indigo-600"
                   />
                 </div>
@@ -799,39 +801,35 @@ const Personnel: React.FC = () => {
       {/* Mark Attendance Modal */}
       {showMarkModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100">
-            <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
-              <h3 className="font-bold text-lg text-slate-800">Mark Staff Attendance</h3>
+          <div className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-bold text-lg text-slate-900">Mark Staff Attendance</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Search a person, then set leave dates</p>
+              </div>
               <button onClick={() => setShowMarkModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <form onSubmit={handleMarkAttendance} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Select Staff Member *</label>
-                <select
-                  required
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Select Staff Member *</label>
+                <SearchablePersonSelect
+                  personnel={pickerList}
                   value={markAttendance.personnel_id}
-                  onChange={(e) => setMarkAttendance({...markAttendance, personnel_id: e.target.value})}
-                  aria-label="Select Staff Member"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
-                >
-                  <option value="">Choose Staff...</option>
-                  {pickerList.map(s => (
-                    <option key={s.id} value={s.id}>
-                      PIN {s.biometric_user_id} - {s.full_name} ({s.rank_name || 'Staff'})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(id) => setMarkAttendance({ ...markAttendance, personnel_id: id })}
+                  placeholder="Search name, PIN or belt number"
+                  required
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Status / Exception *</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Status / Exception *</label>
                 <select
                   value={markAttendance.exception_type}
                   onChange={(e) => setMarkAttendance({...markAttendance, exception_type: e.target.value})}
                   aria-label="Status / Exception"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
                 >
                   <option value="LEAVE">Leave</option>
                   <option value="OSD">OSD (On Special Duty)</option>
@@ -843,49 +841,49 @@ const Personnel: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Start Date</label>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Start Date *</label>
                   <input 
                     type="date" 
                     required
                     value={markAttendance.start_date}
                     onChange={(e) => setMarkAttendance({...markAttendance, start_date: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                    className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1">End Date</label>
+                  <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">End Date *</label>
                   <input 
                     type="date" 
                     required
                     value={markAttendance.end_date}
                     onChange={(e) => setMarkAttendance({...markAttendance, end_date: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                    className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-semibold text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">Reason / Office Order</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase mb-1.5">Reason / Office Order</label>
                 <input 
                   type="text" 
                   placeholder="e.g. Order #55/Estb"
                   value={markAttendance.reason}
                   onChange={(e) => setMarkAttendance({...markAttendance, reason: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                  className="w-full h-11 px-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
                 <button 
                   type="button" 
                   onClick={() => setShowMarkModal(false)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
-                  className="px-5 py-2 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 shadow-md"
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold"
                 >
                   Update Attendance
                 </button>

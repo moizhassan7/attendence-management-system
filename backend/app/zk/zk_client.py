@@ -31,6 +31,17 @@ from app.zk.exceptions import (
 logger = logging.getLogger(__name__)
 
 
+def connect_attempts(mode: str, base_timeout: int) -> list[tuple[bool, int]]:
+    """(force_udp, timeout) attempts. TCP-only PINs must not fall back to UDP."""
+    selected = (mode or "auto").strip().lower()
+    timeout = max(1, int(base_timeout))
+    if selected == "udp":
+        return [(True, timeout), (False, min(8, timeout))]
+    if selected == "tcp":
+        return [(False, timeout)]
+    return [(False, timeout), (True, min(8, timeout))]
+
+
 def _decode_zk_time(raw: bytes) -> datetime:
     """ZK packed timestamp. Same algorithm as pyzk ZK._ZK__decode_time."""
     value = unpack("<I", raw)[0]
@@ -251,17 +262,7 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
         mode = (self.transport or "auto").lower()
         logger.info("[%s] Transport preference: %s", self._label(), mode)
 
-        if mode == "udp":
-            attempts: list[tuple[bool, int]] = [
-                (True, base_timeout),
-                (False, min(8, base_timeout)),
-            ]
-        else:
-            # auto and tcp: TCP first, one UDP fallback (required for TR-2).
-            attempts = [
-                (False, base_timeout),
-                (True, min(8, base_timeout)),
-            ]
+        attempts = connect_attempts(mode, base_timeout)
 
         for index, (force_udp, attempt_timeout) in enumerate(attempts):
             try:
@@ -358,6 +359,12 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
         """Create or update user on the device."""
         if not self._conn:
             raise DeviceConnectionError("Not connected")
+        from app.services.pin_allocator import require_numeric_device_pin
+
+        try:
+            user_id = require_numeric_device_pin(user_id)
+        except ValueError as exc:
+            raise DeviceReadError(str(exc)) from exc
         try:
             existing_users = self._conn.get_users() or []
             existing = next((u for u in existing_users if str(u.user_id) == str(user_id)), None)
@@ -386,10 +393,31 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
             logger.error("[%s] Failed to set user %s: %s", self._label(), user_id, exc)
             raise DeviceReadError(f"Failed to set user on device: {exc}") from exc
 
-    def enroll_fingerprint(self, user_id: str, temp_id: int = 0) -> bool:
+    def _clear_user_templates(self, user_id: str, uid: int) -> None:
+        """Remove existing fingerprint slots so the terminal can capture a new scan."""
+        if not self._conn:
+            return
+        for fid in range(10):
+            try:
+                self._conn.delete_user_template(uid=uid, temp_id=fid, user_id=str(user_id))
+            except Exception:
+                continue
+        try:
+            self._conn.refresh_data()
+        except Exception:
+            pass
+        logger.info("[%s] Cleared fingerprint templates for user %s (uid=%d)", self._label(), user_id, uid)
+
+    def enroll_fingerprint(self, user_id: str, temp_id: int = 0, replace: bool = False) -> bool:
         """Trigger remote fingerprint enrollment prompt on device."""
         if not self._conn:
             raise DeviceConnectionError("Not connected")
+        from app.services.pin_allocator import require_numeric_device_pin
+
+        try:
+            user_id = require_numeric_device_pin(user_id)
+        except ValueError as exc:
+            raise DeviceReadError(str(exc)) from exc
         try:
             existing_users = self._conn.get_users() or []
             user = next((u for u in existing_users if str(u.user_id) == str(user_id)), None)
@@ -411,13 +439,28 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                     pass
             else:
                 uid = user.uid
+                if replace:
+                    self._clear_user_templates(str(user_id), uid)
+
+            if not str(user_id).isdigit() and self.last_transport == "udp":
+                raise DeviceConnectionError(
+                    f"PIN {user_id} cannot enroll over UDP. Terminal must use TCP for this ID."
+                )
 
             logger.info("[%s] Starting remote enrollment for user %s (uid=%d)", self._label(), user_id, uid)
             success = self._conn.enroll_user(uid=uid, temp_id=temp_id, user_id=str(user_id))
             return bool(success)
+        except (ValueError, TypeError, DeviceConnectionError):
+            raise
         except Exception as exc:
-            logger.error("[%s] Enrollment failed for user %s: %s", self._label(), user_id, exc)
-            raise DeviceReadError(f"Enrollment failed on device: {exc}") from exc
+            logger.warning(
+                "[%s] Enrollment command ended for user %s: %s",
+                self._label(),
+                user_id,
+                exc,
+            )
+            # Scan timeout / duplicate finger: caller verifies templates afterwards.
+            return False
         finally:
             try:
                 self._conn.cancel_capture()
@@ -464,6 +507,81 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
             logger.error("[%s] Failed to delete user %s: %s", self._label(), user_id, exc)
             raise DeviceReadError(f"Failed to delete user from device: {exc}") from exc
 
+    def purge_temp_users_without_fingerprints(self) -> dict[str, int]:
+        """Remove TEMP-* IDs that do not own a fingerprint template."""
+        if not self._conn:
+            raise DeviceConnectionError("Not connected")
+        from app.services.temp_pin_cleanup import is_temp_pin, temp_users_safe_to_delete
+
+        users = self.get_users()
+        templates = self.get_templates()
+        protected = {template.uid for template in templates}
+        doomed = temp_users_safe_to_delete(users, protected)
+        skipped_fp = sum(
+            1
+            for user in users
+            if is_temp_pin(getattr(user, "user_id", "")) and getattr(user, "uid", None) in protected
+        )
+        deleted = 0
+        failed = 0
+        aborted = False
+        starting_fingers = int(getattr(self._conn, "fingers", 0) or 0)
+        try:
+            self._conn.disable_device()
+        except Exception:
+            pass
+        for user in doomed:
+            try:
+                ok = bool(self._conn.delete_user(uid=int(user.uid), user_id=str(user.user_id)))
+                if ok:
+                    deleted += 1
+                else:
+                    failed += 1
+            except Exception:
+                failed += 1
+            if deleted and deleted % 10 == 0:
+                try:
+                    self._conn.read_sizes()
+                    if starting_fingers and int(getattr(self._conn, "fingers", 0) or 0) < starting_fingers:
+                        aborted = True
+                        break
+                except Exception:
+                    pass
+        try:
+            self._conn.refresh_data()
+        except Exception:
+            pass
+        try:
+            self._conn.enable_device()
+            self._conn.verify_user()
+        except Exception:
+            pass
+        leftover_temp = 0
+        leftover_total = -1
+        try:
+            leftover_users = self.get_users()
+            leftover_temp = sum(1 for user in leftover_users if is_temp_pin(user.user_id))
+            leftover_total = len(leftover_users)
+        except Exception:
+            leftover_total = -1
+        logger.info(
+            "[%s] Purged TEMP users without fingerprints: deleted=%d failed=%d skipped_fp=%d leftover_temp=%d",
+            self._label(),
+            deleted,
+            failed,
+            skipped_fp,
+            leftover_temp,
+        )
+        return {
+            "deleted": deleted,
+            "failed": failed,
+            "skipped_fp": skipped_fp,
+            "protected_templates": len(protected),
+            "leftover_temp": leftover_temp,
+            "leftover_users": leftover_total,
+            "aborted": aborted,
+        }
+
     def _read_attendance_buffered(self, since: datetime | None = None) -> list[DeviceAttendanceLog]:
         """Download attendance via pyzk's buffered CMD_ATTLOG_RRQ (internally chunked)."""
         from zk import const
@@ -473,7 +591,8 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
         self.terminal_record_count = record_count
         logger.info("[%s] Terminal reports %d attendance records", self._label(), record_count)
         if record_count == 0:
-            return []
+            logger.info("[%s] read_sizes reported 0; trying pyzk get_attendance()", self._label())
+            return self._attendance_via_pyzk(since)
 
         logger.info("[%s] Reading attendance records", self._label())
         attendance_data, size = self._conn.read_with_buffer(const.CMD_ATTLOG_RRQ)
@@ -499,6 +618,30 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
         for index in range(0, len(logs), batch_size):
             yield logs[index:index + batch_size]
 
+    def _attendance_via_pyzk(self, since: datetime | None = None) -> list[DeviceAttendanceLog]:
+        records = self._conn.get_attendance() or []
+        since_naive = None
+        if since is not None:
+            since_naive = since.replace(tzinfo=None) if since.tzinfo is not None else since
+        logs = []
+        for record in records:
+            ts = record.timestamp
+            if since_naive is not None and ts.replace(tzinfo=None) < since_naive:
+                continue
+            logs.append(
+                DeviceAttendanceLog(
+                    user_id=str(record.user_id),
+                    timestamp=ts,
+                    status=record.status if hasattr(record, "status") else 0,
+                    punch=record.punch if hasattr(record, "punch") else 0,
+                    uid=record.uid if hasattr(record, "uid") else 0,
+                )
+            )
+        if records:
+            self.terminal_record_count = len(records)
+        logger.info("[%s] pyzk get_attendance parsed %d relevant records", self._label(), len(logs))
+        return logs
+
     def get_attendance(self, since: datetime | None = None) -> list[DeviceAttendanceLog]:
         """Retrieve attendance. Protocol dump is full; `since` filters after download."""
         if not self._conn:
@@ -512,27 +655,7 @@ class ZKTecoDeviceAdapter(BaseAttendanceDevice):
                 buffered_error,
             )
             try:
-                records = self._conn.get_attendance()
-                since_naive = None
-                if since is not None:
-                    since_naive = since.replace(tzinfo=None) if since.tzinfo is not None else since
-                logs = []
-                for r in records or []:
-                    ts = r.timestamp
-                    if since_naive is not None and ts.replace(tzinfo=None) < since_naive:
-                        continue
-                    logs.append(
-                        DeviceAttendanceLog(
-                            user_id=str(r.user_id),
-                            timestamp=ts,
-                            status=r.status if hasattr(r, "status") else 0,
-                            punch=r.punch if hasattr(r, "punch") else 0,
-                            uid=r.uid if hasattr(r, "uid") else 0,
-                        )
-                    )
-                self.terminal_record_count = len(records or [])
-                logger.info("[%s] Fallback parsed %d relevant attendance records", self._label(), len(logs))
-                return logs
+                return self._attendance_via_pyzk(since)
             except Exception as exc:
                 raise DeviceReadError(f"Failed to read attendance: {exc}") from exc
 

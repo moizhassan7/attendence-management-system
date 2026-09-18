@@ -16,6 +16,10 @@ from app.database import async_session_factory
 from app.models.attendance import AttendancePunch
 from app.models.device import Device
 from app.models.device_sync_log import DeviceSyncLog
+from app.models.personnel import Personnel
+from app.services.enrollment_sync import apply_device_enrollment_state, clear_stale_fingerprint_flags
+from app.services.pin_match import normalize_pin, resolve_personnel_pin
+from app.services.temp_pin_cleanup import build_legacy_temp_pin_map
 from app.utils.timezone import make_aware, now
 from app.zk.base import DeviceAttendanceLog
 from app.zk.device_manager import DeviceManager, create_device_adapter
@@ -73,9 +77,21 @@ def sync_mode_for(*, full: bool, latest_time, clear_after: bool) -> str:
     return "incremental"
 
 
-def should_clear_device_log(*, succeeded: bool, enabled: bool, terminal_records: int, logs_found: int) -> bool:
-    """Wipe device memory only after a successful persist of a real dump. Never clear on empty/failed reads."""
-    return bool(succeeded and enabled and terminal_records > 0 and logs_found > 0)
+def should_clear_device_log(
+    *,
+    succeeded: bool,
+    enabled: bool,
+    terminal_records: int,
+    logs_found: int,
+    min_records: int = 5000,
+) -> bool:
+    """Wipe device memory only after a large successful dump. Daily staff logs stay on the terminal."""
+    return bool(
+        succeeded
+        and enabled
+        and logs_found > 0
+        and terminal_records >= max(1, min_records)
+    )
 
 
 class SyncService:
@@ -155,6 +171,122 @@ class SyncService:
             else:
                 summary["failed"] += 1
         return summary
+
+    async def sync_enrollments_all_devices(self) -> dict:
+        """Read fingerprint templates from every terminal, including disabled TR units."""
+        async with async_session_factory() as db:
+            devices = list((await db.execute(select(Device))).scalars().all())
+        details = []
+        for device in devices:
+            try:
+                details.append(await self._sync_enrollments_isolated(device.id))
+            except Exception as exc:
+                details.append(exc)
+        summary = {
+            "total": len(devices),
+            "success": 0,
+            "failed": 0,
+            "fingerprints_updated": 0,
+            "fingerprints_cleared": 0,
+            "details": [],
+        }
+        confirmed: set[int] = set()
+        for device, item in zip(devices, details):
+            if isinstance(item, Exception):
+                row = {
+                    "device_id": device.id,
+                    "device_name": device.name,
+                    "status": "FAILED",
+                    "error": str(item),
+                    "fingerprints_updated": 0,
+                }
+            else:
+                row = item
+            person_ids = row.pop("confirmed_person_ids", None) or set()
+            summary["details"].append(row)
+            if row.get("status") == "SUCCESS":
+                summary["success"] += 1
+                summary["fingerprints_updated"] += int(row.get("fingerprints_updated") or 0)
+                confirmed |= set(person_ids)
+            else:
+                summary["failed"] += 1
+        # A terminal we could not read holds fingerprints we cannot see, so only
+        # trust the "not enrolled anywhere" conclusion when every unit answered.
+        if devices and not summary["failed"]:
+            async with async_session_factory() as db:
+                summary["fingerprints_cleared"] = await clear_stale_fingerprint_flags(db, confirmed)
+                await db.commit()
+        return summary
+
+    async def _sync_enrollments_isolated(self, device_id: int) -> dict:
+        async with async_session_factory() as db:
+            device = (
+                await db.execute(select(Device).where(Device.id == device_id))
+            ).scalar_one_or_none()
+            if device is None:
+                return {"device_id": device_id, "status": "FAILED", "error": "Device not found"}
+            personnel = list((await db.execute(select(Personnel))).scalars().all())
+            try:
+                result = await self._apply_enrollments_for_device(
+                    db, device, personnel, max_retries=1
+                )
+                await db.commit()
+                return {
+                    "device_id": device.id,
+                    "device_name": device.name,
+                    "status": "SUCCESS",
+                    "fingerprints_updated": result["fingerprints_updated"],
+                    "punches_remapped": result["punches_remapped"],
+                    "confirmed_person_ids": result["confirmed_person_ids"],
+                    "error": None,
+                }
+            except Exception as exc:
+                await db.rollback()
+                logger.warning("[%s] Enrollment-only sync failed: %s", device.name, exc)
+                return {
+                    "device_id": device.id,
+                    "device_name": device.name,
+                    "status": "FAILED",
+                    "fingerprints_updated": 0,
+                    "error": str(exc),
+                }
+
+    async def _apply_enrollments_for_device(
+        self,
+        db,
+        device: Device,
+        personnel: list[Personnel],
+        *,
+        max_retries: int | None = None,
+    ) -> dict:
+        loop = asyncio.get_running_loop()
+        manager = DeviceManager(
+            create_device_adapter(
+                ip=device.ip_address,
+                port=device.port,
+                password=device.communication_password,
+                name=device.name,
+                transport=getattr(device, "preferred_transport", None) or "auto",
+            ),
+            name=device.name,
+        )
+        users, template_uids = await loop.run_in_executor(
+            None, lambda: manager.fetch_enrollment_state(max_retries=max_retries)
+        )
+        result = await apply_device_enrollment_state(
+            db,
+            personnel=personnel,
+            device_users=users,
+            template_uids=template_uids,
+        )
+        if result["fingerprints_updated"] or result["punches_remapped"]:
+            logger.info(
+                "[%s] Auto enrollment sync: fingerprints=%d punches_relinked=%d",
+                device.name,
+                result["fingerprints_updated"],
+                result["punches_remapped"],
+            )
+        return result
 
     async def _sync_device_isolated(self, device_id: int, full: bool = False) -> dict:
         """Own DB session so a failed terminal never rolls back a successful one."""
@@ -256,6 +388,9 @@ class SyncService:
             logs_skipped = 0
 
             batch_size = max(1, settings.device_persist_batch_size)
+            all_personnel = list((await db.execute(select(Personnel))).scalars().all())
+            personnel_pins = [person.biometric_user_id for person in all_personnel]
+            legacy_temp_pins = build_legacy_temp_pin_map(all_personnel)
             logger.info(
                 "[%s] Persisting %d new/relevant records (terminal reported %d) in batches of %d",
                 device.name,
@@ -265,7 +400,13 @@ class SyncService:
             )
 
             for batch_number, batch in enumerate(_chunked(raw_logs, batch_size), start=1):
-                inserted, skipped = await self._ingest_batch(db, device.id, batch)
+                inserted, skipped = await self._ingest_batch(
+                    db,
+                    device.id,
+                    batch,
+                    personnel_pins=personnel_pins,
+                    legacy_temp_pins=legacy_temp_pins,
+                )
                 logs_inserted += inserted
                 logs_skipped += skipped
                 await db.commit()
@@ -279,10 +420,17 @@ class SyncService:
                     skipped,
                 )
 
+            try:
+                await self._apply_enrollments_for_device(db, device, all_personnel)
+            except Exception as exc:
+                logger.warning("[%s] Auto enrollment sync skipped: %s", device.name, exc)
+
             current_time = now()
             learned = manager.last_transport
-            if learned in {"tcp", "udp"}:
-                device.preferred_transport = learned
+            if learned == "tcp":
+                device.preferred_transport = "tcp"
+            elif learned == "udp" and (logs_found > 0 or terminal_records > 0):
+                device.preferred_transport = "udp"
             device.connection_status = "ONLINE"
             device.last_seen_at = current_time
             device.last_sync_at = current_time
@@ -304,6 +452,7 @@ class SyncService:
                 enabled=clear_after,
                 terminal_records=terminal_records,
                 logs_found=logs_found,
+                min_records=settings.device_clear_log_min_records,
             ):
                 logger.info(
                     "[%s] Clearing terminal attendance memory after successful persist (CMD_CLEAR_ATTLOG)",
@@ -401,7 +550,12 @@ class SyncService:
             await self._release_device(device.id)
 
     async def _ingest_batch(
-        self, db: AsyncSession, device_id: int, logs: list[DeviceAttendanceLog]
+        self,
+        db: AsyncSession,
+        device_id: int,
+        logs: list[DeviceAttendanceLog],
+        personnel_pins: list[str] | None = None,
+        legacy_temp_pins: dict[str, str] | None = None,
     ) -> tuple[int, int]:
         """Insert a batch of punches. Idempotent via unique (device, user, time)."""
         if not logs:
@@ -410,14 +564,21 @@ class SyncService:
         prepared: list[tuple[str, object, DeviceAttendanceLog]] = []
         seen: set[tuple[str, object]] = set()
         skipped = 0
+        aliases = legacy_temp_pins or {}
         for log in logs:
             punch_time = make_aware(log.timestamp) if log.timestamp.tzinfo is None else log.timestamp
-            key = (str(log.user_id), punch_time)
+            raw_pin = normalize_pin(log.user_id)
+            user_id = (
+                resolve_personnel_pin(raw_pin, personnel_pins or [])
+                or aliases.get(raw_pin)
+                or raw_pin
+            )
+            key = (user_id, punch_time)
             if key in seen:
                 skipped += 1
                 continue
             seen.add(key)
-            prepared.append((key[0], punch_time, log))
+            prepared.append((user_id, punch_time, log))
 
         if not prepared:
             return 0, skipped

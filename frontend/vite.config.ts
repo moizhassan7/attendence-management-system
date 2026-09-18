@@ -21,6 +21,10 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: true,
     proxy: apiProxy,
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
   },
   preview: {
     host: true,
