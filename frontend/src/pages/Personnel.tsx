@@ -11,16 +11,26 @@ import {
 } from 'recharts';
 import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
+import { AttendanceStatusUsersModal } from '../components/AttendanceStatusUsersModal';
 import PaginationBar from '../components/PaginationBar';
 import SearchablePersonSelect from '../components/SearchablePersonSelect';
 import { rankChartLabel, rankDisplayName } from '../utils/rankLabels';
 import { fetchNextDevicePin, digitsOnlyPin } from '../utils/nextDevicePin';
 
-const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass }: any) => (
-  <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28`}>
+const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass, onClick }: any) => (
+  <div 
+    onClick={onClick}
+    role={onClick ? "button" : undefined}
+    tabIndex={onClick ? 0 : undefined}
+    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick?.(); }}
+    title={onClick ? `Click to view ${title} personnel` : undefined}
+    className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28 transition-all duration-200 ${
+      onClick ? 'cursor-pointer hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 select-none group' : ''
+    }`}
+  >
     <div className="flex justify-between items-start">
-      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-tight w-2/3">{title}</span>
-      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${bgClass}`}>
+      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-tight w-2/3 group-hover:text-slate-700 transition-colors">{title}</span>
+      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${bgClass} group-hover:scale-110 transition-transform`}>
         <Icon className={`w-3.5 h-3.5 ${colorClass}`} />
       </div>
     </div>
@@ -29,7 +39,7 @@ const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, bord
       {subtitle && <div className="text-[10px] font-semibold text-slate-400 mt-1 whitespace-pre-wrap">{subtitle}</div>}
     </div>
     {borderClass && (
-      <div className={`absolute bottom-4 left-4 right-4 h-1 rounded-full ${borderClass}`}></div>
+      <div className={`absolute bottom-0 left-0 right-0 h-1.5 ${borderClass}`}></div>
     )}
   </div>
 );
@@ -67,6 +77,27 @@ const Personnel: React.FC = () => {
   const [showMarkModal, setShowMarkModal] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<any | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    status: string;
+    rankId?: number;
+    departmentId?: number;
+  }>({
+    isOpen: false,
+    title: '',
+    status: 'ALL',
+  });
+
+  const openStatusModal = (title: string, status: string, rankId?: number, departmentId?: number) => {
+    setStatusModal({
+      isOpen: true,
+      title,
+      status,
+      rankId,
+      departmentId,
+    });
+  };
 
   // Add Staff Form
   const [newStaff, setNewStaff] = useState({
@@ -359,19 +390,98 @@ const Personnel: React.FC = () => {
 
       {/* KPIs Row */}
       <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-9 gap-3">
-        <KPICard title="GRAND TOTAL" value={kpi.total_strength} subtitle={`${kpi.uniform} uniform · ${kpi.non_uniform} civil`} icon={Users} colorClass="text-indigo-600" bgClass="bg-indigo-50" borderClass="bg-indigo-600" />
-        <KPICard title="PRESENT" value={kpi.present} subtitle={`On site: ${kpi.present} in -\n0 out`} icon={UserCheck} colorClass="text-emerald-500" bgClass="bg-emerald-50" borderClass="bg-emerald-500" />
-        <KPICard title="LATE" value={kpi.late} subtitle={`95% on time`} icon={UserCheck} colorClass="text-amber-500" bgClass="bg-amber-50" borderClass="bg-amber-500" />
-        <KPICard title="ABSENT" value={kpi.absent} icon={UserX} colorClass="text-rose-500" bgClass="bg-rose-50" borderClass="bg-rose-500" />
-        <KPICard title="LEAVE" value={kpi.leave} icon={Briefcase} colorClass="text-sky-500" bgClass="bg-sky-50" borderClass="bg-sky-500" />
-        <KPICard title="OSD" value={kpi.osd} icon={Activity} colorClass="text-indigo-500" bgClass="bg-indigo-50" borderClass="bg-indigo-500" />
-        <KPICard title="MEDICAL" value={kpi.medical} icon={FileWarning} colorClass="text-amber-500" bgClass="bg-amber-50" borderClass="bg-amber-500" />
-        <KPICard title="EVIDENCE" value={kpi.evidence} icon={GraduationCap} colorClass="text-blue-500" bgClass="bg-blue-50" borderClass="bg-blue-500" />
-        <KPICard title="DUTY REST" value={kpi.duty_rest} icon={CalendarDays} colorClass="text-purple-500" bgClass="bg-purple-50" borderClass="bg-purple-500" />
+        <KPICard 
+          title="GRAND TOTAL" 
+          value={kpi.total_strength} 
+          subtitle={`${kpi.uniform} uniform · ${kpi.non_uniform} civil`} 
+          icon={Users} 
+          colorClass="text-indigo-600" 
+          bgClass="bg-indigo-50" 
+          borderClass="bg-indigo-600" 
+          onClick={() => openStatusModal('Grand Total Staff', 'ALL')}
+        />
+        <KPICard 
+          title="PRESENT" 
+          value={kpi.present} 
+          subtitle={`On site: ${kpi.present} in -\n0 out`} 
+          icon={UserCheck} 
+          colorClass="text-emerald-500" 
+          bgClass="bg-emerald-50" 
+          borderClass="bg-emerald-500" 
+          onClick={() => openStatusModal('Present Staff', 'PRESENT,LATE')}
+        />
+        <KPICard 
+          title="LATE" 
+          value={kpi.late} 
+          subtitle={`95% on time`} 
+          icon={UserCheck} 
+          colorClass="text-amber-500" 
+          bgClass="bg-amber-50" 
+          borderClass="bg-amber-500" 
+          onClick={() => openStatusModal('Late Staff', 'LATE')}
+        />
+        <KPICard 
+          title="ABSENT" 
+          value={kpi.absent} 
+          icon={UserX} 
+          colorClass="text-rose-500" 
+          bgClass="bg-rose-50" 
+          borderClass="bg-rose-500" 
+          onClick={() => openStatusModal('Absent Staff', 'ABSENT')}
+        />
+        <KPICard 
+          title="LEAVE" 
+          value={kpi.leave} 
+          icon={Briefcase} 
+          colorClass="text-sky-500" 
+          bgClass="bg-sky-50" 
+          borderClass="bg-sky-500" 
+          onClick={() => openStatusModal('Staff on Leave', 'LEAVE')}
+        />
+        <KPICard 
+          title="OSD" 
+          value={kpi.osd} 
+          icon={Activity} 
+          colorClass="text-indigo-500" 
+          bgClass="bg-indigo-50" 
+          borderClass="bg-indigo-500" 
+          onClick={() => openStatusModal('OSD Staff', 'OSD')}
+        />
+        <KPICard 
+          title="MEDICAL" 
+          value={kpi.medical} 
+          icon={FileWarning} 
+          colorClass="text-amber-500" 
+          bgClass="bg-amber-50" 
+          borderClass="bg-amber-500" 
+          onClick={() => openStatusModal('Medical Staff', 'MEDICAL')}
+        />
+        <KPICard 
+          title="EVIDENCE" 
+          value={kpi.evidence} 
+          icon={GraduationCap} 
+          colorClass="text-blue-500" 
+          bgClass="bg-blue-50" 
+          borderClass="bg-blue-500" 
+          onClick={() => openStatusModal('Evidence Staff', 'EVIDENCE')}
+        />
+        <KPICard 
+          title="DUTY REST" 
+          value={kpi.duty_rest} 
+          icon={CalendarDays} 
+          colorClass="text-purple-500" 
+          bgClass="bg-purple-50" 
+          borderClass="bg-purple-500" 
+          onClick={() => openStatusModal('Duty Rest Staff', 'DUTY_REST')}
+        />
       </div>
 
       <div className="flex gap-2 text-xs font-bold">
-        <div className="flex items-center gap-1 text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+        <div 
+          onClick={() => openStatusModal('Present Staff (On Site)', 'PRESENT,LATE')}
+          className="flex items-center gap-1 text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition-colors"
+          title="Click to view staff on site"
+        >
           <span>→</span> {kpi.present} in now
         </div>
         <div className="flex items-center gap-1 text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
@@ -401,15 +511,26 @@ const Personnel: React.FC = () => {
                   stroke="none"
                   startAngle={90}
                   endAngle={-270}
+                  className="cursor-pointer"
+                  onClick={(entry: any) => {
+                    if (entry && entry.name) {
+                      const raw = entry.name.toUpperCase().replace(/\s+/g, '_');
+                      openStatusModal(`${entry.name} Staff`, raw);
+                    }
+                  }}
                 >
                   {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell key={`cell-${index}`} fill={entry.color} className="cursor-pointer hover:opacity-80 transition-opacity" />
                   ))}
                 </Pie>
                 <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px' }} />
               </PieChart>
             </ResponsiveContainer>
-            <div className="absolute inset-0 flex items-center justify-center flex-col pt-1">
+            <div 
+              onClick={() => openStatusModal('Present Staff', 'PRESENT,LATE')}
+              className="absolute inset-0 flex items-center justify-center flex-col pt-1 cursor-pointer hover:scale-105 transition-transform"
+              title="Click to view present staff"
+            >
               <span className="text-3xl font-black text-slate-800">{kpi.attendance_percent}%</span>
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">present</span>
             </div>
@@ -419,10 +540,16 @@ const Personnel: React.FC = () => {
             <div className="md:col-span-2 grid grid-cols-2 gap-x-8 gap-y-4">
               {pieData.map((stat, idx) => {
                 const percent = kpi.total_strength > 0 ? (stat.value / kpi.total_strength) * 100 : 0;
+                const raw = stat.name.toUpperCase().replace(/\s+/g, '_');
                 return (
-                  <div key={idx} className="flex flex-col">
+                  <div 
+                    key={idx} 
+                    onClick={() => openStatusModal(`${stat.name} Staff`, raw)}
+                    className="flex flex-col cursor-pointer group hover:bg-slate-50 p-2 rounded-xl transition-colors"
+                    title={`Click to view ${stat.name} staff`}
+                  >
                     <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 mb-1">
-                      <span>{stat.name}</span>
+                      <span className="group-hover:text-slate-900 transition-colors">{stat.name}</span>
                       <span className="text-slate-400">{stat.value} · {Math.round(percent)}%</span>
                     </div>
                     <ProgressBar current={stat.value} total={kpi.total_strength} color={getStatusColor(stat.name)} />
@@ -980,6 +1107,16 @@ const Personnel: React.FC = () => {
           }}
         />
       )}
+
+      <AttendanceStatusUsersModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        title={statusModal.title}
+        status={statusModal.status}
+        rankId={statusModal.rankId}
+        departmentId={statusModal.departmentId}
+        isTrainee={false}
+      />
 
     </div>
   );

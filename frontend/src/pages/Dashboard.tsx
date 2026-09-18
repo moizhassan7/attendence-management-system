@@ -11,6 +11,7 @@ import {
 import api from '../api/client';
 import { dashboardWebSocketUrl } from '../api/ws';
 import TraineesOverview from '../components/TraineesOverview';
+import { AttendanceStatusUsersModal } from '../components/AttendanceStatusUsersModal';
 import { rankChartLabel, rankDisplayName } from '../utils/rankLabels';
 
 interface DashboardKPI {
@@ -66,11 +67,25 @@ interface DepartmentSummary {
   duty_rest: number;
 }
 
-const StatusTile = ({ title, value, hint, icon: Icon, colorClass }: any) => (
-  <div className="bg-slate-50/80 rounded-xl px-3 py-3 border border-slate-100 min-h-[78px] flex flex-col justify-between">
-    <div className="flex items-center gap-1.5">
-      <Icon className={`w-3.5 h-3.5 ${colorClass}`} />
-      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{title}</span>
+const StatusTile = ({ title, value, hint, icon: Icon, colorClass, onClick }: any) => (
+  <div 
+    onClick={onClick}
+    role={onClick ? "button" : undefined}
+    tabIndex={onClick ? 0 : undefined}
+    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick?.(); }}
+    title={onClick ? `Click to view ${title} personnel` : undefined}
+    className={`bg-slate-50/80 rounded-xl px-3 py-3 border border-slate-100 min-h-[78px] flex flex-col justify-between transition-all duration-200 ${
+      onClick ? 'cursor-pointer hover:bg-white hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 select-none group' : ''
+    }`}
+  >
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-1.5">
+        <Icon className={`w-3.5 h-3.5 ${colorClass}`} />
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-700 transition-colors">{title}</span>
+      </div>
+      {onClick && (
+        <ChevronRight className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+      )}
     </div>
     <div className="flex items-end gap-1.5 mt-2">
       <span className={`text-2xl font-extrabold tracking-tight ${colorClass}`}>{value}</span>
@@ -110,6 +125,25 @@ const Dashboard: React.FC = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    status: string;
+    isTrainee?: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    status: 'ALL',
+  });
+
+  const openStatusModal = (title: string, status: string, isTrainee?: boolean) => {
+    setStatusModal({
+      isOpen: true,
+      title,
+      status,
+      isTrainee,
+    });
+  };
 
   const fetchDashboardData = useCallback(async (showRefreshing = false) => {
     if (showRefreshing) setIsRefreshing(true);
@@ -312,10 +346,27 @@ const Dashboard: React.FC = () => {
           <div className="lg:col-span-4 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-slate-100 pb-5 lg:pb-0 lg:pr-6">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Parade state</span>
             <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-5xl font-extrabold tracking-tight text-accent">{stats?.present ?? 0}</span>
-              <span className="text-lg font-bold text-slate-400">/ {stats?.total_strength ?? 0}</span>
+              <span 
+                onClick={() => openStatusModal('Present Personnel (Parade State)', 'PRESENT,LATE')}
+                className="text-5xl font-extrabold tracking-tight text-accent cursor-pointer hover:underline hover:opacity-90 transition-opacity"
+                title="Click to view Present & Late personnel"
+              >
+                {stats?.present ?? 0}
+              </span>
+              <span 
+                onClick={() => openStatusModal('All Personnel Strength', 'ALL')}
+                className="text-lg font-bold text-slate-400 cursor-pointer hover:text-slate-600 hover:underline transition-colors"
+                title="Click to view all personnel"
+              >
+                / {stats?.total_strength ?? 0}
+              </span>
             </div>
-            <p className="text-xs font-medium text-slate-400 mt-1">Present of total staff strength</p>
+            <p 
+              onClick={() => openStatusModal('Present Personnel (Parade State)', 'PRESENT,LATE')}
+              className="text-xs font-medium text-slate-400 mt-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              Present of total staff strength · click to view
+            </p>
             <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden mt-4">
               <div
                 className="h-full bg-accent rounded-full transition-all duration-500"
@@ -323,25 +374,73 @@ const Dashboard: React.FC = () => {
               />
             </div>
             <div className="flex justify-between mt-2 text-[11px] font-semibold">
-              <span className="text-accent">{attendancePct}% attendance</span>
+              <span 
+                onClick={() => openStatusModal('Present Personnel (Parade State)', 'PRESENT,LATE')}
+                className="text-accent cursor-pointer hover:underline"
+              >
+                {attendancePct}% attendance
+              </span>
               <span className="text-slate-400">{exceptionsCount} on exception</span>
             </div>
           </div>
 
           <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatusTile title="Late" value={stats?.late ?? 0} icon={Clock} colorClass="text-warning" />
-            <StatusTile title="Absent" value={stats?.absent ?? 0} icon={UserX} colorClass="text-danger" />
-            <StatusTile title="Leave" value={stats?.leave ?? 0} icon={Briefcase} colorClass="text-info" />
-            <StatusTile title="OSD" value={stats?.osd ?? 0} icon={FileWarning} colorClass="text-purple" />
-            <StatusTile title="Medical" value={stats?.medical ?? 0} icon={Stethoscope} colorClass="text-warning" />
-            <StatusTile title="Weekend" value={stats?.weekend ?? 0} icon={CalendarDays} colorClass="text-dark" />
-            <StatusTile title="Duty rest" value={stats?.duty_rest ?? 0} icon={ShieldCheck} colorClass="text-purple" />
+            <StatusTile 
+              title="Late" 
+              value={stats?.late ?? 0} 
+              icon={Clock} 
+              colorClass="text-warning" 
+              onClick={() => openStatusModal('Late Personnel', 'LATE')}
+            />
+            <StatusTile 
+              title="Absent" 
+              value={stats?.absent ?? 0} 
+              icon={UserX} 
+              colorClass="text-danger" 
+              onClick={() => openStatusModal('Absent Personnel', 'ABSENT')}
+            />
+            <StatusTile 
+              title="Leave" 
+              value={stats?.leave ?? 0} 
+              icon={Briefcase} 
+              colorClass="text-info" 
+              onClick={() => openStatusModal('Personnel on Leave', 'LEAVE')}
+            />
+            <StatusTile 
+              title="OSD" 
+              value={stats?.osd ?? 0} 
+              icon={FileWarning} 
+              colorClass="text-purple" 
+              onClick={() => openStatusModal('OSD Personnel', 'OSD')}
+            />
+            <StatusTile 
+              title="Medical" 
+              value={stats?.medical ?? 0} 
+              icon={Stethoscope} 
+              colorClass="text-warning" 
+              onClick={() => openStatusModal('Medical Personnel', 'MEDICAL')}
+            />
+            <StatusTile 
+              title="Weekend" 
+              value={stats?.weekend ?? 0} 
+              icon={CalendarDays} 
+              colorClass="text-dark" 
+              onClick={() => openStatusModal('Weekend Personnel', 'WEEKEND')}
+            />
+            <StatusTile 
+              title="Duty rest" 
+              value={stats?.duty_rest ?? 0} 
+              icon={ShieldCheck} 
+              colorClass="text-purple" 
+              onClick={() => openStatusModal('Duty Rest Personnel', 'DUTY_REST')}
+            />
             <StatusTile
               title="On site"
               value={stats?.present ?? 0}
               hint="in"
               icon={ArrowRightLeft}
               colorClass="text-accent"
+              onClick={() => openStatusModal('On Site Personnel', 'PRESENT,LATE')}
             />
           </div>
         </div>
@@ -451,9 +550,16 @@ const Dashboard: React.FC = () => {
                     stroke="none"
                     paddingAngle={2}
                     cornerRadius={4}
+                    className="cursor-pointer"
+                    onClick={(entry: any) => {
+                      if (entry && entry.name) {
+                        const rawStatus = entry.name.toUpperCase().replace(/\s+/g, '_');
+                        openStatusModal(`${entry.name} Personnel`, rawStatus);
+                      }
+                    }}
                   >
                     {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} className="cursor-pointer hover:opacity-80 transition-opacity" />
                     ))}
                   </Pie>
                   <RechartsTooltip 
@@ -469,9 +575,15 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 mt-1">
               {pieData.map((d, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-500">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }}></div>
-                  {d.name} ({d.value})
+                <div 
+                  key={i} 
+                  onClick={() => openStatusModal(`${d.name} Personnel`, d.name.toUpperCase().replace(/\s+/g, '_'))}
+                  className="flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform"
+                  title={`Click to view ${d.name} personnel`}
+                >
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }} />
+                  <span className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 transition-colors">{d.name}</span>
+                  <span className="text-[11px] font-bold text-slate-700">({d.value})</span>
                 </div>
               ))}
             </div>
@@ -604,6 +716,15 @@ const Dashboard: React.FC = () => {
       </div>
 
       <TraineesOverview targetDate={selectedDate} />
+
+      <AttendanceStatusUsersModal 
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        title={statusModal.title}
+        status={statusModal.status}
+        date={selectedDate}
+        isTrainee={statusModal.isTrainee}
+      />
     </div>
   );
 };

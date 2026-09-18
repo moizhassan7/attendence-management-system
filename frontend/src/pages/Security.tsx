@@ -8,13 +8,27 @@ import {
 import api from '../api/client';
 import { useBranding } from '../context/BrandingContext';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
+import { AttendanceStatusUsersModal } from '../components/AttendanceStatusUsersModal';
 import PaginationBar from '../components/PaginationBar';
 
-const KPICard = ({ title, value, colorClass, bgClass, icon: Icon, borderClass }: any) => (
-  <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden`}>
+const KPICard = ({ title, value, colorClass, bgClass, icon: Icon, borderClass, onClick, isSelected }: any) => (
+  <div 
+    onClick={onClick}
+    role={onClick ? "button" : undefined}
+    tabIndex={onClick ? 0 : undefined}
+    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick?.(); }}
+    title={onClick ? `Click to view ${title} personnel` : undefined}
+    className={`bg-white rounded-2xl p-4 shadow-sm border flex flex-col justify-between relative overflow-hidden transition-all duration-200 ${
+      isSelected
+        ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-md'
+        : 'border-slate-100'
+    } ${
+      onClick ? 'cursor-pointer hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 select-none group' : ''
+    }`}
+  >
     <div className="flex justify-between items-start">
-      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-tight max-w-[70%]">{title}</span>
-      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${bgClass}`}>
+      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-tight max-w-[70%] group-hover:text-slate-700 transition-colors">{title}</span>
+      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${bgClass} group-hover:scale-110 transition-transform`}>
         <Icon className={`w-3.5 h-3.5 ${colorClass}`} />
       </div>
     </div>
@@ -22,7 +36,7 @@ const KPICard = ({ title, value, colorClass, bgClass, icon: Icon, borderClass }:
       <span className={`text-3xl font-black ${colorClass}`}>{value}</span>
     </div>
     {borderClass && (
-      <div className={`absolute bottom-4 left-4 right-4 h-1 rounded-full ${borderClass}`}></div>
+      <div className={`absolute bottom-0 left-0 right-0 h-1.5 ${borderClass}`}></div>
     )}
   </div>
 );
@@ -40,6 +54,23 @@ const Security: React.FC = () => {
   const [editStaff, setEditStaff] = useState<any | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    status: string;
+  }>({
+    isOpen: false,
+    title: '',
+    status: 'ALL',
+  });
+
+  const openStatusModal = (title: string, status: string) => {
+    setStatusModal({
+      isOpen: true,
+      title,
+      status,
+    });
+  };
 
   // Bulk Shift Change State
   const [availableShifts, setAvailableShifts] = useState<any[]>([]);
@@ -59,8 +90,31 @@ const Security: React.FC = () => {
       const res = await api.get('/dashboard/security');
       setData(res.data?.data);
       if (res.data?.data?.deployment && !activeShift) {
-        const keys = Object.keys(res.data.data.deployment);
-        setActiveShift(keys.includes('Off / Marked') ? 'Off / Marked' : (keys[0] || 'Awaiting'));
+        const dep = res.data.data.deployment;
+        const morningCount = dep['Morning Shift'] || 0;
+        const eveningCount = dep['Evening Shift'] || 0;
+        const nightCount = dep['Night Shift'] || 0;
+
+        let defaultShift = 'Morning Shift';
+        const currentHour = new Date().getHours();
+        if (currentHour >= 5 && currentHour < 13) {
+          defaultShift = 'Morning Shift';
+        } else if (currentHour >= 13 && currentHour < 21) {
+          defaultShift = 'Evening Shift';
+        } else {
+          defaultShift = 'Night Shift';
+        }
+
+        if ((dep[defaultShift] || 0) === 0) {
+          if (morningCount > 0) defaultShift = 'Morning Shift';
+          else if (nightCount > 0) defaultShift = 'Night Shift';
+          else if (eveningCount > 0) defaultShift = 'Evening Shift';
+          else {
+            const keys = Object.keys(dep);
+            defaultShift = keys[0] || 'Off / Marked';
+          }
+        }
+        setActiveShift(defaultShift);
       }
     } catch (error) {
       console.error('Failed to fetch security data', error);
@@ -224,6 +278,18 @@ const Security: React.FC = () => {
 
   const allSelected = filteredStaff.length > 0 && filteredStaff.every((s: any) => selectedIds.includes(s.id));
 
+  const morningCount = deployment?.['Morning Shift'] ?? deployment?.morning ?? 0;
+  const eveningCount = deployment?.['Evening Shift'] ?? deployment?.evening ?? 0;
+  const nightCount = deployment?.['Night Shift'] ?? deployment?.night ?? 0;
+  const awaitingCount = deployment?.['Awaiting'] ?? deployment?.awaiting ?? 0;
+  const offCount = deployment?.['Off / Marked'] ?? deployment?.off ?? 0;
+
+  const handleSelectShift = (shiftName: string) => {
+    setActiveShift(shiftName);
+    setPage(1);
+    setSelectedIds([]);
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       
@@ -266,26 +332,134 @@ const Security: React.FC = () => {
       <div className="space-y-4">
         <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">DEPLOYMENT TODAY</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <KPICard title="MORNING" value={deployment.morning} icon={Sunrise} colorClass="text-emerald-500" bgClass="bg-emerald-50" borderClass="bg-emerald-500" />
-          <KPICard title="EVENING" value={deployment.evening} icon={Sun} colorClass="text-amber-500" bgClass="bg-amber-50" borderClass="bg-amber-500" />
-          <KPICard title="NIGHT" value={deployment.night} icon={Moon} colorClass="text-indigo-600" bgClass="bg-indigo-50" borderClass="bg-indigo-600" />
-          <KPICard title="AWAITING" value={deployment.awaiting} icon={Clock} colorClass="text-slate-600" bgClass="bg-slate-100" borderClass="bg-slate-500" />
-          <KPICard title="OFF / MARKED" value={deployment.off} icon={CalendarDays} colorClass="text-purple-600" bgClass="bg-purple-50" borderClass="bg-purple-600" />
+          <KPICard 
+            title="MORNING" 
+            value={morningCount} 
+            icon={Sunrise} 
+            colorClass="text-emerald-500" 
+            bgClass="bg-emerald-50" 
+            borderClass="bg-emerald-500"
+            isSelected={activeShift.toLowerCase() === 'morning shift'}
+            onClick={() => handleSelectShift('Morning Shift')}
+          />
+          <KPICard 
+            title="EVENING" 
+            value={eveningCount} 
+            icon={Sun} 
+            colorClass="text-amber-500" 
+            bgClass="bg-amber-50" 
+            borderClass="bg-amber-500"
+            isSelected={activeShift.toLowerCase() === 'evening shift'}
+            onClick={() => handleSelectShift('Evening Shift')}
+          />
+          <KPICard 
+            title="NIGHT" 
+            value={nightCount} 
+            icon={Moon} 
+            colorClass="text-indigo-600" 
+            bgClass="bg-indigo-50" 
+            borderClass="bg-indigo-600"
+            isSelected={activeShift.toLowerCase() === 'night shift'}
+            onClick={() => handleSelectShift('Night Shift')}
+          />
+          <KPICard 
+            title="AWAITING" 
+            value={awaitingCount} 
+            icon={Clock} 
+            colorClass="text-slate-600" 
+            bgClass="bg-slate-100" 
+            borderClass="bg-slate-500"
+            isSelected={activeShift.toLowerCase() === 'awaiting'}
+            onClick={() => handleSelectShift('Awaiting')}
+          />
+          <KPICard 
+            title="OFF / MARKED" 
+            value={offCount} 
+            icon={CalendarDays} 
+            colorClass="text-purple-600" 
+            bgClass="bg-purple-50" 
+            borderClass="bg-purple-600"
+            isSelected={activeShift.toLowerCase() === 'off / marked'}
+            onClick={() => handleSelectShift('Off / Marked')}
+          />
         </div>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ATTENDANCE STATUS</h3>
         <div className="grid grid-cols-3 md:grid-cols-9 gap-3">
-          <KPICard title="TOTAL" value={status.total} icon={Users} colorClass="text-indigo-600" bgClass="bg-indigo-50" />
-          <KPICard title="PRESENT" value={status.present} icon={UserCheck} colorClass="text-emerald-500" bgClass="bg-emerald-50" />
-          <KPICard title="LATE" value={status.late} icon={UserCheck} colorClass="text-amber-500" bgClass="bg-amber-50" />
-          <KPICard title="ABSENT" value={status.absent} icon={UserX} colorClass="text-rose-500" bgClass="bg-rose-50" />
-          <KPICard title="LEAVE" value={status.leave} icon={Briefcase} colorClass="text-sky-500" bgClass="bg-sky-50" />
-          <KPICard title="OSD" value={status.osd} icon={Activity} colorClass="text-indigo-500" bgClass="bg-indigo-50" />
-          <KPICard title="MEDICAL" value={status.medical} icon={FileWarning} colorClass="text-amber-500" bgClass="bg-amber-50" />
-          <KPICard title="EVIDENCE" value={status.evidence} icon={GraduationCap} colorClass="text-blue-500" bgClass="bg-blue-50" />
-          <KPICard title="DUTY REST" value={status.duty_rest} icon={CalendarDays} colorClass="text-purple-500" bgClass="bg-purple-50" />
+          <KPICard 
+            title="TOTAL" 
+            value={status.total} 
+            icon={Users} 
+            colorClass="text-indigo-600" 
+            bgClass="bg-indigo-50" 
+            onClick={() => openStatusModal('All Security Personnel', 'ALL')}
+          />
+          <KPICard 
+            title="PRESENT" 
+            value={status.present} 
+            icon={UserCheck} 
+            colorClass="text-emerald-500" 
+            bgClass="bg-emerald-50" 
+            onClick={() => openStatusModal('Present Security Staff', 'PRESENT,LATE')}
+          />
+          <KPICard 
+            title="LATE" 
+            value={status.late} 
+            icon={UserCheck} 
+            colorClass="text-amber-500" 
+            bgClass="bg-amber-50" 
+            onClick={() => openStatusModal('Late Security Staff', 'LATE')}
+          />
+          <KPICard 
+            title="ABSENT" 
+            value={status.absent} 
+            icon={UserX} 
+            colorClass="text-rose-500" 
+            bgClass="bg-rose-50" 
+            onClick={() => openStatusModal('Absent Security Staff', 'ABSENT')}
+          />
+          <KPICard 
+            title="LEAVE" 
+            value={status.leave} 
+            icon={Briefcase} 
+            colorClass="text-sky-500" 
+            bgClass="bg-sky-50" 
+            onClick={() => openStatusModal('Security Staff on Leave', 'LEAVE')}
+          />
+          <KPICard 
+            title="OSD" 
+            value={status.osd} 
+            icon={Activity} 
+            colorClass="text-indigo-500" 
+            bgClass="bg-indigo-50" 
+            onClick={() => openStatusModal('OSD Security Staff', 'OSD')}
+          />
+          <KPICard 
+            title="MEDICAL" 
+            value={status.medical} 
+            icon={FileWarning} 
+            colorClass="text-amber-500" 
+            bgClass="bg-amber-50" 
+            onClick={() => openStatusModal('Medical Security Staff', 'MEDICAL')}
+          />
+          <KPICard 
+            title="EVIDENCE" 
+            value={status.evidence} 
+            icon={GraduationCap} 
+            colorClass="text-blue-500" 
+            bgClass="bg-blue-50" 
+            onClick={() => openStatusModal('Evidence Security Staff', 'EVIDENCE')}
+          />
+          <KPICard 
+            title="DUTY REST" 
+            value={status.duty_rest} 
+            icon={CalendarDays} 
+            colorClass="text-purple-500" 
+            bgClass="bg-purple-50" 
+            onClick={() => openStatusModal('Duty Rest Security Staff', 'DUTY_REST')}
+          />
         </div>
       </div>
 
@@ -642,6 +816,14 @@ const Security: React.FC = () => {
           }}
         />
       )}
+
+      <AttendanceStatusUsersModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        title={statusModal.title}
+        status={statusModal.status}
+        dutyType="Security"
+      />
 
     </div>
   );

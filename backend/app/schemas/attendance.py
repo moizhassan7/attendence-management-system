@@ -45,4 +45,10 @@ class AttendanceDailyOut(BaseModel):
     rank_name: str | None = None
     category: str | None = None
     shift_name: str | None = None
+    course_name: str | None = None
+    designation: str | None = None
+    gender: str | None = None
+    is_trainee: bool | None = None
+    cnic: str | None = None
+    father_name: str | None = None
     model_config = {"from_attributes": True}

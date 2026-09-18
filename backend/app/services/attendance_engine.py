@@ -57,8 +57,16 @@ def apply_sanctioned_exception(status: str, exception_type: str | None) -> str:
     return status
 
 
-def infer_shift_for_punch(punch_local: datetime, shifts: Sequence) -> Shift | None:
-    """Pick the shift that started most recently before the punch (rotation, not assigned roster)."""
+def infer_shift_for_punch(
+    punch_local: datetime, shifts: Sequence, early_buffer_minutes: int = 180
+) -> Shift | None:
+    """Pick the shift that best matches the punch time.
+    
+    In a rotating security deployment, guards punch in early for handover/roll call
+    (e.g., 05:00-08:00 for an 08:00 Morning shift). Using an early arrival buffer
+    (default 180 min / 3 hours) ensures check-ins before shift start map to the
+    upcoming shift rather than the previous shift.
+    """
     named = [s for s in shifts if any(k in (s.name or "").lower() for k in SECURITY_SHIFT_KEYWORDS)]
     pool = named or list(shifts)
     if not pool:
@@ -69,11 +77,12 @@ def infer_shift_for_punch(punch_local: datetime, shifts: Sequence) -> Shift | No
     for s in pool:
         start = s.start_time
         start_m = start.hour * 60 + start.minute
-        delta = (punch_m - start_m) % (24 * 60)
+        delta = (punch_m - (start_m - early_buffer_minutes)) % (24 * 60)
         if delta < best_delta:
             best_delta = delta
             best = s
     return best
+
 
 
 class AttendanceService:

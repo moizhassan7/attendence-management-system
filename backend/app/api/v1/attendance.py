@@ -17,9 +17,10 @@ from app.models.exception import AttendanceException
 from app.models.personnel import Personnel
 from app.models.device import Device
 from app.models.settings import SystemSetting
+from app.models.shift import Shift
 from app.schemas.common import ApiResponse, PaginatedResponse, PaginationMeta
 from app.schemas.attendance import AttendancePunchOut, AttendanceDailyOut
-from app.services.attendance_engine import AttendanceService
+from app.services.attendance_engine import AttendanceService, infer_shift_for_punch, is_security_staff
 from app.services.pin_match import candidate_device_pins, resolve_personnel_pin
 from app.utils.timezone import today, now, to_local, get_tz
 
@@ -119,31 +120,91 @@ async def list_daily_attendance(
     date_filter: Annotated[date | None, Query(alias="date")] = None,
     department_id: Annotated[int | None, Query()] = None,
     rank_id: Annotated[int | None, Query()] = None,
+    course_id: Annotated[int | None, Query()] = None,
+    category: Annotated[str | None, Query()] = None,
+    duty_type: Annotated[str | None, Query()] = None,
+    is_trainee: Annotated[bool | None, Query()] = None,
     status: Annotated[str | None, Query()] = None,
+    search: Annotated[str | None, Query()] = None,
     db: AsyncSession = Depends(get_db),
 ):
-    """List daily attendance records with filters."""
-    query = select(AttendanceDaily)
+    """List daily attendance records with extensive filters and search."""
+    target_date = date_filter or today()
+
+    # If no records exist yet for this date, trigger calculation once
+    existing_count = await db.scalar(
+        select(func.count(AttendanceDaily.id)).where(AttendanceDaily.attendance_date == target_date)
+    )
+    if not existing_count:
+        try:
+            await AttendanceService().process_daily_attendance(db, target_date)
+        except Exception as exc:
+            logger.warning("Could not pre-process daily attendance for %s: %s", target_date, exc)
+
+    query = select(AttendanceDaily).options(
+        selectinload(AttendanceDaily.personnel).selectinload(Personnel.rank),
+        selectinload(AttendanceDaily.personnel).selectinload(Personnel.department),
+        selectinload(AttendanceDaily.personnel).selectinload(Personnel.course),
+        selectinload(AttendanceDaily.personnel).selectinload(Personnel.shift),
+    )
     count_query = select(func.count(AttendanceDaily.id))
 
-    target_date = date_filter or today()
     query = query.where(AttendanceDaily.attendance_date == target_date)
     count_query = count_query.where(AttendanceDaily.attendance_date == target_date)
 
-    if status:
-        query = query.where(AttendanceDaily.status == status)
-        count_query = count_query.where(AttendanceDaily.status == status)
+    # Status filter (supports comma-separated e.g. "PRESENT,LATE" or single status)
+    if status and status.strip().upper() != "ALL":
+        if "," in status:
+            statuses = [s.strip().upper() for s in status.split(",") if s.strip()]
+            query = query.where(func.upper(AttendanceDaily.status).in_(statuses))
+            count_query = count_query.where(func.upper(AttendanceDaily.status).in_(statuses))
+        else:
+            query = query.where(func.upper(AttendanceDaily.status) == status.strip().upper())
+            count_query = count_query.where(func.upper(AttendanceDaily.status) == status.strip().upper())
 
-    # Join with Personnel for filtering by dept/rank
-    if department_id or rank_id:
+    # Personnel filters
+    needs_personnel_join = any([
+        department_id is not None,
+        rank_id is not None,
+        course_id is not None,
+        category is not None,
+        duty_type is not None,
+        is_trainee is not None,
+        bool(search and search.strip()),
+    ])
+
+    if needs_personnel_join:
         query = query.join(Personnel, AttendanceDaily.personnel_id == Personnel.id)
         count_query = count_query.join(Personnel, AttendanceDaily.personnel_id == Personnel.id)
+
         if department_id:
             query = query.where(Personnel.department_id == department_id)
             count_query = count_query.where(Personnel.department_id == department_id)
         if rank_id:
             query = query.where(Personnel.rank_id == rank_id)
             count_query = count_query.where(Personnel.rank_id == rank_id)
+        if course_id:
+            query = query.where(Personnel.course_id == course_id)
+            count_query = count_query.where(Personnel.course_id == course_id)
+        if category:
+            query = query.where(Personnel.category == category)
+            count_query = count_query.where(Personnel.category == category)
+        if duty_type:
+            query = query.where(Personnel.duty_type == duty_type)
+            count_query = count_query.where(Personnel.duty_type == duty_type)
+        if is_trainee is not None:
+            query = query.where(Personnel.is_trainee == is_trainee)
+            count_query = count_query.where(Personnel.is_trainee == is_trainee)
+        if search and search.strip():
+            term = f"%{search.strip()}%"
+            s_filter = or_(
+                Personnel.full_name.ilike(term),
+                Personnel.biometric_user_id.ilike(term),
+                Personnel.employee_code.ilike(term),
+                Personnel.cnic.ilike(term),
+            )
+            query = query.where(s_filter)
+            count_query = count_query.where(s_filter)
 
     total = (await db.execute(count_query)).scalar() or 0
     result = await db.execute(
@@ -153,9 +214,22 @@ async def list_daily_attendance(
     )
     records = result.scalars().all()
 
+    active_shifts = None
     out = []
     for r in records:
         p = r.personnel
+        s_name = p.shift.name if p and p.shift else None
+        if not s_name and p and is_security_staff(p.duty_type):
+            if r.first_in:
+                if active_shifts is None:
+                    active_shifts = list((await db.execute(select(Shift).where(Shift.active == True))).scalars().all())
+                inferred = infer_shift_for_punch(to_local(r.first_in), active_shifts)
+                s_name = inferred.name if inferred else "Morning Shift"
+            elif r.status in ["LEAVE", "MEDICAL", "OSD", "DUTY_REST", "WEEKEND", "HOLIDAY", "EVIDENCE", "ABSENT"]:
+                s_name = "Off / Marked"
+            else:
+                s_name = "Awaiting"
+
         out.append(AttendanceDailyOut(
             id=r.id,
             personnel_id=r.personnel_id,
@@ -173,14 +247,21 @@ async def list_daily_attendance(
             biometric_user_id=p.biometric_user_id if p else None,
             department_name=p.department.name if p and p.department else None,
             rank_name=p.rank.name if p and p.rank else None,
+            course_name=p.course.name if p and p.course else None,
             category=p.category if p else None,
-            shift_name=p.shift.name if p and p.shift else None,
+            designation=p.designation if p else None,
+            gender=p.gender if p else None,
+            is_trainee=p.is_trainee if p else None,
+            cnic=p.cnic if p else None,
+            father_name=p.father_name if p else None,
+            shift_name=s_name,
         ))
 
     return PaginatedResponse(
         data=out,
         pagination=PaginationMeta(page=page, page_size=page_size, total=total),
     )
+
 
 
 @router.get("/recent-punches", response_model=ApiResponse)

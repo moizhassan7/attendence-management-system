@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import api from '../api/client';
 import { EditPersonnelModal } from '../components/EditPersonnelModal';
+import { AttendanceStatusUsersModal } from '../components/AttendanceStatusUsersModal';
 import PaginationBar from '../components/PaginationBar';
 import SearchablePersonSelect from '../components/SearchablePersonSelect';
 import { fetchNextDevicePin, digitsOnlyPin } from '../utils/nextDevicePin';
@@ -55,11 +56,20 @@ interface TraineeData {
   distribution: any[];
 }
 
-const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass }: any) => (
-  <div className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28`}>
+const KPICard = ({ title, value, subtitle, colorClass, bgClass, icon: Icon, borderClass, onClick }: any) => (
+  <div 
+    onClick={onClick}
+    role={onClick ? "button" : undefined}
+    tabIndex={onClick ? 0 : undefined}
+    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick?.(); }}
+    title={onClick ? `Click to view ${title} trainees` : undefined}
+    className={`bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden h-28 transition-all duration-200 ${
+      onClick ? 'cursor-pointer hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 select-none group' : ''
+    }`}
+  >
     <div className="flex justify-between items-start">
-      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{title}</span>
-      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${bgClass}`}>
+      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider group-hover:text-slate-700 transition-colors">{title}</span>
+      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${bgClass} group-hover:scale-110 transition-transform`}>
         <Icon className={`w-3.5 h-3.5 ${colorClass}`} />
       </div>
     </div>
@@ -106,6 +116,25 @@ const Trainees: React.FC = () => {
   const [showMarkModal, setShowMarkModal] = useState(false);
   const [selectedTrainee, setSelectedTrainee] = useState<any | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    status: string;
+    courseId?: number;
+  }>({
+    isOpen: false,
+    title: '',
+    status: 'ALL',
+  });
+
+  const openStatusModal = (title: string, status: string, courseId?: number) => {
+    setStatusModal({
+      isOpen: true,
+      title,
+      status,
+      courseId,
+    });
+  };
 
   // Add Trainee Form
   const [newTrainee, setNewTrainee] = useState({
@@ -383,15 +412,88 @@ const Trainees: React.FC = () => {
 
       {/* KPIs Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-9 gap-3">
-        <KPICard title="ENROLLED" value={kpi.total_strength} icon={Users} colorClass="text-indigo-600" bgClass="bg-indigo-50" borderClass="bg-indigo-600" />
-        <KPICard title="PRESENT" value={kpi.present} subtitle={`${kpi.attendance_percent}% present`} icon={UserCheck} colorClass="text-emerald-500" bgClass="bg-emerald-50" borderClass="bg-slate-200" />
-        <KPICard title="ABSENT" value={kpi.absent} icon={UserX} colorClass="text-rose-500" bgClass="bg-rose-50" borderClass="bg-slate-200" />
-        <KPICard title="LEAVE" value={kpi.leave} icon={Briefcase} colorClass="text-sky-500" bgClass="bg-sky-50" borderClass="bg-slate-200" />
-        <KPICard title="WEEKEND" value={kpi.weekend} icon={CalendarDays} colorClass="text-slate-600" bgClass="bg-slate-100" borderClass="bg-slate-400" />
-        <KPICard title="OSD" value={kpi.osd} icon={Activity} colorClass="text-indigo-500" bgClass="bg-indigo-50" borderClass="bg-slate-200" />
-        <KPICard title="MEDICAL" value={kpi.medical} icon={FileWarning} colorClass="text-amber-500" bgClass="bg-amber-50" borderClass="bg-slate-200" />
-        <KPICard title="EVIDENCE" value={kpi.evidence} icon={FileWarning} colorClass="text-blue-500" bgClass="bg-blue-50" borderClass="bg-slate-200" />
-        <KPICard title="REPATRIATION" value={kpi.repatriation} icon={ArrowRightLeft} colorClass="text-pink-500" bgClass="bg-pink-50" borderClass="bg-pink-500" />
+        <KPICard 
+          title="ENROLLED" 
+          value={kpi.total_strength} 
+          icon={Users} 
+          colorClass="text-indigo-600" 
+          bgClass="bg-indigo-50" 
+          borderClass="bg-indigo-600" 
+          onClick={() => openStatusModal('All Enrolled Trainees', 'ALL')}
+        />
+        <KPICard 
+          title="PRESENT" 
+          value={kpi.present} 
+          subtitle={`${kpi.attendance_percent}% present`} 
+          icon={UserCheck} 
+          colorClass="text-emerald-500" 
+          bgClass="bg-emerald-50" 
+          borderClass="bg-emerald-500" 
+          onClick={() => openStatusModal('Present Trainees', 'PRESENT,LATE')}
+        />
+        <KPICard 
+          title="ABSENT" 
+          value={kpi.absent} 
+          icon={UserX} 
+          colorClass="text-rose-500" 
+          bgClass="bg-rose-50" 
+          borderClass="bg-rose-500" 
+          onClick={() => openStatusModal('Absent Trainees', 'ABSENT')}
+        />
+        <KPICard 
+          title="LEAVE" 
+          value={kpi.leave} 
+          icon={Briefcase} 
+          colorClass="text-sky-500" 
+          bgClass="bg-sky-50" 
+          borderClass="bg-sky-500" 
+          onClick={() => openStatusModal('Trainees on Leave', 'LEAVE')}
+        />
+        <KPICard 
+          title="WEEKEND" 
+          value={kpi.weekend} 
+          icon={CalendarDays} 
+          colorClass="text-slate-600" 
+          bgClass="bg-slate-100" 
+          borderClass="bg-slate-400" 
+          onClick={() => openStatusModal('Weekend Trainees', 'WEEKEND')}
+        />
+        <KPICard 
+          title="OSD" 
+          value={kpi.osd} 
+          icon={Activity} 
+          colorClass="text-indigo-500" 
+          bgClass="bg-indigo-50" 
+          borderClass="bg-indigo-500" 
+          onClick={() => openStatusModal('OSD Trainees', 'OSD')}
+        />
+        <KPICard 
+          title="MEDICAL" 
+          value={kpi.medical} 
+          icon={FileWarning} 
+          colorClass="text-amber-500" 
+          bgClass="bg-amber-50" 
+          borderClass="bg-amber-500" 
+          onClick={() => openStatusModal('Medical Trainees', 'MEDICAL')}
+        />
+        <KPICard 
+          title="EVIDENCE" 
+          value={kpi.evidence} 
+          icon={FileWarning} 
+          colorClass="text-blue-500" 
+          bgClass="bg-blue-50" 
+          borderClass="bg-blue-500" 
+          onClick={() => openStatusModal('Evidence Trainees', 'EVIDENCE')}
+        />
+        <KPICard 
+          title="REPATRIATION" 
+          value={kpi.repatriation} 
+          icon={ArrowRightLeft} 
+          colorClass="text-pink-500" 
+          bgClass="bg-pink-50" 
+          borderClass="bg-pink-500" 
+          onClick={() => openStatusModal('Repatriated Trainees', 'REPATRIATION')}
+        />
       </div>
 
       {/* Course-Wise Strength */}
@@ -968,6 +1070,15 @@ const Trainees: React.FC = () => {
           }}
         />
       )}
+
+      <AttendanceStatusUsersModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        title={statusModal.title}
+        status={statusModal.status}
+        courseId={statusModal.courseId}
+        isTrainee={true}
+      />
 
     </div>
   );

@@ -8,6 +8,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip
 } from 'recharts';
 import api from '../api/client';
+import { AttendanceStatusUsersModal } from './AttendanceStatusUsersModal';
 
 interface CourseSummary {
   course_id: number;
@@ -52,16 +53,30 @@ interface TraineesOverviewProps {
   } | null;
 }
 
-const SmallKPICard = ({ title, value, subtitle, colorClass, icon: Icon }: any) => (
-  <div className="bg-white dark:bg-[#151D2E] px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-sm flex flex-col justify-between min-h-[88px]">
-    <div className="flex items-center gap-2 mb-2">
-      {Icon && <Icon className={`w-4 h-4 ${colorClass}`} />}
-      <span className="text-xs text-slate-500">{title}</span>
+const SmallKPICard = ({ title, value, subtitle, colorClass, icon: Icon, onClick }: any) => (
+  <div 
+    onClick={onClick}
+    role={onClick ? "button" : undefined}
+    tabIndex={onClick ? 0 : undefined}
+    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClick?.(); }}
+    title={onClick ? `Click to view ${title} trainees` : undefined}
+    className={`bg-white dark:bg-[#151D2E] px-4 py-3 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col justify-between min-h-[88px] transition-all duration-200 ${
+      onClick ? 'cursor-pointer hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 select-none group' : ''
+    }`}
+  >
+    <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center gap-2">
+        {Icon && <Icon className={`w-4 h-4 ${colorClass}`} />}
+        <span className="text-xs font-semibold text-slate-500 group-hover:text-slate-800 transition-colors">{title}</span>
+      </div>
+      {onClick && (
+        <ChevronRight className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+      )}
     </div>
     <div className="flex items-baseline gap-2">
-      <span className={`font-parade text-2xl tabular-nums ${colorClass || 'text-[#1A2332] dark:text-[#F4EFE4]'}`}>{value}</span>
+      <span className={`font-parade text-2xl tabular-nums font-extrabold ${colorClass || 'text-[#1A2332] dark:text-[#F4EFE4]'}`}>{value}</span>
     </div>
-    {subtitle && <div className="text-[11px] text-slate-400 mt-1">{subtitle}</div>}
+    {subtitle && <div className="text-[11px] font-semibold text-slate-400 mt-1">{subtitle}</div>}
   </div>
 );
 
@@ -69,6 +84,25 @@ const TraineesOverview: React.FC<TraineesOverviewProps> = ({ targetDate, externa
   const navigate = useNavigate();
   const [data, setData] = useState<{ kpi: TraineeKPI; courses: CourseSummary[] } | null>(externalData || null);
   const [loading, setLoading] = useState(!externalData);
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    status: string;
+    courseId?: number;
+  }>({
+    isOpen: false,
+    title: '',
+    status: 'ALL',
+  });
+
+  const openStatusModal = (title: string, status: string, courseId?: number) => {
+    setStatusModal({
+      isOpen: true,
+      title,
+      status,
+      courseId,
+    });
+  };
 
   useEffect(() => {
     if (externalData) {
@@ -157,36 +191,42 @@ const TraineesOverview: React.FC<TraineesOverviewProps> = ({ targetDate, externa
             subtitle={`${kpi.attendance_percent}%`} 
             icon={UserCheck} 
             colorClass="text-accent" 
+            onClick={() => openStatusModal('Present Trainees', 'PRESENT,LATE')}
           />
           <SmallKPICard 
             title="ABSENT" 
             value={kpi.absent} 
             icon={UserX} 
             colorClass="text-danger" 
+            onClick={() => openStatusModal('Absent Trainees', 'ABSENT')}
           />
           <SmallKPICard 
             title="LEAVE" 
             value={kpi.leave} 
             icon={Briefcase} 
             colorClass="text-info" 
+            onClick={() => openStatusModal('Trainees on Leave', 'LEAVE')}
           />
           <SmallKPICard 
             title="WEEKEND" 
             value={kpi.weekend} 
             icon={CalendarDays} 
             colorClass="text-dark" 
+            onClick={() => openStatusModal('Weekend Trainees', 'WEEKEND')}
           />
           <SmallKPICard 
             title="OSD" 
             value={kpi.osd} 
             icon={FileWarning} 
             colorClass="text-purple" 
+            onClick={() => openStatusModal('OSD Trainees', 'OSD')}
           />
           <SmallKPICard 
             title="REPATRIATION" 
             value={kpi.repatriation || 0} 
             icon={ArrowRightLeft} 
             colorClass="text-pink-500" 
+            onClick={() => openStatusModal('Repatriated Trainees', 'REPATRIATION')}
           />
         </div>
       </div>
@@ -200,6 +240,7 @@ const TraineesOverview: React.FC<TraineesOverviewProps> = ({ targetDate, externa
             value={kpi.total_strength} 
             icon={Users} 
             colorClass="text-primary" 
+            onClick={() => openStatusModal('All Enrolled Trainees', 'ALL')}
           />
           {courses.slice(0, 3).map((c, idx) => {
             const icons = [BookOpen, GraduationCap, FileWarning];
@@ -211,6 +252,7 @@ const TraineesOverview: React.FC<TraineesOverviewProps> = ({ targetDate, externa
                 value={c.strength}
                 icon={icons[idx % icons.length]}
                 colorClass={colors[idx % colors.length]}
+                onClick={() => openStatusModal(`${c.course_name} Trainees`, 'ALL', c.course_id)}
               />
             );
           })}
@@ -328,6 +370,16 @@ const TraineesOverview: React.FC<TraineesOverviewProps> = ({ targetDate, externa
           </div>
         </div>
       </div>
+
+      <AttendanceStatusUsersModal
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        title={statusModal.title}
+        status={statusModal.status}
+        date={targetDate}
+        courseId={statusModal.courseId}
+        isTrainee={true}
+      />
     </div>
   );
 };
