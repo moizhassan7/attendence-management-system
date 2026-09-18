@@ -130,8 +130,8 @@ const Backup: React.FC = () => {
     setIsRestoring(true);
     try {
       const form = new FormData();
-      form.append('file', file);
-      const res = await api.post('/backup/restore', form);
+      form.append('file', file, file.name);
+      const res = await api.post('/backup/restore/upload', form);
       showNotice(res.data?.message || 'Database restored from upload.');
       await fetchBackups();
     } catch (err: any) {

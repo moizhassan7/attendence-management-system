@@ -405,31 +405,23 @@ async def download_backup(
     return FileResponse(path=str(file_path), filename=safe_name, media_type=media)
 
 
-@router.post("/restore", response_model=ApiResponse)
-async def restore_backup(
-    filename: Annotated[str | None, Query()] = None,
-    file: UploadFile | None = File(None),
-    current_user: User = Depends(require_admin),
-) -> ApiResponse:
-    """Restore the live database from a listed backup or an uploaded file."""
-    ensure_backup_dir()
+def _save_uploaded_backup(file: UploadFile) -> Path:
+    original = os.path.basename(file.filename or "")
+    lower = original.lower()
+    if not original or not (lower.endswith(".db") or lower.endswith(".zip")):
+        raise HTTPException(status_code=400, detail="Upload a .zip (PostgreSQL) or .db (SQLite) backup")
+    safe_name = f"uploaded_restore_{now().strftime('%Y%m%d_%H%M%S')}_{original}"
+    target = BACKUP_DIR / safe_name
+    with open(target, "wb") as out:
+        shutil.copyfileobj(file.file, out)
+    if not target.exists() or target.stat().st_size == 0:
+        if target.exists():
+            target.unlink()
+        raise HTTPException(status_code=400, detail="Uploaded backup file is empty")
+    return target
 
-    if file is not None:
-        original = os.path.basename(file.filename or "backup.zip")
-        lower = original.lower()
-        if not (lower.endswith(".db") or lower.endswith(".zip")):
-            raise HTTPException(status_code=400, detail="Upload a .zip (PostgreSQL) or .db (SQLite) backup")
-        safe_name = f"uploaded_restore_{now().strftime('%Y%m%d_%H%M%S')}_{original}"
-        target = BACKUP_DIR / safe_name
-        with open(target, "wb") as out:
-            shutil.copyfileobj(file.file, out)
-    elif filename:
-        target = BACKUP_DIR / os.path.basename(filename)
-        if not target.exists():
-            raise HTTPException(status_code=404, detail="Specified backup file not found")
-    else:
-        raise HTTPException(status_code=400, detail="Provide a backup filename or upload a backup file")
 
+async def _apply_restore(target: Path, performed_by: str) -> ApiResponse:
     pre_restore_name = f"safety_pre_restore_{now().strftime('%Y%m%d_%H%M%S')}"
     pre_restore_path = BACKUP_DIR / (pre_restore_name + (".db" if _is_sqlite() else ".zip"))
 
@@ -473,7 +465,7 @@ async def restore_backup(
     await _write_audit(
         "RESTORE_DATABASE",
         target.name,
-        getattr(current_user, "username", "admin"),
+        performed_by,
         old_value=pre_restore_path.name,
         new_value=target.name,
     )
@@ -486,6 +478,40 @@ async def restore_backup(
         },
         message=f"Database restored from {target.name}. Reload the app to see updated records.",
     )
+
+
+@router.post("/restore/upload", response_model=ApiResponse)
+async def restore_backup_upload(
+    file: Annotated[UploadFile, File(...)],
+    current_user: User = Depends(require_admin),
+) -> ApiResponse:
+    """Restore from an uploaded .zip (PostgreSQL) or .db (SQLite) file."""
+    ensure_backup_dir()
+    target = _save_uploaded_backup(file)
+    return await _apply_restore(target, getattr(current_user, "username", "admin"))
+
+
+@router.post("/restore", response_model=ApiResponse)
+async def restore_backup(
+    filename: Annotated[str | None, Query()] = None,
+    file: UploadFile | None = File(None),
+    current_user: User = Depends(require_admin),
+) -> ApiResponse:
+    """Restore the live database from a listed backup or an uploaded file."""
+    ensure_backup_dir()
+    performed_by = getattr(current_user, "username", "admin")
+    has_upload = file is not None and bool(file.filename)
+
+    if has_upload:
+        target = _save_uploaded_backup(file)
+    elif filename:
+        target = BACKUP_DIR / os.path.basename(filename)
+        if not target.exists():
+            raise HTTPException(status_code=404, detail="Specified backup file not found")
+    else:
+        raise HTTPException(status_code=400, detail="Provide a backup filename or upload a backup file")
+
+    return await _apply_restore(target, performed_by)
 
 
 @router.delete("/{filename}", response_model=ApiResponse)

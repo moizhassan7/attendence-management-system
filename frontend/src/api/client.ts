@@ -21,9 +21,6 @@ function resolveApiBaseUrl(): string {
 
 const api = axios.create({
   baseURL: resolveApiBaseUrl(),
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Intercept requests to add the auth token
@@ -32,6 +29,16 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Default JSON Content-Type breaks FormData (backup restore upload).
+    // Let the browser set multipart/form-data with the correct boundary.
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData && config.headers) {
+      const headers = config.headers as { delete?: (name: string) => void } & Record<string, unknown>;
+      if (typeof headers.delete === 'function') {
+        headers.delete('Content-Type');
+      } else {
+        delete headers['Content-Type'];
+      }
     }
     return config;
   },

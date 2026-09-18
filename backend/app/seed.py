@@ -6,10 +6,10 @@ import asyncio
 import logging
 from datetime import date, time
 
-from passlib.context import CryptContext
 from sqlalchemy import select, func
 
 from app.config import get_settings
+from app.core.security import get_password_hash
 from app.database import async_session_factory, init_db
 from app.models.device import Device
 from app.models.settings import SystemSetting
@@ -17,7 +17,6 @@ from app.models.shift import Shift
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def seed_database():
@@ -38,7 +37,7 @@ async def seed_database():
             db.add(User(
                 username=settings.admin_username,
                 email=settings.admin_email,
-                hashed_password=pwd_context.hash(settings.admin_password),
+                hashed_password=get_password_hash(settings.admin_password),
                 full_name="System Administrator",
                 role="ADMIN",
                 is_active=True,
